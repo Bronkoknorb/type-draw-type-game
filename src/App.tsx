@@ -18,7 +18,7 @@ function App() {
     }
   }
 
-  const handleClick = (event: React.MouseEvent) => toggleToFullscreenAndLandscapeOnMobile();
+  const handleClick = () => toggleToFullscreenAndLandscapeOnMobile();
 
   return (
     <div className="App">
