@@ -1,7 +1,11 @@
 .App {
   text-align: center;
+  height: 100%;
+  width: 100%;
+  background-color: #282c34;
 }
 
+/*
 .App-header {
   background-color: #282c34;
   min-height: 100vh;
@@ -11,8 +15,12 @@
   justify-content: center;
   font-size: calc(10px + 2vmin);
   color: white;
-}
+}*/
 
 canvas {
   background-color:white;
+  touch-action: none;
+  display: block;
+  max-height: 100%;
+  max-width: 90%;
 }
