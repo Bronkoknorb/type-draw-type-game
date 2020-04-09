@@ -1,4 +1,5 @@
 import React from 'react';
+import logo from './logo.svg';
 import './App.css';
 
 import o9n from 'o9n';
@@ -115,15 +116,10 @@ function App() {
 
   return (
     <div className="App">
-      <canvas height="1080" width="1440"
+      <img src={logo} alt="Type Draw Type Game" onClick={handleClick} />
+      <canvas width="1440" height="1080"
           onMouseDown={handleMouseDown} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} onMouseOut={handleMouseOut}
-          onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd}
-        ></canvas>
-      {/*<header className="App-header">
-        <button onClick={handleClick}>
-          To Fullscreen
-        </button>
-      </header>*/}
+          onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd}></canvas>
     </div>
   );
 }
