@@ -1,6 +1,6 @@
 {
-  "name": "drawing-game",
-  "version": "0.1.0",
+  "name": "type-draw-type-game",
+  "version": "1.0.0",
   "private": true,
   "dependencies": {
     "@types/node": "^12.0.0",
