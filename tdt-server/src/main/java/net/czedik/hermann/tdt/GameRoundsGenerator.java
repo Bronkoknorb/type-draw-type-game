@@ -36,13 +36,13 @@ public class GameRoundsGenerator {
 
         /* This is an algorithm to generate a "perfect" game for an even number of players:
          (A perfect game means, that you get a story from every other player exactly once.)
-         After the first round, if you are player p (with p from 0 to the total number of players), you hand your story
-         over to player p+1 (modulo the number of players), after the second round to player p-2, then to p+3, then to
-         p-4, then to p+5 and so on (always modulo the number of players), until the game is over (the number of rounds
-         corresponds to the number of player (and also stories), because we want every player to participate in every
-         story). (Sitting on a round table this could look like this: first hand the paper/story to the player right of
-         you, then the next one to the player sitting two places left of you, then to the player sitting three places
-         right of you, and so on. */
+         After the first round, if you are player p (with p from 0 to the total number of players minus 1), you hand
+         your story over to player p+1 (modulo the number of players), after the second round to player p-2, then to
+         p+3, then to p-4, then to p+5 and so on (always modulo the number of players), until the game is over (the
+         number of rounds corresponds to the number of player (and also stories), because we want every player to
+         participate in every story). (Sitting on a round table this could look like this: first hand the paper/story
+         to the player right of you, then the next one to the player sitting two places left of you, then to the player
+         sitting three places right of you, and so on. */
         int sign = 1;
         for (int r = 0; r < rounds.length - 1; r++) {
             int[] currentRound = rounds[r];
