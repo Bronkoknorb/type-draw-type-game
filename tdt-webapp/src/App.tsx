@@ -1,25 +1,50 @@
 import React from 'react';
+import { Link, RouteComponentProps, Router } from "@reach/router";
+
 import logo from './logo.svg';
 import './App.css';
 
 import o9n from 'o9n';
 
-function App() {
+const App = () => {
+  return (
+    <div className="App">
+      <Router>
+        <Home path="/" />
+        <Draw path="/draw" />{/* TODO https://reach.tech/router/typescript to see how to add parameters */}
+      </Router>
+    </div>
+  );
+}
 
+export default App;
+
+const Home = (props: RouteComponentProps) => {
   function isMobileDevice() {
-    return (window.orientation !== undefined && document.documentElement.requestFullscreen !== undefined);
-  };
+    return window.orientation !== undefined;
+  }
 
   function toggleToFullscreenAndLandscapeOnMobile() {
     if (isMobileDevice()) {
-      document.documentElement.requestFullscreen().then(() => {
-        o9n.orientation.lock("landscape-primary");
-      });
+      if (document.documentElement.requestFullscreen) {
+        document.documentElement.requestFullscreen().then(() => {
+          o9n.orientation.lock("landscape-primary").catch(() => console.log("Cannot change orientation"));
+        }).catch(() => console.log("Cannot switch to fullscreen"));
+      }
     }
   }
 
   const handleClick = () => toggleToFullscreenAndLandscapeOnMobile();
 
+  return (
+    <div>
+      <img src={logo} alt="Type Draw Type Game" onClick={handleClick} /><br />
+      <Link to="/draw">Dashboard</Link>
+    </div>
+  );
+};
+
+const Draw = (props: RouteComponentProps) => {
   function getMousePos(canvas: HTMLCanvasElement, event: { clientX: number, clientY: number }) {
     let rect = canvas.getBoundingClientRect(), // abs. size of element
       scaleX = canvas.width / rect.width,    // relationship bitmap vs. element for X
@@ -114,14 +139,7 @@ function App() {
     paint_end(ctx);
   };
 
-  return (
-    <div className="App">
-      <img src={logo} alt="Type Draw Type Game" onClick={handleClick} />
-      <canvas width="1440" height="1080"
-          onMouseDown={handleMouseDown} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} onMouseOut={handleMouseOut}
-          onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd}></canvas>
-    </div>
-  );
-}
-
-export default App;
+  return (<canvas width="1440" height="1080"
+    onMouseDown={handleMouseDown} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} onMouseOut={handleMouseOut}
+    onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd}></canvas>);
+};
