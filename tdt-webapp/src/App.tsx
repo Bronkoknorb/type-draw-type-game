@@ -11,7 +11,7 @@ const App = () => {
     <div className="App">
       <Router>
         <Home path="/" />
-        <Draw path="/draw" />{/* TODO https://reach.tech/router/typescript to see how to add parameters */}
+        <Game path="/g" />{/* TODO https://reach.tech/router/typescript to see how to add parameters */}
       </Router>
     </div>
   );
@@ -39,12 +39,33 @@ const Home = (props: RouteComponentProps) => {
   return (
     <div>
       <img src={logo} alt="Type Draw Type Game" onClick={handleClick} /><br />
-      <Link to="/draw">Dashboard</Link>
+      <Link to="/g">Start new game</Link>
     </div>
   );
 };
 
-const Draw = (props: RouteComponentProps) => {
+const Game = (props: RouteComponentProps) => {
+
+  React.useEffect(() => {
+    const wsProtocol = (window.location.protocol === "https:") ? "wss://" : "ws://";
+    const wsUrl = wsProtocol + window.location.host + "/api/websocket";
+    console.log("Connecting to websocket " + wsUrl);
+    const socket = new WebSocket(wsUrl);
+
+    // TODO subscribe to messages
+
+    return () => {
+      console.log("Disconnecting from websocket");
+      socket.close();
+    };
+  }, []);
+
+  return (
+    <Draw />
+  );
+}
+
+const Draw = () => {
   function getMousePos(canvas: HTMLCanvasElement, event: { clientX: number, clientY: number }) {
     let rect = canvas.getBoundingClientRect(), // abs. size of element
       scaleX = canvas.width / rect.width,    // relationship bitmap vs. element for X
