@@ -34,7 +34,8 @@ public class WebSocketHandler extends AbstractWebSocketHandler {
 
     @Override
     public void handleTextMessage(WebSocketSession session, TextMessage message) {
-        // TODO
+        String payload = message.getPayload();
+        log.info("Received message: {}", payload);
     }
 
     @Override
