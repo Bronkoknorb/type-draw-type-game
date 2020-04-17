@@ -1,14 +1,22 @@
-html, body, #root {
+html,
+body,
+#root {
   margin: 0;
   width: 100vw;
   height: 100vh;
   overflow: hidden;
 }
 
+@font-face {
+  font-family: 'KidsDrawings';
+  src: local('MyFont'), url(./fonts/KidsDrawings.woff) format('woff');
+}
+
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
+  font-size: 5vmin;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: #ffffbe;

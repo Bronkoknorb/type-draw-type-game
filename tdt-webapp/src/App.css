@@ -4,20 +4,55 @@
   width: 100%;
 }
 
-/*
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+/* Some stupid div the Router inserts */
+.App>div {
+  width: 100%;
+  height: 100%;
+}
+
+.Home {
+  width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
+  justify-content: space-around;
+}
+
+.Home-header {
+  display: flex;
+  flex-direction: row;
   align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}*/
+  justify-content: space-around;
+}
+
+.Home-header-drawing {
+  font-family: "KidsDrawings";
+  font-size: 20vmin;
+  flex-grow: 1;
+  color:black;
+}
+
+.Home-header-drawing1 {
+  margin-top: 21vmin;
+}
+
+.Home-header-drawing2 {
+  margin-bottom: 21vmin;
+}
+
+.Home-header-logo {
+  flex-grow: 2;
+}
+
+.Home-header-logo img {
+  display: block;
+  width: 100%;
+  max-height: 45vh;
+  /*max-width: 45vmin;*/
+}
 
 canvas {
-  background-color:white;
+  background-color: white;
   touch-action: none;
   display: block;
   max-height: 100%;

@@ -35,19 +35,34 @@ const Home = (props: RouteComponentProps) => {
     }
   }
 
+  function getRandomCharacterFromString(s: string) {
+    return s.charAt(Math.floor(Math.random() * s.length));
+  }
+
+  const [randomDrawingCharacter1, setRandomDrawingCharacter1] = React.useState("");
+  const [randomDrawingCharacter2, setRandomDrawingCharacter2] = React.useState("");
+
+  React.useEffect(() => {
+    setRandomDrawingCharacter1(getRandomCharacterFromString("AFGHJKLMNOPRSTUVWXYZ"));
+    setRandomDrawingCharacter2(getRandomCharacterFromString("abcefghijklmnopqrstu"));
+  }, []);
+
   const handleClick = () => toggleToFullscreenAndLandscapeOnMobile();
 
   return (
-    <div>
-      <img src={logo} alt="Type Draw Type Game" onClick={handleClick} /><br />
-      <Link to="/g/xyz">Start new game</Link>
+    <div className="Home">
+      <div className="Home-header">
+        <div className="Home-header-drawing Home-header-drawing1">{randomDrawingCharacter1}</div>
+        <div className="Home-header-logo"><img src={logo} alt="Type Draw Type Game" onClick={handleClick} /></div>
+        <div className="Home-header-drawing Home-header-drawing2">{randomDrawingCharacter2}</div>
+      </div>
+      <div className="Home-buttons"><Link to="/g/xyz">Start new game</Link></div>
     </div>
   );
 };
 
-interface GameProps extends RouteComponentProps
-{
-	gameId?: string;
+interface GameProps extends RouteComponentProps {
+  gameId?: string;
 }
 
 const Game = (props: GameProps) => {
@@ -56,7 +71,7 @@ const Game = (props: GameProps) => {
   function getUserId() {
     const store = window.localStorage;
     let userId = store.getItem("userId");
-    if(userId === null) {
+    if (userId === null) {
       userId = uuidv4();
       store.setItem("userId", userId);
     }
