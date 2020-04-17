@@ -85,7 +85,7 @@ const Game = (props: GameProps) => {
       console.log("Disconnecting from websocket");
       socket.close();
     };
-  }, []);
+  }, [gameId]);
 
   return (
     <Draw />
