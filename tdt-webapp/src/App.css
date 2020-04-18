@@ -27,7 +27,7 @@
 
 .Home-header-drawing {
   font-family: "KidsDrawings";
-  font-size: 20vmin;
+  font-size: calc(25px + 15vmin);
   flex-grow: 1;
   color: black;
   margin-left: 3vmin;

@@ -39,21 +39,38 @@ const Home = (props: RouteComponentProps) => {
     return s.charAt(Math.floor(Math.random() * s.length));
   }
 
+  const getRandomLeftDrawingChar = () => getRandomCharacterFromString("AFGHJKLMNOPRSTUVWXYZ");
+  const getRandomRightDrawingChar = () => getRandomCharacterFromString("AFGHJKLMNOPRSTUVWXYZ");
+
   const [drawingChars, setDrawingChars] = React.useState(() => {
     return {
-      left: getRandomCharacterFromString("AFGHJKLMNOPRSTUVWXYZ"),
-      right: getRandomCharacterFromString("abcefghijklmnopqrstu")
+      left: getRandomLeftDrawingChar(),
+      right: getRandomRightDrawingChar(),
     }
   });
+
+  const nextLeftDrawing = () => {
+    setDrawingChars({
+      ...drawingChars,
+      left: getRandomLeftDrawingChar(),
+    });
+  };
+
+  const nextRightDrawing = () => {
+    setDrawingChars({
+      ...drawingChars,
+      right: getRandomRightDrawingChar(),
+    });
+  };
 
   const handleClick = () => toggleToFullscreenAndLandscapeOnMobile();
 
   return (
     <div className="Home">
       <div className="Home-header">
-        <div className="Home-header-drawing Home-header-drawing1">{drawingChars.left}</div>
+        <div className="Home-header-drawing Home-header-drawing1" onClick={nextLeftDrawing}>{drawingChars.left}</div>
         <div className="Home-header-logo"><img src={logo} alt="Type Draw Type Game" onClick={handleClick} /></div>
-        <div className="Home-header-drawing Home-header-drawing2">{drawingChars.right}</div>
+        <div className="Home-header-drawing Home-header-drawing2" onClick={nextRightDrawing}>{drawingChars.right}</div>
       </div>
       <div className="Home-buttons"><Link to="/g/xyz">Start new game</Link></div>
     </div>
