@@ -42,10 +42,10 @@ const Home = (props: RouteComponentProps) => {
   const [randomDrawingCharacter1, setRandomDrawingCharacter1] = React.useState("");
   const [randomDrawingCharacter2, setRandomDrawingCharacter2] = React.useState("");
 
-  React.useEffect(() => {
+  if(randomDrawingCharacter1 === "" || randomDrawingCharacter2 === "") {
     setRandomDrawingCharacter1(getRandomCharacterFromString("AFGHJKLMNOPRSTUVWXYZ"));
     setRandomDrawingCharacter2(getRandomCharacterFromString("abcefghijklmnopqrstu"));
-  }, []);
+  }
 
   const handleClick = () => toggleToFullscreenAndLandscapeOnMobile();
 
