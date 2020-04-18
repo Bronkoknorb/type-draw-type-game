@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-class GameRoundsGeneratorTest {
+class GameRoundsGeneratorTests {
 
     /**
      * Set to true to print out the games and more debugging information during testing.
