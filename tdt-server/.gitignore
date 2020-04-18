@@ -1,8 +1,6 @@
 /.gradle/
 /build/
 
-/src/main/resources/static/
-
 ### STS ###
 .apt_generated
 .classpath
