@@ -22,14 +22,12 @@ public class WebSocketHandler extends AbstractWebSocketHandler {
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) {
-        InetSocketAddress remoteAddress = session.getRemoteAddress();
-        log.info("Connection {} from: {}", session.getId(), remoteAddress != null ? remoteAddress.getHostName() : null);
+        log.info("Connection {} from: {}", session.getId(), getHostname(session));
     }
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
-        InetSocketAddress remoteAddress = session.getRemoteAddress();
-        log.info("Closed connection {} ({})", session.getId(), remoteAddress != null ? remoteAddress.getHostName() : null);
+        log.info("Closed connection {} ({})", session.getId(), getHostname(session));
     }
 
     @Override
@@ -41,5 +39,10 @@ public class WebSocketHandler extends AbstractWebSocketHandler {
     @Override
     protected void handleBinaryMessage(WebSocketSession session, BinaryMessage message) {
         // TODO
+    }
+
+    private String getHostname(WebSocketSession session) {
+        InetSocketAddress remoteAddress = session.getRemoteAddress();
+        return remoteAddress != null ? remoteAddress.getHostName() : null;
     }
 }
