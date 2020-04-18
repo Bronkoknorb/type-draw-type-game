@@ -1,0 +1,9 @@
+/.git/
+/resources-not-in-git/
+
+/tdt-webapp/node_modules/
+/tdt-webapp/build/
+
+/tdt-server/.gradle/
+/tdt-server/.idea/
+/tdt-server/build/
