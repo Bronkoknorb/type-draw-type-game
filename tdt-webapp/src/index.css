@@ -8,12 +8,20 @@ body,
 }
 
 @font-face {
-  font-family: 'KidsDrawings';
-  src: local('MyFont'), url(./fonts/KidsDrawings.woff) format('woff');
+  font-family: "Comic Neue";
+  src: url(./fonts/ComicNeue-Regular.woff) format("woff"),
+    url(./fonts/ComicNeue-Regular.woff2) format("woff2");
 }
 
-body, button {
-  font-family: 'Comic Neue', sans-serif;
+@font-face {
+  font-family: "KidsDrawings";
+  src: url(./fonts/KidsDrawings.woff) format("woff"),
+    url(./fonts/KidsDrawings.woff2) format("woff2");
+}
+
+body,
+button {
+  font-family: "Comic Neue", sans-serif;
   font-size: calc(14px + 3vmin);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
