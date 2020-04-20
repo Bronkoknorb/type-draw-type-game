@@ -12,13 +12,15 @@ body,
   src: local('MyFont'), url(./fonts/KidsDrawings.woff) format('woff');
 }
 
-body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  font-size: 5vmin;
+body, button {
+  font-family: 'Comic Neue', sans-serif;
+  font-size: calc(14px + 3vmin);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: #ffffbe;
+  color: black;
+}
+
+a {
   color: black;
 }

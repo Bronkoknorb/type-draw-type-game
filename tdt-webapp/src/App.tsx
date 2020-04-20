@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, RouteComponentProps, Router } from "@reach/router";
+import { RouteComponentProps, Router, navigate } from "@reach/router";
 import { v4 as uuidv4 } from 'uuid';
 
 import logo from './logo.svg';
@@ -39,8 +39,8 @@ const Home = (props: RouteComponentProps) => {
     return s.charAt(Math.floor(Math.random() * s.length));
   }
 
-  const getRandomLeftDrawingChar = () => getRandomCharacterFromString("AFGHJKLMNOPRSTUVWXYZ");
-  const getRandomRightDrawingChar = () => getRandomCharacterFromString("AFGHJKLMNOPRSTUVWXYZ");
+  const getRandomLeftDrawingChar  = () => getRandomCharacterFromString("AFGHJKLMNOPRSTUVWXYZ");
+  const getRandomRightDrawingChar = () => getRandomCharacterFromString("abcefghijklmnopqrstu");
 
   const [drawingChars, setDrawingChars] = React.useState(() => {
     return {
@@ -63,16 +63,28 @@ const Home = (props: RouteComponentProps) => {
     });
   };
 
-  const handleClick = () => toggleToFullscreenAndLandscapeOnMobile();
+  const handleStartNewGame = () => {
+    navigate("/g/xyz"); // TODO game id
+    toggleToFullscreenAndLandscapeOnMobile();
+  }
 
   return (
     <div className="Home">
-      <div className="Home-header">
-        <div className="Home-header-drawing Home-header-drawing1" onClick={nextLeftDrawing}>{drawingChars.left}</div>
-        <div className="Home-header-logo"><img src={logo} alt="Type Draw Type Game" onClick={handleClick} /></div>
-        <div className="Home-header-drawing Home-header-drawing2" onClick={nextRightDrawing}>{drawingChars.right}</div>
+      <div className="Home-content">
+        <div className="Home-header">
+          <div className="Home-header-drawing Home-header-drawing1" onClick={nextLeftDrawing}>{drawingChars.left}</div>
+          <div className="Home-header-logo"><img src={logo} alt="Type Draw Type Game" onClick={toggleToFullscreenAndLandscapeOnMobile} /></div>
+          <div className="Home-header-drawing Home-header-drawing2" onClick={nextRightDrawing}>{drawingChars.right}</div>
+        </div>
+        <div className="Home-buttons">
+          <button className="button" onClick={handleStartNewGame}>Start new game</button>
+        </div>
       </div>
-      <div className="Home-buttons"><Link to="/g/xyz">Start new game</Link></div>
+      <div className="Home-footer">
+        <div>
+          <a href="https://github.com/Bronkoknorb/type-draw-type-game">Open Source</a> by Hermann Czedik-Eysenberg
+        </div>
+      </div>
     </div>
   );
 };
