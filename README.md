@@ -63,3 +63,11 @@ Run the frontend in development mode:
 This will also automatically start a proxy server which forwards API requests to the backend (running on port 8080).
 
 See also [React-App-HELP.md](tdt-webapp/React-App-HELP.md).
+
+Author
+------
+
+Copyright by Hermann Czedik-Eysenberg  
+git-dev@hermann.czedik.net
+
+License: [GNU AFFERO GENERAL PUBLIC LICENSE](LICENSE)
