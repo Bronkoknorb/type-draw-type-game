@@ -230,7 +230,32 @@ const Draw = () => {
     paint_end(ctx);
   };
 
-  return (<canvas width="1440" height="1080"
-    onMouseDown={handleMouseDown} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} onMouseOut={handleMouseOut}
-    onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd}></canvas>);
+  const [showBrushPopup, setShowBrushPopup] = React.useState(false);
+
+  const brushPopup = React.createRef<HTMLDivElement>();
+
+  const selectBrush = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    if (brushPopup.current !== null) {
+      const button = event.currentTarget;
+      brushPopup.current.style.left = button.offsetLeft + button.offsetWidth + "px";
+      brushPopup.current.style.top = button.offsetTop + "px";
+      setShowBrushPopup(!showBrushPopup);
+    }
+  }
+
+  return (
+    <div className="Draw">
+      <div className="Draw-tools">
+        <div className="tool-button" onClick={selectBrush}><div>Brush</div></div>
+        <div className="tool-button"><div>Info</div></div>
+        <div className={"tool-popup" + (showBrushPopup ? "" : " hidden")} ref={brushPopup}>Brushes</div>
+        <div className="tool-button"><div>Done</div></div>
+      </div>
+      <div className="Draw-canvas">
+        <canvas width="1440" height="1080"
+          onMouseDown={handleMouseDown} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} onMouseOut={handleMouseOut}
+          onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd}></canvas>
+      </div>
+    </div>
+  );
 };
