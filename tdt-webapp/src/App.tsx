@@ -1,11 +1,11 @@
-import React from 'react';
+import React from "react";
 import { RouteComponentProps, Router, navigate } from "@reach/router";
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 
-import logo from './logo.svg';
-import './App.css';
+import logo from "./logo.svg";
+import "./App.css";
 
-import o9n from 'o9n';
+import o9n from "o9n";
 
 const App = () => {
   return (
@@ -16,7 +16,7 @@ const App = () => {
       </Router>
     </div>
   );
-}
+};
 
 export default App;
 
@@ -28,9 +28,14 @@ const Home = (props: RouteComponentProps) => {
   function toggleToFullscreenAndLandscapeOnMobile() {
     if (isMobileDevice()) {
       if (document.documentElement.requestFullscreen) {
-        document.documentElement.requestFullscreen().then(() => {
-          o9n.orientation.lock("landscape-primary").catch(() => console.log("Cannot change orientation"));
-        }).catch(() => console.log("Cannot switch to fullscreen"));
+        document.documentElement
+          .requestFullscreen()
+          .then(() => {
+            o9n.orientation
+              .lock("landscape-primary")
+              .catch(() => console.log("Cannot change orientation"));
+          })
+          .catch(() => console.log("Cannot switch to fullscreen"));
       }
     }
   }
@@ -39,14 +44,16 @@ const Home = (props: RouteComponentProps) => {
     return s.charAt(Math.floor(Math.random() * s.length));
   }
 
-  const getRandomLeftDrawingChar  = () => getRandomCharacterFromString("AFGHJKLMNOPRSTUVWXYZ");
-  const getRandomRightDrawingChar = () => getRandomCharacterFromString("abcefghijklmnopqrstu");
+  const getRandomLeftDrawingChar = () =>
+    getRandomCharacterFromString("AFGHJKLMNOPRSTUVWXYZ");
+  const getRandomRightDrawingChar = () =>
+    getRandomCharacterFromString("abcefghijklmnopqrstu");
 
   const [drawingChars, setDrawingChars] = React.useState(() => {
     return {
       left: getRandomLeftDrawingChar(),
       right: getRandomRightDrawingChar(),
-    }
+    };
   });
 
   const nextLeftDrawing = () => {
@@ -66,23 +73,44 @@ const Home = (props: RouteComponentProps) => {
   const handleStartNewGame = () => {
     navigate("/g/xyz"); // TODO game id
     toggleToFullscreenAndLandscapeOnMobile();
-  }
+  };
 
   return (
     <div className="Home">
       <div className="Home-content">
         <div className="Home-header">
-          <div className="Home-header-drawing Home-header-drawing1" onClick={nextLeftDrawing}>{drawingChars.left}</div>
-          <div className="Home-header-logo"><img src={logo} alt="Type Draw Type Game" onClick={toggleToFullscreenAndLandscapeOnMobile} /></div>
-          <div className="Home-header-drawing Home-header-drawing2" onClick={nextRightDrawing}>{drawingChars.right}</div>
+          <div
+            className="Home-header-drawing Home-header-drawing1"
+            onClick={nextLeftDrawing}
+          >
+            {drawingChars.left}
+          </div>
+          <div className="Home-header-logo">
+            <img
+              src={logo}
+              alt="Type Draw Type Game"
+              onClick={toggleToFullscreenAndLandscapeOnMobile}
+            />
+          </div>
+          <div
+            className="Home-header-drawing Home-header-drawing2"
+            onClick={nextRightDrawing}
+          >
+            {drawingChars.right}
+          </div>
         </div>
         <div className="Home-buttons">
-          <button className="button" onClick={handleStartNewGame}>Start new game</button>
+          <button className="button" onClick={handleStartNewGame}>
+            Start new game
+          </button>
         </div>
       </div>
       <div className="Home-footer">
         <div>
-          <a href="https://github.com/Bronkoknorb/type-draw-type-game">Open Source</a> by Hermann Czedik-Eysenberg
+          <a href="https://github.com/Bronkoknorb/type-draw-type-game">
+            Open Source
+          </a>{" "}
+          by Hermann Czedik-Eysenberg
         </div>
       </div>
     </div>
@@ -107,21 +135,24 @@ const Game = (props: GameProps) => {
   }
 
   React.useEffect(() => {
-    const wsProtocol = (window.location.protocol === "https:") ? "wss://" : "ws://";
+    const wsProtocol =
+      window.location.protocol === "https:" ? "wss://" : "ws://";
     const wsUrl = wsProtocol + window.location.host + "/api/websocket";
     console.log("Connecting to websocket " + wsUrl);
     const socket = new WebSocket(wsUrl);
 
-    socket.addEventListener('open', event => {
+    socket.addEventListener("open", (event) => {
       console.log("Websocket opened. Sending join action.");
 
-      socket.send(JSON.stringify({
-        action: "join",
-        join: {
-          gameId,
-          userId: getUserId()
-        }
-      }));
+      socket.send(
+        JSON.stringify({
+          action: "join",
+          join: {
+            gameId,
+            userId: getUserId(),
+          },
+        })
+      );
     });
 
     return () => {
@@ -130,24 +161,25 @@ const Game = (props: GameProps) => {
     };
   }, [gameId]);
 
-  return (
-    <Draw />
-  );
-}
+  return <Draw />;
+};
 
 const Draw = () => {
-  function getMousePos(canvas: HTMLCanvasElement, event: { clientX: number, clientY: number }) {
+  function getMousePos(
+    canvas: HTMLCanvasElement,
+    event: { clientX: number; clientY: number }
+  ) {
     let rect = canvas.getBoundingClientRect(), // abs. size of element
-      scaleX = canvas.width / rect.width,    // relationship bitmap vs. element for X
-      scaleY = canvas.height / rect.height;  // relationship bitmap vs. element for Y
+      scaleX = canvas.width / rect.width, // relationship bitmap vs. element for X
+      scaleY = canvas.height / rect.height; // relationship bitmap vs. element for Y
 
     return {
-      x: (event.clientX - rect.left) * scaleX,   // scale mouse coordinates after they have
-      y: (event.clientY - rect.top) * scaleY     // been adjusted to be relative to element
-    }
+      x: (event.clientX - rect.left) * scaleX, // scale mouse coordinates after they have
+      y: (event.clientY - rect.top) * scaleY, // been adjusted to be relative to element
+    };
   }
 
-  let pos: { x: number, y: number } | null = null;
+  let pos: { x: number; y: number } | null = null;
 
   function paint_start(ctx: CanvasRenderingContext2D, x: number, y: number) {
     pos = { x, y };
@@ -164,7 +196,11 @@ const Draw = () => {
     ctx.stroke();
     pos = { x, y };
   }
-  function paint_end(ctx: CanvasRenderingContext2D, x: number | null = null, y: number | null = null) {
+  function paint_end(
+    ctx: CanvasRenderingContext2D,
+    x: number | null = null,
+    y: number | null = null
+  ) {
     if (pos === null) {
       return;
     }
@@ -172,7 +208,9 @@ const Draw = () => {
     pos = null;
   }
 
-  const handleMouseDown = (event: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => {
+  const handleMouseDown = (
+    event: React.MouseEvent<HTMLCanvasElement, MouseEvent>
+  ) => {
     if (event.buttons !== 1) {
       return;
     }
@@ -181,7 +219,9 @@ const Draw = () => {
     const ctx = canvas.getContext("2d")!;
     paint_start(ctx, x, y);
   };
-  const handleMouseMove = (event: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => {
+  const handleMouseMove = (
+    event: React.MouseEvent<HTMLCanvasElement, MouseEvent>
+  ) => {
     const canvas = event.currentTarget;
     const { x, y } = getMousePos(canvas, event);
     const ctx = canvas.getContext("2d")!;
@@ -191,12 +231,16 @@ const Draw = () => {
     }
     paint_move(ctx, x, y);
   };
-  const handleMouseUp = (event: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => {
+  const handleMouseUp = (
+    event: React.MouseEvent<HTMLCanvasElement, MouseEvent>
+  ) => {
     const canvas = event.currentTarget;
     const ctx = canvas.getContext("2d")!;
     paint_end(ctx);
   };
-  const handleMouseOut = (event: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => {
+  const handleMouseOut = (
+    event: React.MouseEvent<HTMLCanvasElement, MouseEvent>
+  ) => {
     const canvas = event.currentTarget;
     const ctx = canvas.getContext("2d")!;
     const { x, y } = getMousePos(canvas, event);
@@ -211,7 +255,7 @@ const Draw = () => {
     const { x, y } = getMousePos(canvas, event.touches[0]);
     const ctx = canvas.getContext("2d")!;
     paint_start(ctx, x, y);
-  }
+  };
   const handleTouchMove = (event: React.TouchEvent<HTMLCanvasElement>) => {
     event.preventDefault();
     const canvas = event.currentTarget;
@@ -237,24 +281,44 @@ const Draw = () => {
   const selectBrush = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     if (brushPopup.current !== null) {
       const button = event.currentTarget;
-      brushPopup.current.style.left = button.offsetLeft + button.offsetWidth + "px";
+      brushPopup.current.style.left =
+        button.offsetLeft + button.offsetWidth + "px";
       brushPopup.current.style.top = button.offsetTop + "px";
       setShowBrushPopup(!showBrushPopup);
     }
-  }
+  };
 
   return (
     <div className="Draw">
       <div className="Draw-tools">
-        <div className="tool-button" onClick={selectBrush}><div>Brush</div></div>
-        <div className="tool-button"><div>Info</div></div>
-        <div className={"tool-popup" + (showBrushPopup ? "" : " hidden")} ref={brushPopup}>Brushes</div>
-        <div className="tool-button"><div>Done</div></div>
+        <div className="tool-button" onClick={selectBrush}>
+          <div>Brush</div>
+        </div>
+        <div className="tool-button">
+          <div>Info</div>
+        </div>
+        <div
+          className={"tool-popup" + (showBrushPopup ? "" : " hidden")}
+          ref={brushPopup}
+        >
+          Brushes
+        </div>
+        <div className="tool-button">
+          <div>Done</div>
+        </div>
       </div>
       <div className="Draw-canvas">
-        <canvas width="1440" height="1080"
-          onMouseDown={handleMouseDown} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} onMouseOut={handleMouseOut}
-          onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd}></canvas>
+        <canvas
+          width="1440"
+          height="1080"
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+          onMouseOut={handleMouseOut}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+        ></canvas>
       </div>
     </div>
   );
