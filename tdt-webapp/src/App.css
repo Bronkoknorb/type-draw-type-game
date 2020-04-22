@@ -32,7 +32,7 @@
   justify-content: space-around;
 }
 
-.Home-header-drawing {
+.Drawing {
   font-family: "KidsDrawings";
   font-size: calc(25px + 15vmin);
   flex-grow: 1;
@@ -42,11 +42,11 @@
   text-shadow: 0.5vmin 0.7vmin 1vmin rgba(61, 37, 37, 0.2);
 }
 
-.Home-header-drawing1 {
+.Drawing-left {
   margin-top: 21vmin;
 }
 
-.Home-header-drawing2 {
+.Drawing-right {
   margin-bottom: 21vmin;
 }
 

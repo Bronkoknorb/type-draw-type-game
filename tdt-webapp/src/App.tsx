@@ -40,36 +40,6 @@ const Home = (props: RouteComponentProps) => {
     }
   }
 
-  function getRandomCharacterFromString(s: string) {
-    return s.charAt(Math.floor(Math.random() * s.length));
-  }
-
-  const getRandomLeftDrawingChar = () =>
-    getRandomCharacterFromString("AFGHJKLMNOPRSTUVWXYZ");
-  const getRandomRightDrawingChar = () =>
-    getRandomCharacterFromString("abcefghijklmnopqrstu");
-
-  const [drawingChars, setDrawingChars] = React.useState(() => {
-    return {
-      left: getRandomLeftDrawingChar(),
-      right: getRandomRightDrawingChar(),
-    };
-  });
-
-  const nextLeftDrawing = () => {
-    setDrawingChars({
-      ...drawingChars,
-      left: getRandomLeftDrawingChar(),
-    });
-  };
-
-  const nextRightDrawing = () => {
-    setDrawingChars({
-      ...drawingChars,
-      right: getRandomRightDrawingChar(),
-    });
-  };
-
   const handleStartNewGame = () => {
     navigate("/g/xyz"); // TODO game id
     toggleToFullscreenAndLandscapeOnMobile();
@@ -79,12 +49,7 @@ const Home = (props: RouteComponentProps) => {
     <div className="Home">
       <div className="Home-content">
         <div className="Home-header">
-          <div
-            className="Home-header-drawing Home-header-drawing1"
-            onClick={nextLeftDrawing}
-          >
-            {drawingChars.left}
-          </div>
+          <Drawing className="Drawing-left" chars="AFGHJKLMNOPRSTUVWXYZ" />
           <div className="Home-header-logo">
             <img
               src={logo}
@@ -92,12 +57,7 @@ const Home = (props: RouteComponentProps) => {
               onClick={toggleToFullscreenAndLandscapeOnMobile}
             />
           </div>
-          <div
-            className="Home-header-drawing Home-header-drawing2"
-            onClick={nextRightDrawing}
-          >
-            {drawingChars.right}
-          </div>
+          <Drawing className="Drawing-right" chars="abcefghijklmnopqrstu" />
         </div>
         <div className="Home-buttons">
           <button className="button" onClick={handleStartNewGame}>
@@ -113,6 +73,32 @@ const Home = (props: RouteComponentProps) => {
           by Hermann Czedik-Eysenberg
         </div>
       </div>
+    </div>
+  );
+};
+
+const Drawing = ({
+  chars,
+  className,
+}: {
+  chars: string;
+  className: string;
+}) => {
+  function getRandomCharacterFromString(s: string) {
+    return s.charAt(Math.floor(Math.random() * s.length));
+  }
+
+  const getRandomDrawingChar = () => getRandomCharacterFromString(chars);
+
+  const [drawingChar, setDrawingChar] = React.useState(getRandomDrawingChar);
+
+  const nextDrawing = () => {
+    setDrawingChar(getRandomDrawingChar());
+  };
+
+  return (
+    <div className={"Drawing " + className} onClick={nextDrawing}>
+      {drawingChar}
     </div>
   );
 };
