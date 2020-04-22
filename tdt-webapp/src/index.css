@@ -19,13 +19,16 @@ body,
     url(./fonts/KidsDrawings.woff2) format("woff2");
 }
 
+body {
+  background-color: #ffffbe;
+}
+
 body,
 button {
   font-family: "Comic Neue", sans-serif;
   font-size: calc(14px + 3vmin);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #ffffbe;
   color: black;
 }
 
