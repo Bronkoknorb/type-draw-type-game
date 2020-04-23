@@ -20,26 +20,26 @@ const App = () => {
 
 export default App;
 
-const Home = (props: RouteComponentProps) => {
-  function isMobileDevice() {
-    return window.orientation !== undefined;
-  }
+function isMobileDevice() {
+  return window.orientation !== undefined;
+}
 
-  function toggleToFullscreenAndLandscapeOnMobile() {
-    if (isMobileDevice()) {
-      if (document.documentElement.requestFullscreen) {
-        document.documentElement
-          .requestFullscreen()
-          .then(() => {
-            o9n.orientation
-              .lock("landscape-primary")
-              .catch(() => console.log("Cannot change orientation"));
-          })
-          .catch(() => console.log("Cannot switch to fullscreen"));
-      }
+function toggleToFullscreenAndLandscapeOnMobile() {
+  if (isMobileDevice()) {
+    if (document.documentElement.requestFullscreen) {
+      document.documentElement
+        .requestFullscreen()
+        .then(() => {
+          o9n.orientation
+            .lock("landscape-primary")
+            .catch(() => console.log("Cannot change orientation"));
+        })
+        .catch(() => console.log("Cannot switch to fullscreen"));
     }
   }
+}
 
+const Home = (props: RouteComponentProps) => {
   const handleStartNewGame = () => {
     navigate("/g/xyz"); // TODO game id
     toggleToFullscreenAndLandscapeOnMobile();
@@ -50,13 +50,7 @@ const Home = (props: RouteComponentProps) => {
       <div className="Home-content">
         <div className="Home-header">
           <Drawing className="Drawing-left" chars="AFGHJKLMNOPRSTUVWXYZ" />
-          <div className="Home-header-logo">
-            <img
-              src={logo}
-              alt="Type Draw Type Game"
-              onClick={toggleToFullscreenAndLandscapeOnMobile}
-            />
-          </div>
+          <Logo />
           <Drawing className="Drawing-right" chars="abcefghijklmnopqrstu" />
         </div>
         <div className="Home-buttons">
@@ -77,6 +71,20 @@ const Home = (props: RouteComponentProps) => {
   );
 };
 
+const Logo = () => (
+  <div className="Logo">
+    <img
+      src={logo}
+      alt="Type Draw Type Game"
+      onClick={toggleToFullscreenAndLandscapeOnMobile}
+    />
+  </div>
+);
+
+function getRandomCharacterFromString(s: string) {
+  return s.charAt(Math.floor(Math.random() * s.length));
+}
+
 const Drawing = ({
   chars,
   className,
@@ -84,10 +92,6 @@ const Drawing = ({
   chars: string;
   className: string;
 }) => {
-  function getRandomCharacterFromString(s: string) {
-    return s.charAt(Math.floor(Math.random() * s.length));
-  }
-
   const getRandomDrawingChar = () => getRandomCharacterFromString(chars);
 
   const [drawingChar, setDrawingChar] = React.useState(getRandomDrawingChar);
@@ -147,7 +151,44 @@ const Game = (props: GameProps) => {
     };
   }, [gameId]);
 
-  return <Draw />;
+  // TODO
+  if (false) {
+    return <Draw />;
+  } else {
+    return <Join />;
+  }
+};
+
+const Join = () => {
+  return (
+    <div className="Join">
+      <div className="Join-logo">
+        <Logo />
+      </div>
+      <div className="Join-content">
+        <h1>Join Game</h1>
+        <Avatar />
+      </div>
+    </div>
+  );
+};
+
+const Avatar = () => {
+  const faces = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+  const [face, setFace] = React.useState(() =>
+    getRandomCharacterFromString(faces)
+  );
+
+  const nextFace = () => {
+    setFace(faces.charAt((faces.indexOf(face) + 1) % faces.length));
+  };
+
+  return (
+    <div className="Avatar" onClick={nextFace}>
+      {face}
+    </div>
+  );
 };
 
 const Draw = () => {

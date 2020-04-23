@@ -19,6 +19,12 @@ body,
     url(./fonts/KidsDrawings.woff2) format("woff2");
 }
 
+@font-face {
+  font-family: "TheFreakyFace";
+  src: url(./fonts/TheFreakyFace.woff) format("woff"),
+    url(./fonts/TheFreakyFace.woff2) format("woff2");
+}
+
 body {
   background-color: #ffffbe;
 }
@@ -34,4 +40,9 @@ button {
 
 a {
   color: black;
+}
+
+h1 {
+  font-size: calc(16px + 4vmin);
+  font-weight: bold;
 }
