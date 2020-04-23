@@ -136,10 +136,11 @@
   font-size: 25vmin;
   vertical-align: middle;
   border: 0.7vmin solid black;
+  border-radius: 50%;
   background-color: white;
   width: 24vmin;
   height: 24vmin;
-  line-height: 28vmin;
+  line-height: 29vmin;
   margin: 0 auto;
   cursor: pointer;
   user-select: none;
