@@ -160,28 +160,51 @@ const Game = (props: GameProps) => {
 };
 
 const Join = () => {
+  const [avatar, setAvatar] = React.useState("");
+
+  const [name, setName] = React.useState("");
+
+  const buttonDisabled = name === "";
+
   return (
     <div className="Join">
       <div className="Join-logo">
         <Logo />
       </div>
       <div className="Join-content">
-        <h1>Join Game</h1>
-        <Avatar />
+        Click to pick your look:
+        <br />
+        <Avatar handleChange={(face) => setAvatar(face)} />
+        <label htmlFor="name">Enter your name:</label>
+        <input
+          type="text"
+          id="name"
+          name="name"
+          value={name}
+          onChange={(event) => setName(event.target.value)}
+        />
+        <br />
+        <button className="button" disabled={buttonDisabled}>
+          Join game
+        </button>
       </div>
     </div>
   );
 };
 
-const Avatar = () => {
+const Avatar = ({ handleChange }: { handleChange: (face: string) => void }) => {
   const faces = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-  const [face, setFace] = React.useState(() =>
-    getRandomCharacterFromString(faces)
-  );
+  const [face, setFace] = React.useState(() => {
+    const initialFace = getRandomCharacterFromString(faces);
+    handleChange(initialFace);
+    return initialFace;
+  });
 
   const nextFace = () => {
-    setFace(faces.charAt((faces.indexOf(face) + 1) % faces.length));
+    const newFace = faces.charAt((faces.indexOf(face) + 1) % faces.length);
+    handleChange(newFace);
+    setFace(newFace);
   };
 
   return (

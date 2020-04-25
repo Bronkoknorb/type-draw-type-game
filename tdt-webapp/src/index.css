@@ -30,7 +30,9 @@ body {
 }
 
 body,
-button {
+button,
+input,
+textarea {
   font-family: "Comic Neue", sans-serif;
   font-size: calc(14px + 3vmin);
   -webkit-font-smoothing: antialiased;
@@ -45,4 +47,19 @@ a {
 h1 {
   font-size: calc(16px + 4vmin);
   font-weight: bold;
+  margin-bottom: 4vmin;
+}
+
+input,
+textarea {
+  outline: none;
+  border: 0.7vmin solid black;
+  border-radius: 2vmin;
+  padding: 1vmin;
+  background-color: white;
+  box-shadow: 0.5vmin 0.7vmin 1vmin rgba(0, 0, 0, 0.2);
+}
+
+.hidden {
+  display: none;
 }

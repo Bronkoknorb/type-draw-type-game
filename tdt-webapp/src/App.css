@@ -98,6 +98,21 @@
   flex-basis: 50%;
 }
 
+.Join-content .Avatar {
+  margin-top: 0.5vmin;
+  margin-bottom: 3vmin;
+}
+
+.Join-content label {
+  display: block;
+  margin-bottom: 0.9vmin;
+}
+
+.Join-content input {
+  width: 80%;
+  margin-bottom: 4vmin;
+}
+
 .Draw {
   display: flex;
   align-items: center;
@@ -161,6 +176,11 @@
   outline: none;
 }
 
+.button:disabled {
+  background-color: #888;
+  cursor: not-allowed;
+}
+
 .tool-button {
   background-color: rgb(40, 27, 219);
   border: none;
@@ -186,8 +206,4 @@
   width: 30vmin;
   height: 15vmin;
   background-color: blue;
-}
-
-.hidden {
-  display: none;
 }
