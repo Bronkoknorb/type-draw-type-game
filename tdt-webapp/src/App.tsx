@@ -180,6 +180,7 @@ const Join = () => {
           type="text"
           id="name"
           name="name"
+          autoFocus
           value={name}
           onChange={(event) => setName(event.target.value)}
         />
