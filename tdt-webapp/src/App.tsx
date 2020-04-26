@@ -467,7 +467,7 @@ const Draw = () => {
         <Dialog show={showColorPicker}>
           <ColorPicker handlePickColor={handlePickColor} />
         </Dialog>
-        <div className="tool-button">
+        <div className="tool-button tool-button-done">
           <div>Done</div>
         </div>
       </div>

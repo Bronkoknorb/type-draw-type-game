@@ -126,11 +126,18 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+}
+
+.Draw-tools .tool-color {
+  margin: 2vmin;
 }
 
 .Draw-tools .tool-button {
   margin: 2vmin;
+}
+
+.Draw-tools .tool-button-done {
+  margin-top: 4vmin;
 }
 
 .Draw-canvas {
