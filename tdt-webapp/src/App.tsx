@@ -152,7 +152,7 @@ const Game = (props: GameProps) => {
   }, [gameId]);
 
   // TODO
-  if (false) {
+  if (true) {
     return <Draw />;
   } else {
     return <Join />;
@@ -216,17 +216,61 @@ const Avatar = ({ handleChange }: { handleChange: (face: string) => void }) => {
 };
 
 const Draw = () => {
-  function getMousePos(
+  // calculates size and position of img/canvas with css object-fit: contain
+  function getObjectFitSize(
+    containerWidth: number,
+    containerHeight: number,
+    width: number,
+    height: number
+  ) {
+    const doRatio = width / height;
+    const cRatio = containerWidth / containerHeight;
+    let targetWidth = 0;
+    let targetHeight = 0;
+
+    if (doRatio > cRatio) {
+      targetWidth = containerWidth;
+      targetHeight = targetWidth / doRatio;
+    } else {
+      targetHeight = containerHeight;
+      targetWidth = targetHeight * doRatio;
+    }
+
+    return {
+      width: targetWidth,
+      height: targetHeight,
+      x: (containerWidth - targetWidth) / 2,
+      y: (containerHeight - targetHeight) / 2,
+    };
+  }
+
+  function getCanvasSize(canvas: HTMLCanvasElement) {
+    return getObjectFitSize(
+      canvas.clientWidth,
+      canvas.clientHeight,
+      canvas.width,
+      canvas.height
+    );
+  }
+
+  // gets position in "natural" canvas coordinates for mouse/touch events
+  function getPositionInCanvas(
     canvas: HTMLCanvasElement,
     event: { clientX: number; clientY: number }
   ) {
-    let rect = canvas.getBoundingClientRect(), // abs. size of element
-      scaleX = canvas.width / rect.width, // relationship bitmap vs. element for X
-      scaleY = canvas.height / rect.height; // relationship bitmap vs. element for Y
+    const rect = canvas.getBoundingClientRect();
+
+    const canvasSize = getCanvasSize(canvas);
+
+    const scaleX = canvas.width / canvasSize.width;
+    const scaleY = canvas.height / canvasSize.height;
+
+    const x = (event.clientX - rect.left - canvasSize.x) * scaleX;
+    const y = (event.clientY - rect.top - canvasSize.y) * scaleY;
 
     return {
-      x: (event.clientX - rect.left) * scaleX, // scale mouse coordinates after they have
-      y: (event.clientY - rect.top) * scaleY, // been adjusted to be relative to element
+      x: x,
+      y: y,
     };
   }
 
@@ -241,6 +285,7 @@ const Draw = () => {
     }
     ctx.lineCap = "round";
     ctx.lineWidth = 10;
+    ctx.strokeStyle = "#FF0000";
     ctx.beginPath();
     ctx.moveTo(pos!.x, pos!.y);
     ctx.lineTo(x, y);
@@ -266,7 +311,7 @@ const Draw = () => {
       return;
     }
     const canvas = event.currentTarget;
-    const { x, y } = getMousePos(canvas, event);
+    const { x, y } = getPositionInCanvas(canvas, event);
     const ctx = canvas.getContext("2d")!;
     paint_start(ctx, x, y);
   };
@@ -274,7 +319,7 @@ const Draw = () => {
     event: React.MouseEvent<HTMLCanvasElement, MouseEvent>
   ) => {
     const canvas = event.currentTarget;
-    const { x, y } = getMousePos(canvas, event);
+    const { x, y } = getPositionInCanvas(canvas, event);
     const ctx = canvas.getContext("2d")!;
     if (event.buttons !== 1) {
       paint_end(ctx);
@@ -294,7 +339,7 @@ const Draw = () => {
   ) => {
     const canvas = event.currentTarget;
     const ctx = canvas.getContext("2d")!;
-    const { x, y } = getMousePos(canvas, event);
+    const { x, y } = getPositionInCanvas(canvas, event);
     paint_end(ctx, x, y);
   };
   const handleTouchStart = (event: React.TouchEvent<HTMLCanvasElement>) => {
@@ -303,7 +348,7 @@ const Draw = () => {
       return;
     }
     const canvas = event.currentTarget;
-    const { x, y } = getMousePos(canvas, event.touches[0]);
+    const { x, y } = getPositionInCanvas(canvas, event.touches[0]);
     const ctx = canvas.getContext("2d")!;
     paint_start(ctx, x, y);
   };
@@ -315,7 +360,7 @@ const Draw = () => {
       paint_end(ctx);
       return;
     }
-    const { x, y } = getMousePos(canvas, event.touches[0]);
+    const { x, y } = getPositionInCanvas(canvas, event.touches[0]);
     paint_move(ctx, x, y);
   };
   const handleTouchEnd = (event: React.TouchEvent<HTMLCanvasElement>) => {
@@ -338,6 +383,18 @@ const Draw = () => {
       setShowBrushPopup(!showBrushPopup);
     }
   };
+
+  const canvasRef = React.createRef<HTMLCanvasElement>();
+
+  const clearCanvas = () => {
+    const canvas = canvasRef.current!;
+    const ctx = canvas.getContext("2d")!;
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+  };
+
+  // initial clear
+  React.useEffect(clearCanvas, []);
 
   return (
     <div className="Draw">
@@ -369,6 +426,7 @@ const Draw = () => {
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
+          ref={canvasRef}
         ></canvas>
       </div>
     </div>

@@ -138,7 +138,6 @@
 }
 
 .Draw-canvas canvas {
-  background-color: white;
   touch-action: none;
   display: block;
   max-width: 100%;
