@@ -204,5 +204,70 @@
   margin-left: 2vmin;
   width: 30vmin;
   height: 15vmin;
-  background-color: blue;
+  border-radius: 4vmin;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(5px);
+}
+
+.tool-color {
+  width: 15vmin;
+  height: 15vmin;
+  position: relative;
+  border-radius: 50%;
+  box-shadow: 0.5vmin 0.7vmin 1vmin rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+}
+
+.tool-color .tool-color-selectedcolor {
+  position: absolute;
+  width: 13vmin;
+  height: 13vmin;
+  left: 1vmin;
+  top: 1vmin;
+  border-radius: 50%;
+  z-index: -1;
+}
+
+.tool-color img {
+  width: 15vmin;
+  height: 15vmin;
+}
+
+.Dialog {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+.Dialog-content {
+  width: 90vw;
+  height: 90vh;
+  border: 0.7vmin solid black;
+  border-radius: 4vmin;
+  background-color: white;
+  box-shadow: 0.5vmin 0.7vmin 1vmin rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+}
+
+.ColorPicker {
+  width: 100%;
+  height: 100%;
+  display: flex;
+}
+
+.ColorPicker > div {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.ColorPicker > div > div {
+  flex-grow: 1;
+  cursor: pointer;
 }

@@ -3,6 +3,7 @@ import { RouteComponentProps, Router, navigate } from "@reach/router";
 import { v4 as uuidv4 } from "uuid";
 
 import logo from "./logo.svg";
+import colorwheel from "./colorwheel.svg";
 import "./App.css";
 
 import o9n from "o9n";
@@ -215,7 +216,32 @@ const Avatar = ({ handleChange }: { handleChange: (face: string) => void }) => {
   );
 };
 
+function useWindowSize() {
+  function getSize() {
+    return {
+      width: window.innerWidth,
+      height: window.innerHeight,
+    };
+  }
+
+  const [windowSize, setWindowSize] = React.useState(getSize);
+
+  React.useEffect(() => {
+    function handleResize() {
+      setWindowSize(getSize());
+    }
+
+    window.addEventListener("resize", handleResize);
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  return windowSize;
+}
+
 const Draw = () => {
+  const [color, setColor] = React.useState("#000000");
+
   // calculates size and position of img/canvas with css object-fit: contain
   function getObjectFitSize(
     containerWidth: number,
@@ -285,7 +311,7 @@ const Draw = () => {
     }
     ctx.lineCap = "round";
     ctx.lineWidth = 10;
-    ctx.strokeStyle = "#FF0000";
+    ctx.strokeStyle = color;
     ctx.beginPath();
     ctx.moveTo(pos!.x, pos!.y);
     ctx.lineTo(x, y);
@@ -372,16 +398,36 @@ const Draw = () => {
 
   const [showBrushPopup, setShowBrushPopup] = React.useState(false);
 
+  const brushButton = React.createRef<HTMLDivElement>();
   const brushPopup = React.createRef<HTMLDivElement>();
 
-  const selectBrush = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-    if (brushPopup.current !== null) {
-      const button = event.currentTarget;
+  const setBrushPopupPosition = () => {
+    if (brushPopup.current !== null && brushButton.current !== null) {
       brushPopup.current.style.left =
-        button.offsetLeft + button.offsetWidth + "px";
-      brushPopup.current.style.top = button.offsetTop + "px";
-      setShowBrushPopup(!showBrushPopup);
+        brushButton.current.offsetLeft + brushButton.current.offsetWidth + "px";
+      brushPopup.current.style.top = brushButton.current.offsetTop + "px";
     }
+  };
+
+  const selectBrush = () => {
+    setShowBrushPopup(!showBrushPopup);
+  };
+
+  const windowSize = useWindowSize();
+
+  React.useEffect(() => {
+    setBrushPopupPosition();
+  }, [windowSize]);
+
+  const [showColorPicker, setShowColorPicker] = React.useState(false);
+
+  const triggerColorPicker = () => {
+    setShowColorPicker(true);
+  };
+
+  const handlePickColor = (color: string) => {
+    setColor(color);
+    setShowColorPicker(false);
   };
 
   const canvasRef = React.createRef<HTMLCanvasElement>();
@@ -399,11 +445,11 @@ const Draw = () => {
   return (
     <div className="Draw">
       <div className="Draw-tools">
-        <div className="tool-button" onClick={selectBrush}>
-          <div>Brush</div>
-        </div>
         <div className="tool-button">
           <div>Info</div>
+        </div>
+        <div className="tool-button" onClick={selectBrush} ref={brushButton}>
+          <div>Brush</div>
         </div>
         <div
           className={"tool-popup" + (showBrushPopup ? "" : " hidden")}
@@ -411,6 +457,16 @@ const Draw = () => {
         >
           Brushes
         </div>
+        <div className="tool-color" onClick={triggerColorPicker}>
+          <div
+            className="tool-color-selectedcolor"
+            style={{ backgroundColor: color }}
+          ></div>
+          <img src={colorwheel} alt="Pick color" title="Pick color" />
+        </div>
+        <Dialog show={showColorPicker}>
+          <ColorPicker handlePickColor={handlePickColor} />
+        </Dialog>
         <div className="tool-button">
           <div>Done</div>
         </div>
@@ -429,6 +485,59 @@ const Draw = () => {
           ref={canvasRef}
         ></canvas>
       </div>
+    </div>
+  );
+};
+
+const Dialog = ({
+  show,
+  children,
+}: {
+  show: boolean;
+  children: JSX.Element;
+}) => {
+  if (!show) return null;
+
+  return (
+    <div className="Dialog">
+      <div className="Dialog-content">{children}</div>
+    </div>
+  );
+};
+
+const ColorPicker = ({
+  handlePickColor,
+}: {
+  handlePickColor: (color: string) => void;
+}) => {
+  const colors = [
+    ["#FFF", "#DDD", "#AAA", "#555", "#000"],
+    ["#FAA", "#F55", "#F00", "#A00", "#500"],
+    ["#FDA", "#FA5", "#F80", "#A50", "#520"],
+    ["#FFA", "#FF5", "#FF0", "#AA0", "#550"],
+    ["#AFA", "#5F5", "#0F0", "#0A0", "#050"],
+    ["#AFD", "#5FA", "#0F8", "#0A5", "#052"],
+    ["#AFF", "#5FF", "#0FF", "#0AA", "#055"],
+    ["#ADF", "#5AF", "#08F", "#05A", "#025"],
+    ["#AAF", "#55F", "#00F", "#00A", "#005"],
+    ["#DAF", "#A5F", "#80F", "#50A", "#205"],
+    ["#FAF", "#F5F", "#F0F", "#A0A", "#505"],
+  ];
+
+  return (
+    <div className="ColorPicker">
+      {colors.map((colorRow) => (
+        <div>
+          {colorRow.map((color) => {
+            const style = {
+              backgroundColor: color,
+            };
+            return (
+              <div style={style} onClick={() => handlePickColor(color)}></div>
+            );
+          })}
+        </div>
+      ))}
     </div>
   );
 };
