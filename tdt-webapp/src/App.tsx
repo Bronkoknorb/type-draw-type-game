@@ -239,45 +239,46 @@ function useWindowSize() {
   return windowSize;
 }
 
+// calculates size and position of img/canvas with css object-fit: contain
+function getObjectFitSize(
+  containerWidth: number,
+  containerHeight: number,
+  width: number,
+  height: number
+) {
+  const doRatio = width / height;
+  const cRatio = containerWidth / containerHeight;
+  let targetWidth = 0;
+  let targetHeight = 0;
+
+  if (doRatio > cRatio) {
+    targetWidth = containerWidth;
+    targetHeight = targetWidth / doRatio;
+  } else {
+    targetHeight = containerHeight;
+    targetWidth = targetHeight * doRatio;
+  }
+
+  return {
+    width: targetWidth,
+    height: targetHeight,
+    x: (containerWidth - targetWidth) / 2,
+    y: (containerHeight - targetHeight) / 2,
+  };
+}
+
+function getCanvasSize(canvas: HTMLCanvasElement) {
+  return getObjectFitSize(
+    canvas.clientWidth,
+    canvas.clientHeight,
+    canvas.width,
+    canvas.height
+  );
+}
+
 const Draw = () => {
   const [color, setColor] = React.useState("#000000");
-
-  // calculates size and position of img/canvas with css object-fit: contain
-  function getObjectFitSize(
-    containerWidth: number,
-    containerHeight: number,
-    width: number,
-    height: number
-  ) {
-    const doRatio = width / height;
-    const cRatio = containerWidth / containerHeight;
-    let targetWidth = 0;
-    let targetHeight = 0;
-
-    if (doRatio > cRatio) {
-      targetWidth = containerWidth;
-      targetHeight = targetWidth / doRatio;
-    } else {
-      targetHeight = containerHeight;
-      targetWidth = targetHeight * doRatio;
-    }
-
-    return {
-      width: targetWidth,
-      height: targetHeight,
-      x: (containerWidth - targetWidth) / 2,
-      y: (containerHeight - targetHeight) / 2,
-    };
-  }
-
-  function getCanvasSize(canvas: HTMLCanvasElement) {
-    return getObjectFitSize(
-      canvas.clientWidth,
-      canvas.clientHeight,
-      canvas.width,
-      canvas.height
-    );
-  }
+  const [lineWidth, setLineWidth] = React.useState(10);
 
   // gets position in "natural" canvas coordinates for mouse/touch events
   function getPositionInCanvas(
@@ -310,7 +311,7 @@ const Draw = () => {
       paint_start(ctx, x, y);
     }
     ctx.lineCap = "round";
-    ctx.lineWidth = 10;
+    ctx.lineWidth = lineWidth;
     ctx.strokeStyle = color;
     ctx.beginPath();
     ctx.moveTo(pos!.x, pos!.y);
@@ -398,16 +399,8 @@ const Draw = () => {
 
   const [showBrushPopup, setShowBrushPopup] = React.useState(false);
 
-  const brushButton = React.createRef<HTMLDivElement>();
-  const brushPopup = React.createRef<HTMLDivElement>();
-
-  const setBrushPopupPosition = () => {
-    if (brushPopup.current !== null && brushButton.current !== null) {
-      brushPopup.current.style.left =
-        brushButton.current.offsetLeft + brushButton.current.offsetWidth + "px";
-      brushPopup.current.style.top = brushButton.current.offsetTop + "px";
-    }
-  };
+  const brushButton = React.useRef<HTMLDivElement>(null);
+  const brushPopup = React.useRef<HTMLDivElement>(null);
 
   const selectBrush = () => {
     setShowBrushPopup(!showBrushPopup);
@@ -416,8 +409,18 @@ const Draw = () => {
   const windowSize = useWindowSize();
 
   React.useEffect(() => {
+    const setBrushPopupPosition = () => {
+      if (brushPopup.current !== null && brushButton.current !== null) {
+        brushPopup.current.style.left =
+          brushButton.current.offsetLeft +
+          brushButton.current.offsetWidth +
+          "px";
+        brushPopup.current.style.top = brushButton.current.offsetTop + "px";
+      }
+    };
+
     setBrushPopupPosition();
-  }, [windowSize]);
+  }, [windowSize, brushButton, brushPopup]);
 
   const [showColorPicker, setShowColorPicker] = React.useState(false);
 
@@ -430,7 +433,7 @@ const Draw = () => {
     setShowColorPicker(false);
   };
 
-  const canvasRef = React.createRef<HTMLCanvasElement>();
+  const canvasRef = React.useRef<HTMLCanvasElement>(null);
 
   const clearCanvas = () => {
     const canvas = canvasRef.current!;
@@ -441,6 +444,30 @@ const Draw = () => {
 
   // initial clear
   React.useEffect(clearCanvas, []);
+
+  const getBrushSizes = (scale: number) => {
+    const sizes = [2, 8, 16, 32, 64];
+    return sizes.map((size) => ({
+      pixelSize: size,
+      displaySize: Math.ceil(size * scale),
+    }));
+  };
+
+  const [brushSizes, setBrushSizes] = React.useState(() => getBrushSizes(1));
+
+  React.useEffect(() => {
+    const canvas = canvasRef.current;
+    if (canvas !== null) {
+      const canvasSize = getCanvasSize(canvas);
+      const scale = canvasSize.width / canvas.width;
+      setBrushSizes(getBrushSizes(scale));
+    }
+  }, [windowSize]);
+
+  const handleSetBrush = (size: number) => {
+    setShowBrushPopup(false);
+    setLineWidth(size);
+  };
 
   return (
     <div className="Draw">
@@ -455,7 +482,17 @@ const Draw = () => {
           className={"tool-popup" + (showBrushPopup ? "" : " hidden")}
           ref={brushPopup}
         >
-          Brushes
+          {brushSizes.map((size) => (
+            <div onClick={() => handleSetBrush(size.pixelSize)}>
+              <div
+                style={{
+                  width: size.displaySize,
+                  height: size.displaySize,
+                  backgroundColor: color,
+                }}
+              ></div>
+            </div>
+          ))}
         </div>
         <div className="tool-color" onClick={triggerColorPicker}>
           <div
