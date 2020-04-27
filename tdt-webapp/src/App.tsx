@@ -411,11 +411,10 @@ const Draw = () => {
   React.useEffect(() => {
     const setBrushPopupPosition = () => {
       if (brushPopup.current !== null && brushButton.current !== null) {
-        brushPopup.current.style.left =
-          brushButton.current.offsetLeft +
-          brushButton.current.offsetWidth +
-          "px";
-        brushPopup.current.style.top = brushButton.current.offsetTop + "px";
+        brushPopup.current.style.left = `${
+          brushButton.current.offsetLeft + brushButton.current.offsetWidth
+        }px`;
+        brushPopup.current.style.top = `calc(${brushButton.current.offsetTop}px - 2vmin)`;
       }
     };
 
@@ -472,10 +471,14 @@ const Draw = () => {
   return (
     <div className="Draw">
       <div className="Draw-tools">
-        <div className="tool-button">
+        <div className="tool-button tool-button-info">
           <div>Info</div>
         </div>
-        <div className="tool-button" onClick={selectBrush} ref={brushButton}>
+        <div
+          className="tool-button tool-button-brush"
+          onClick={selectBrush}
+          ref={brushButton}
+        >
           <div>Brush</div>
         </div>
         <div

@@ -195,7 +195,7 @@
   text-align: center;
   text-decoration: none;
   display: inline-block;
-  border-radius: 50%;
+  border-radius: 4vmin;
   font-size: 0.7em;
   box-shadow: 0.5vmin 0.7vmin 1vmin rgba(0, 0, 0, 0.2);
   cursor: pointer;
@@ -205,6 +205,16 @@
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.tool-button-info {
+  background-color: #700;
+  color: white;
+}
+
+.tool-button-brush {
+  background-color: #050;
+  color: white;
 }
 
 .tool-popup {
