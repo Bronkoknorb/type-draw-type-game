@@ -1,13 +1,12 @@
-Type Draw Type Game
-===================
+# Type Draw Type Game
 
 TODO describe game
 
-Installation
-------------
+## Installation
 
 Prerequisites:
-* Install [Docker](https://www.docker.com/)
+
+- Install [Docker](https://www.docker.com/)
 
 To build the app using Docker:
 
@@ -31,15 +30,15 @@ To check the logs of the running Docker container:
 
     docker logs draw
 
-Development
------------
+## Development
 
 ### Backend Server
 
 The Backend is developed using Spring Boot in Java and built with Gradle.
 
 Prerequisites:
-* Install Java (tested with version 11)
+
+- Install Java (tested with version 11)
 
 Run the server in development mode:
 
@@ -53,7 +52,8 @@ See also [Spring-Boot-HELP.md](tdt-server/Spring-Boot-HELP.md).
 The Frontend is a React App written in Typescript and built with yarn.
 
 Prerequisites:
-* Install [yarn](https://yarnpkg.com/) (tested with version 1.22.4)
+
+- Install [yarn](https://yarnpkg.com/) (tested with version 1.22.4)
 
 Run the frontend in development mode:
 
@@ -62,10 +62,13 @@ Run the frontend in development mode:
 
 This will also automatically start a proxy server which forwards API requests to the backend (running on port 8080).
 
+To interactively upgrade dependencies of the frontend:
+
+    yarn upgrade-interactive --latest
+
 See also [React-App-HELP.md](tdt-webapp/React-App-HELP.md).
 
-Author
-------
+## Author
 
 Copyright by Hermann Czedik-Eysenberg  
 git-dev@hermann.czedik.net
