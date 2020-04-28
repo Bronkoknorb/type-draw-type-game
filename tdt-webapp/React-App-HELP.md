@@ -26,6 +26,12 @@ To run a static server:
 
     npx serve -s build
 
+### Upgrade dependencies
+
+To interactively upgrade dependencies to the latest version:
+
+    yarn upgrade-interactive --latest
+
 ### `yarn eject`
 
 **Note: this is a one-way operation. Once you `eject`, you can’t go back!**
