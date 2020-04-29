@@ -10,7 +10,7 @@ COPY tdt-webapp/ ./
 RUN yarn build
 
 # Stage 2 - build the server
-FROM openjdk:11-jdk-slim-buster as build-server
+FROM adoptopenjdk:11-jdk-hotspot-bionic as build-server
 WORKDIR /usr/src/server
 
 COPY tdt-server/gradle/ ./gradle/
@@ -31,7 +31,7 @@ COPY --from=build-webapp /usr/src/app/build/ ./src/main/resources/static/
 RUN ./gradlew -i --no-daemon --build-cache build
 
 # Stage 3 - production container
-FROM openjdk:11-jre-slim-buster
+FROM adoptopenjdk:11-jre-hotspot-bionic
 RUN useradd --user-group draw
 USER draw:draw
 WORKDIR /usr/src/server
