@@ -14,8 +14,9 @@ jobs:
     - name: Set up Docker buildx
       uses: crazy-max/ghaction-docker-buildx@v1
     - name: Build
+      # ,linux/arm/v7,linux/arm64
       run: |
         docker buildx build \
-          --platform linux/amd64 \ # ,linux/arm/v7,linux/arm64
+          --platform linux/amd64 \
           --output "type=image,push=false" \
           .
