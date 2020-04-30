@@ -22,5 +22,5 @@ jobs:
         docker buildx build \
           --platform linux/amd64 \
           --tag docker.pkg.github.com/bronkoknorb/type-draw-type-game/game:latest \
-          --push \
+          --output type=image,push=true \
           .
