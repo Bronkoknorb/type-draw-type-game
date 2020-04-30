@@ -68,6 +68,30 @@ To interactively upgrade dependencies of the frontend:
 
 See also [React-App-HELP.md](tdt-webapp/React-App-HELP.md).
 
+## Multi-Architecture build
+
+I want to build ARM Docker images to run on my Raspberry Pi:
+
+As of writing this, experimental features need to be enabled for Docker:
+
+    export DOCKER_CLI_EXPERIMENTAL=enabled
+
+Install qemu instructions to be able to build ARM executables:
+
+    docker run --rm --privileged multiarch/qemu-user-static:register
+
+Create a multi-architecture build instance:
+
+    docker buildx create --name mybuilder
+    docker buildx use mybuilder
+    docker buildx inspect --bootstrap
+
+Build multi-architecture images:
+
+    docker buildx build --platform linux/amd64,linux/arm/v7,linux/arm64 .
+
+Reference: https://www.docker.com/blog/getting-started-with-docker-for-arm-on-linux/
+
 ## Author
 
 Copyright by Hermann Czedik-Eysenberg  
