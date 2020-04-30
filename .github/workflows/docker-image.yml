@@ -13,10 +13,13 @@ jobs:
       uses: actions/checkout@v2
     - name: Set up Docker buildx
       uses: crazy-max/ghaction-docker-buildx@v1
+    - name: Docker login
+      run: docker login docker.pkg.github.com -u Bronkoknorb -p ${{ secrets.GITHUB_TOKEN }}
     - name: Build
       # ,linux/arm/v7,linux/arm64
       run: |
         docker buildx build \
           --platform linux/amd64 \
-          --output "type=image,push=false" \
+          --tag docker.pkg.github.com/bronkoknorb/type-draw-type-game/game \
+          --push \
           .
