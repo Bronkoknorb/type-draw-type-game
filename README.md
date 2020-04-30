@@ -72,6 +72,10 @@ See also [React-App-HELP.md](tdt-webapp/React-App-HELP.md).
 
 I want to build ARM Docker images to run on my Raspberry Pi:
 
+This repository contains a Github Action Workflow which builds the multi-arch images and pushes them to a Docker registry, see [docker-image.yml](.github/workflows/docker-image.yml).
+
+Here are some notes how to achieve the same locally:
+
 As of writing this, experimental features need to be enabled for Docker:
 
     export DOCKER_CLI_EXPERIMENTAL=enabled
