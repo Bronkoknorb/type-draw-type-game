@@ -17,9 +17,10 @@ jobs:
         run: |
           echo "${{ secrets.GITHUB_TOKEN }}" | docker login docker.pkg.github.com -u Bronkoknorb --password-stdin
       - name: Build
+        # ,linux/arm/v7,linux/arm64
         run: |
           docker buildx build \
-            --platform linux/amd64,linux/arm/v7,linux/arm64 \
+            --platform linux/amd64 \
             --tag docker.pkg.github.com/bronkoknorb/type-draw-type-game/game:latest \
             --output type=image,push=false \
             .
