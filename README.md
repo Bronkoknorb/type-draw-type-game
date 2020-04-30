@@ -78,7 +78,7 @@ As of writing this, experimental features need to be enabled for Docker:
 
 Install qemu instructions to be able to build ARM executables:
 
-    docker run --rm --privileged multiarch/qemu-user-static:register
+    docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
 
 Create a multi-architecture build instance:
 
