@@ -2,25 +2,24 @@ name: Build & Publish Docker images
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
 
 jobs:
   build:
     runs-on: ubuntu-18.04
-    
-    steps:    
-    - name: Checkout
-      uses: actions/checkout@v2
-    - name: Set up Docker buildx
-      uses: crazy-max/ghaction-docker-buildx@v1
-    - name: Docker login
-      run: |
-        echo "${{ secrets.GITHUB_TOKEN }}" | docker login docker.pkg.github.com -u Bronkoknorb --password-stdin
-    - name: Build
-      # ,linux/arm/v7,linux/arm64
-      run: |
-        docker buildx build \
-          --platform linux/amd64 \
-          --tag docker.pkg.github.com/bronkoknorb/type-draw-type-game/game:latest \
-          --output type=image,push=true \
-          .
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Set up Docker buildx
+        uses: crazy-max/ghaction-docker-buildx@v1
+      - name: Docker login
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login docker.pkg.github.com -u Bronkoknorb --password-stdin
+      - name: Build
+        run: |
+          docker buildx build \
+            --platform linux/amd64,linux/arm/v7,linux/arm64 \
+            --tag docker.pkg.github.com/bronkoknorb/type-draw-type-game/game:latest \
+            --output type=image,push=false \
+            .
