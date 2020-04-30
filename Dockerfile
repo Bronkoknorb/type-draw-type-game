@@ -10,7 +10,7 @@ COPY tdt-webapp/ ./
 RUN yarn build
 
 # Stage 2 - build the server
-FROM adoptopenjdk:11-jdk-hotspot-bionic as build-server
+FROM adoptopenjdk:14-jdk-hotspot-bionic as build-server
 WORKDIR /usr/src/server
 
 COPY tdt-server/gradle/ ./gradle/
@@ -22,16 +22,16 @@ RUN ./gradlew --version
 COPY tdt-server/build.gradle tdt-server/settings.gradle ./
 COPY tdt-server/src/main/java/net/czedik/hermann/tdt/Application.java ./src/main/java/net/czedik/hermann/tdt/Application.java
 COPY tdt-server/src/test/java/net/czedik/hermann/tdt/ApplicationUnitTests.java ./src/test/java/net/czedik/hermann/tdt/ApplicationUnitTests.java
-RUN ./gradlew -i --no-daemon --build-cache build
+RUN ./gradlew -i --no-daemon --build-cache --stacktrace build
 
 # now copy everything
 COPY tdt-server/ ./
 # including the webapp static resources generated in the stage 1
 COPY --from=build-webapp /usr/src/app/build/ ./src/main/resources/static/
-RUN ./gradlew -i --no-daemon --build-cache build
+RUN ./gradlew -i --no-daemon --build-cache --stacktrace build
 
 # Stage 3 - production container
-FROM adoptopenjdk:11-jre-hotspot-bionic
+FROM adoptopenjdk:14-jre-hotspot-bionic
 RUN useradd --user-group draw
 USER draw:draw
 WORKDIR /usr/src/server
