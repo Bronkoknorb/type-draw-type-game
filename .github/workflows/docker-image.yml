@@ -1,0 +1,21 @@
+name: Build & Publish Docker images
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-18.04
+    
+    steps:    
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Set up Docker buildx
+      uses: crazy-max/ghaction-docker-buildx@v1
+    - name: Build
+      run: |
+        docker buildx build \
+          --platform linux/amd64,linux/arm/v7,linux/arm64 \
+          --output "type=image,push=false" \
+          .
