@@ -17,10 +17,9 @@ jobs:
         run: |
           echo "${{ secrets.DOCKER_HUB_TOKEN }}" | docker login -u bronkoknorb --password-stdin
       - name: Build
-        # TODO also include arm64 once Raspbian supports that: linux/arm64
         run: |
           docker buildx build \
-            --platform linux/amd64,linux/arm/v7 \
+            --platform linux/amd64,linux/arm/v7,linux/arm64 \
             --tag bronkoknorb/type-draw-type-game:latest \
             --push \
             .
