@@ -92,7 +92,10 @@ Create a multi-architecture build instance:
 
 Build multi-architecture images:
 
-    docker buildx build --platform linux/amd64,linux/arm/v7,linux/arm64 .
+    docker buildx build --platform linux/amd64,linux/arm/v7 .
+
+Note: For now platform linux/arm64 is not included as it is very slow to build.
+Might be useful to add it again for future Raspbian version which will use arm64.
 
 Reference: https://www.docker.com/blog/getting-started-with-docker-for-arm-on-linux/
 
