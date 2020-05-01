@@ -10,8 +10,9 @@ COPY tdt-webapp/ ./
 RUN yarn build
 
 # Stage 2 - build the server
-FROM adoptopenjdk:14-jdk-hotspot-bionic as build-server
-WORKDIR /usr/src/server
+FROM ubuntu:18.04 as build-server
+RUN apt-get update && apt-get install openjdk-11-jdk -y --no-install-recommends
+WORKDIR /opt/tdt-src/
 
 COPY tdt-server/gradle/ ./gradle/
 COPY tdt-server/gradlew ./
@@ -20,21 +21,25 @@ RUN ./gradlew --version
 
 # first copy only dependency definitions and main classes, because these change less often and therefore allow docker to cache the build results better
 COPY tdt-server/build.gradle tdt-server/settings.gradle ./
-COPY tdt-server/src/main/java/net/czedik/hermann/tdt/Application.java ./src/main/java/net/czedik/hermann/tdt/Application.java
-COPY tdt-server/src/test/java/net/czedik/hermann/tdt/ApplicationUnitTests.java ./src/test/java/net/czedik/hermann/tdt/ApplicationUnitTests.java
+COPY tdt-server/src/main/java/net/czedik/hermann/tdt/Application.java \
+     ./src/main/java/net/czedik/hermann/tdt/Application.java
+COPY tdt-server/src/test/java/net/czedik/hermann/tdt/ApplicationUnitTests.java \
+     ./src/test/java/net/czedik/hermann/tdt/ApplicationUnitTests.java
 RUN ./gradlew -i --no-daemon --build-cache --stacktrace build
 
 # now copy everything
 COPY tdt-server/ ./
-# including the webapp static resources generated in the stage 1
-COPY --from=build-webapp /usr/src/app/build/ ./src/main/resources/static/
+# including the webapp resources generated in the stage 1
+COPY --from=build-webapp /usr/src/app/build/ ./src/main/resources/public/
 RUN ./gradlew -i --no-daemon --build-cache --stacktrace build
 
 # Stage 3 - production container
-FROM adoptopenjdk:14-jre-hotspot-bionic
-RUN useradd --user-group draw
+FROM ubuntu:18.04
+RUN apt-get update && apt-get install openjdk-11-jre -y --no-install-recommends \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN useradd --create-home --user-group draw --shell /bin/bash
 USER draw:draw
-WORKDIR /usr/src/server
-COPY --from=build-server /usr/src/server/build/libs/type-draw-type-server-1.0.0-SNAPSHOT.jar server.jar
+WORKDIR /opt/tdt/
+COPY --from=build-server /opt/tdt-src/build/libs/type-draw-type-server-1.0.0-SNAPSHOT.jar server.jar
 EXPOSE 8080
 ENTRYPOINT ["java","-jar","server.jar"]
