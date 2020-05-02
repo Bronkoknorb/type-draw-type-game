@@ -13,7 +13,7 @@ const Draw = () => {
     displaySize: number;
   }
 
-  const getBrushSizes: (scale: number) => Brush[] = (scale: number) => {
+  const getBrushes: (scale: number) => Brush[] = (scale: number) => {
     const sizes = [2, 8, 16, 32, 64];
     return sizes.map((size) => ({
       pixelSize: size,
@@ -21,7 +21,7 @@ const Draw = () => {
     }));
   };
 
-  const [brushSizes, setBrushSizes] = React.useState(() => getBrushSizes(1));
+  const [brushSizes, setBrushSizes] = React.useState(() => getBrushes(1));
 
   const [selectedBrushIndex, setSelectedBrushIndex] = React.useState(1);
 
@@ -196,13 +196,13 @@ const Draw = () => {
     if (canvas !== null) {
       const canvasSize = getCanvasSize(canvas);
       const scale = canvasSize.width / canvas.width;
-      setBrushSizes(getBrushSizes(scale));
+      setBrushSizes(getBrushes(scale));
     }
   }, [windowSize]);
 
-  const handleSetBrush = (brush: Brush) => {
+  const handleSetBrush = (brushIndex: number) => {
     setShowBrushPopup(false);
-    setSelectedBrushIndex(brushSizes.indexOf(brush));
+    setSelectedBrushIndex(brushIndex);
   };
 
   return (
@@ -228,11 +228,11 @@ const Draw = () => {
           className={"tool-popup" + (showBrushPopup ? "" : " hidden")}
           ref={brushPopup}
         >
-          {brushSizes.map((brush) => (
+          {brushSizes.map((brush, index) => (
             <div
               className="tool-button tool-button-brush"
-              onClick={() => handleSetBrush(brush)}
-              key={brush.pixelSize}
+              onClick={() => handleSetBrush(index)}
+              key={index}
             >
               <div
                 style={{
