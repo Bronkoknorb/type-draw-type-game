@@ -9,8 +9,10 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.AbstractWebSocketHandler;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.nio.channels.FileChannel;
 
 public class WebSocketHandler extends AbstractWebSocketHandler {
 
@@ -37,9 +39,13 @@ public class WebSocketHandler extends AbstractWebSocketHandler {
     }
 
     @Override
-    protected void handleBinaryMessage(WebSocketSession session, BinaryMessage message) {
-        // TODO
-        log.info("Received binary message: {}", message.getPayloadLength());
+    protected void handleBinaryMessage(WebSocketSession session, BinaryMessage message) throws IOException {
+        // TODO test what happens if we get IOException here
+        log.info("Received image of size: {}kB", message.getPayloadLength() / 1024);
+        // TODO make path configurable, write for the right game
+        try (FileChannel fc = new FileOutputStream("/home/hermann/test.png").getChannel()) {
+            fc.write(message.getPayload());
+        }
     }
 
     private String getHostname(WebSocketSession session) {
