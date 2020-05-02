@@ -39,6 +39,7 @@ public class WebSocketHandler extends AbstractWebSocketHandler {
     @Override
     protected void handleBinaryMessage(WebSocketSession session, BinaryMessage message) {
         // TODO
+        log.info("Received binary message: {}", message.getPayloadLength());
     }
 
     private String getHostname(WebSocketSession session) {

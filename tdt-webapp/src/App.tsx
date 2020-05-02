@@ -105,14 +105,17 @@ const Game = (props: GameProps) => {
     return userId;
   }
 
+  const socketRef = React.useRef<WebSocket>();
+
   React.useEffect(() => {
     const wsProtocol =
       window.location.protocol === "https:" ? "wss://" : "ws://";
     const wsUrl = wsProtocol + window.location.host + "/api/websocket";
     console.log("Connecting to websocket " + wsUrl);
     const socket = new WebSocket(wsUrl);
+    socketRef.current = socket;
 
-    socket.addEventListener("open", (event) => {
+    socket.onopen = () => {
       console.log("Websocket opened. Sending join action.");
 
       socket.send(
@@ -124,7 +127,11 @@ const Game = (props: GameProps) => {
           },
         })
       );
-    });
+    };
+
+    socket.onerror = (error) => {
+      console.log("Websocket error", error);
+    };
 
     return () => {
       console.log("Disconnecting from websocket");
@@ -132,9 +139,14 @@ const Game = (props: GameProps) => {
     };
   }, [gameId]);
 
+  const handleDrawDone = (image: Blob) => {
+    console.log("Sending drawn image");
+    socketRef.current!.send(image);
+  };
+
   // TODO
   if (true) {
-    return <Draw />;
+    return <Draw handleDone={handleDrawDone} />;
   } else {
     return <Join />;
   }

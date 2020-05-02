@@ -5,7 +5,7 @@ import Dialog from "./Dialog";
 
 import colorwheel from "./colorwheel.svg";
 
-const Draw = () => {
+const Draw = ({ handleDone }: { handleDone: (image: Blob) => void }) => {
   const [color, setColor] = React.useState("#000");
 
   interface Brush {
@@ -86,7 +86,7 @@ const Draw = () => {
     }
     const canvas = event.currentTarget;
     const { x, y } = getPositionInCanvas(canvas, event);
-    const ctx = canvas.getContext("2d")!;
+    const ctx = getCanvas2DContext(canvas);
     paint_start(ctx, x, y);
   };
   const handleMouseMove = (
@@ -94,7 +94,7 @@ const Draw = () => {
   ) => {
     const canvas = event.currentTarget;
     const { x, y } = getPositionInCanvas(canvas, event);
-    const ctx = canvas.getContext("2d")!;
+    const ctx = getCanvas2DContext(canvas);
     if (event.buttons !== 1) {
       paint_end(ctx);
       return;
@@ -105,14 +105,14 @@ const Draw = () => {
     event: React.MouseEvent<HTMLCanvasElement, MouseEvent>
   ) => {
     const canvas = event.currentTarget;
-    const ctx = canvas.getContext("2d")!;
+    const ctx = getCanvas2DContext(canvas);
     paint_end(ctx);
   };
   const handleMouseOut = (
     event: React.MouseEvent<HTMLCanvasElement, MouseEvent>
   ) => {
     const canvas = event.currentTarget;
-    const ctx = canvas.getContext("2d")!;
+    const ctx = getCanvas2DContext(canvas);
     const { x, y } = getPositionInCanvas(canvas, event);
     paint_end(ctx, x, y);
   };
@@ -123,13 +123,13 @@ const Draw = () => {
     }
     const canvas = event.currentTarget;
     const { x, y } = getPositionInCanvas(canvas, event.touches[0]);
-    const ctx = canvas.getContext("2d")!;
+    const ctx = getCanvas2DContext(canvas);
     paint_start(ctx, x, y);
   };
   const handleTouchMove = (event: React.TouchEvent<HTMLCanvasElement>) => {
     event.preventDefault();
     const canvas = event.currentTarget;
-    const ctx = canvas.getContext("2d")!;
+    const ctx = getCanvas2DContext(canvas);
     if (event.touches.length !== 1) {
       paint_end(ctx);
       return;
@@ -140,7 +140,7 @@ const Draw = () => {
   const handleTouchEnd = (event: React.TouchEvent<HTMLCanvasElement>) => {
     event.preventDefault();
     const canvas = event.currentTarget;
-    const ctx = canvas.getContext("2d")!;
+    const ctx = getCanvas2DContext(canvas);
     paint_end(ctx);
   };
 
@@ -183,7 +183,7 @@ const Draw = () => {
 
   const clearCanvas = () => {
     const canvas = canvasRef.current!;
-    const ctx = canvas.getContext("2d")!;
+    const ctx = getCanvas2DContext(canvas);
     ctx.fillStyle = "#ffffff";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
   };
@@ -203,6 +203,16 @@ const Draw = () => {
   const handleSetBrush = (brushIndex: number) => {
     setShowBrushPopup(false);
     setSelectedBrushIndex(brushIndex);
+  };
+
+  const handleClickDone = () => {
+    const canvas = canvasRef.current!;
+    const imageDataUrl = canvas.toDataURL("image/png");
+    // nice trick using fetch to get the image as binary Blob instead of data url
+    window
+      .fetch(imageDataUrl)
+      .then((res) => res.blob())
+      .then((image) => handleDone(image));
   };
 
   return (
@@ -254,7 +264,7 @@ const Draw = () => {
         <Dialog show={showColorPicker}>
           <ColorPicker handlePickColor={handlePickColor} />
         </Dialog>
-        <div className="button tool-button-done">
+        <div className="button tool-button-done" onClick={handleClickDone}>
           <div>Done</div>
         </div>
       </div>
@@ -299,14 +309,18 @@ const ColorPicker = ({
 
   return (
     <div className="ColorPicker">
-      {colors.map((colorRow) => (
-        <div>
-          {colorRow.map((color) => {
+      {colors.map((colorRow, index) => (
+        <div key={index}>
+          {colorRow.map((color, index) => {
             const style = {
               backgroundColor: color,
             };
             return (
-              <div style={style} onClick={() => handlePickColor(color)}></div>
+              <div
+                key={index}
+                style={style}
+                onClick={() => handlePickColor(color)}
+              ></div>
             );
           })}
         </div>
@@ -314,3 +328,9 @@ const ColorPicker = ({
     </div>
   );
 };
+
+function getCanvas2DContext(
+  canvas: HTMLCanvasElement
+): CanvasRenderingContext2D {
+  return canvas.getContext("2d")!;
+}
