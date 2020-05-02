@@ -132,12 +132,12 @@
   margin: 2vmin;
 }
 
-.Draw-tools .tool-button {
+.Draw-tools > .tool-button {
   margin: 2vmin;
 }
 
 .Draw-tools .tool-button-done {
-  margin-top: 4vmin;
+  margin-top: 5vmin;
 }
 
 .Draw-canvas {
@@ -195,7 +195,7 @@
   text-align: center;
   text-decoration: none;
   display: inline-block;
-  border-radius: 4vmin;
+  border-radius: 50%;
   font-size: 0.7em;
   box-shadow: 0.5vmin 0.7vmin 1vmin rgba(0, 0, 0, 0.2);
   cursor: pointer;
@@ -213,38 +213,27 @@
 }
 
 .tool-button-brush {
-  background-color: #050;
-  color: white;
+  background-color: #eee;
+  cursor: pointer;
+  margin: 1vmin;
+}
+
+.tool-button-brush > div {
+  background-color: black;
+  border-radius: 50%;
 }
 
 .tool-popup {
   position: absolute;
   margin-left: 2vmin;
-  width: 90vmin;
-  height: 20vmin;
+  padding: 1vmin;
   border-radius: 4vmin;
   background-color: rgba(0, 0, 0, 0.7);
   backdrop-filter: blur(5px);
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  justify-content: space-evenly;
-}
-
-.tool-popup > div {
-  background-color: #eee;
-  width: 14vmin;
-  height: 14vmin;
-  display: flex;
-  align-items: center;
-  justify-content: space-evenly;
-  border-radius: 4vmin;
-  box-shadow: 0.5vmin 0.7vmin 1vmin rgba(255, 255, 255, 0.2);
-  cursor: pointer;
-}
-
-.tool-popup > div > div {
-  background-color: black;
-  border-radius: 50%;
+  justify-content: space-between;
 }
 
 .tool-color {
