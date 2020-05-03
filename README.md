@@ -1,5 +1,7 @@
 # Type Draw Type Game
 
+![Build & Publish Docker images](https://github.com/Bronkoknorb/type-draw-type-game/workflows/Build%20&%20Publish%20Docker%20images/badge.svg)
+
 TODO describe game
 
 ## Installation
