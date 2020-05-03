@@ -298,3 +298,26 @@
   flex-grow: 1;
   cursor: pointer;
 }
+
+.Type {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.Type textarea {
+  width: 80vw;
+  height: 30vh;
+}
+
+.Type img {
+  width: 25vmin;
+  margin-top: 2.3vmin;
+}
+
+.Type button {
+  margin-bottom: 3vmin;
+}

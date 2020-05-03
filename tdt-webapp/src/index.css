@@ -63,3 +63,7 @@ textarea {
 .hidden {
   display: none !important;
 }
+
+.small {
+  font-size: 0.7em;
+}

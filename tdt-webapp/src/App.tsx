@@ -9,6 +9,8 @@ import {
 import Draw from "./Draw";
 
 import logo from "./logo.svg";
+import type from "./type.svg";
+
 import "./App.css";
 
 const App = () => {
@@ -145,10 +147,12 @@ const Game = (props: GameProps) => {
   };
 
   // TODO
-  if (true) {
+  if (false) {
     return <Draw handleDone={handleDrawDone} />;
-  } else {
+  } else if (false) {
     return <Join />;
+  } else {
+    return <Type />;
   }
 };
 
@@ -204,6 +208,32 @@ const Avatar = ({ handleChange }: { handleChange: (face: string) => void }) => {
   return (
     <div className="Avatar" onClick={nextFace}>
       {face}
+    </div>
+  );
+};
+
+const Type = () => {
+  const [text, setText] = React.useState("");
+
+  const buttonDisabled = text === "";
+
+  return (
+    <div className="Type">
+      <div>
+        <div className="small">Round X of Y</div>
+        <img src={type} alt="Type" />
+        <div>... a sentence or short story:</div>
+      </div>
+      <textarea
+        value={text}
+        onChange={(event) => setText(event.target.value)}
+      />
+      <div className="small">
+        Note: The next player will have to draw your text.
+      </div>
+      <button className="button" disabled={buttonDisabled}>
+        Done
+      </button>
     </div>
   );
 };
