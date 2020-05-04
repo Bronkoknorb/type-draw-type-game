@@ -251,7 +251,7 @@ const Type = ({ first }: { first: boolean }) => {
         {!first && (
           <div>
             by Player:
-            <img src="/api/image" className="Drawing" />
+            <img src="/api/image" className="Drawing" alt="Drawing" />
           </div>
         )}
         <button className="button" disabled={buttonDisabled}>
