@@ -36,9 +36,15 @@ const Home = (props: RouteComponentProps) => {
     <div className="Home">
       <div className="Home-content">
         <div className="Home-header">
-          <Drawing className="Drawing-left" chars="AFGHJKLMNOPRSTUVWXYZ" />
+          <Decoration
+            className="Decoration-left"
+            chars="AFGHJKLMNOPRSTUVWXYZ"
+          />
           <Logo />
-          <Drawing className="Drawing-right" chars="abcefghijklmnopqrstu" />
+          <Decoration
+            className="Decoration-right"
+            chars="abcefghijklmnopqrstu"
+          />
         </div>
         <div className="Home-buttons">
           <button className="button" onClick={handleStartNewGame}>
@@ -68,24 +74,26 @@ const Logo = () => (
   </div>
 );
 
-const Drawing = ({
+const Decoration = ({
   chars,
   className,
 }: {
   chars: string;
   className: string;
 }) => {
-  const getRandomDrawingChar = () => getRandomCharacterFromString(chars);
+  const getRandomDecorationChar = () => getRandomCharacterFromString(chars);
 
-  const [drawingChar, setDrawingChar] = React.useState(getRandomDrawingChar);
+  const [decorationChar, setDecorationChar] = React.useState(
+    getRandomDecorationChar
+  );
 
-  const nextDrawing = () => {
-    setDrawingChar(getRandomDrawingChar());
+  const nextDecoration = () => {
+    setDecorationChar(getRandomDecorationChar());
   };
 
   return (
-    <div className={"Drawing " + className} onClick={nextDrawing}>
-      {drawingChar}
+    <div className={"Decoration " + className} onClick={nextDecoration}>
+      {decorationChar}
     </div>
   );
 };
@@ -152,7 +160,7 @@ const Game = (props: GameProps) => {
   } else if (false) {
     return <Join />;
   } else {
-    return <Type />;
+    return <Type first={false} />;
   }
 };
 
@@ -212,28 +220,48 @@ const Avatar = ({ handleChange }: { handleChange: (face: string) => void }) => {
   );
 };
 
-const Type = () => {
+const Type = ({ first }: { first: boolean }) => {
   const [text, setText] = React.useState("");
 
   const buttonDisabled = text === "";
 
   return (
-    <div className="Type">
-      <div>
-        <div className="small">Round X of Y</div>
-        <img src={type} alt="Type" />
-        <div>... a sentence or short story:</div>
+    <Scrollable>
+      <div className="Type">
+        <div>
+          <div className="small">Round X of Y</div>
+          <h1>
+            <img src={type} alt="Type" />
+          </h1>
+          <div>
+            {first
+              ? "... a sentence or short story:"
+              : "... what you see on the drawing below:"}
+          </div>
+        </div>
+        <textarea
+          value={text}
+          onChange={(event) => setText(event.target.value)}
+        />
+        {first && (
+          <div className="small">
+            Note: The next player will have to draw your text.
+          </div>
+        )}
+        {!first && (
+          <div>
+            by Player:
+            <img src="/api/image" className="Drawing" />
+          </div>
+        )}
+        <button className="button" disabled={buttonDisabled}>
+          Done
+        </button>
       </div>
-      <textarea
-        value={text}
-        onChange={(event) => setText(event.target.value)}
-      />
-      <div className="small">
-        Note: The next player will have to draw your text.
-      </div>
-      <button className="button" disabled={buttonDisabled}>
-        Done
-      </button>
-    </div>
+    </Scrollable>
   );
+};
+
+const Scrollable = ({ children }: { children: JSX.Element }) => {
+  return <div className="Scrollable">{children}</div>;
 };

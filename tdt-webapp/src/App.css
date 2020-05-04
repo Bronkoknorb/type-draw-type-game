@@ -32,7 +32,7 @@
   justify-content: space-around;
 }
 
-.Drawing {
+.Decoration {
   font-family: "KidsDrawings";
   font-size: calc(25px + 15vmin);
   flex-grow: 1;
@@ -44,11 +44,11 @@
   user-select: none;
 }
 
-.Drawing-left {
+.Decoration-left {
   margin-top: 21vmin;
 }
 
-.Drawing-right {
+.Decoration-right {
   margin-bottom: 21vmin;
 }
 
@@ -300,8 +300,7 @@
 }
 
 .Type {
-  width: 100%;
-  height: 100%;
+  min-height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -310,14 +309,28 @@
 
 .Type textarea {
   width: 80vw;
-  height: 30vh;
+  height: 20vh;
+  margin: 2vmin 0;
 }
 
-.Type img {
+.Type h1 img {
   width: 25vmin;
   margin-top: 2.3vmin;
 }
 
 .Type button {
   margin-bottom: 3vmin;
+}
+
+.Scrollable {
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+}
+
+.Drawing {
+  display: block;
+  margin: 2vmin 0;
+  max-height: 100vh;
+  max-width: 90vw;
 }
