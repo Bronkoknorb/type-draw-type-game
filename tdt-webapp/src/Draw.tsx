@@ -2,7 +2,8 @@ import React from "react";
 import { useWindowSize, getCanvasSize } from "./helpers";
 import Dialog from "./Dialog";
 import "./Draw.css";
-import colorwheel from "./colorwheel.svg";
+import colorwheelImg from "./img/colorwheel.svg";
+import drawImg from "./img/draw.svg";
 
 interface Brush {
   pixelSize: number;
@@ -18,6 +19,8 @@ function getBrushes(scale: number): Brush[] {
 }
 
 const Draw = ({ handleDone }: { handleDone: (image: Blob) => void }) => {
+  const [showHelpDialog, setShowHelpDialog] = React.useState(true);
+
   const [color, setColor] = React.useState("#000");
 
   const [brushSizes, setBrushSizes] = React.useState(() => getBrushes(1));
@@ -84,9 +87,23 @@ const Draw = ({ handleDone }: { handleDone: (image: Blob) => void }) => {
 
   return (
     <div className="Draw">
+      <Dialog show={showHelpDialog}>
+        <div className="DrawHelp">
+          <div className="small">Round X of Y</div>
+          <h1>
+            <img src={drawImg} alt="Draw" />
+          </h1>
+          <button className="button" onClick={() => setShowHelpDialog(false)}>
+            Okay, start drawing
+          </button>
+        </div>
+      </Dialog>
       <div className="Draw-tools">
-        <div className="tool-button tool-button-info">
-          <div>Info</div>
+        <div
+          className="tool-button tool-button-info"
+          onClick={() => setShowHelpDialog(true)}
+        >
+          <div>Help?</div>
         </div>
         <div
           className="tool-button tool-button-brush"
@@ -126,13 +143,13 @@ const Draw = ({ handleDone }: { handleDone: (image: Blob) => void }) => {
             className="tool-color-selectedcolor"
             style={{ backgroundColor: color }}
           ></div>
-          <img src={colorwheel} alt="Pick color" title="Pick color" />
+          <img src={colorwheelImg} alt="Pick color" title="Pick color" />
         </div>
         <Dialog show={showColorPicker}>
           <ColorPicker handlePickColor={handlePickColor} />
         </Dialog>
         <div className="button tool-button-done" onClick={handleClickDone}>
-          <div>Done</div>
+          Done
         </div>
       </div>
       <DrawCanvas

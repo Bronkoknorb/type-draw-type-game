@@ -125,3 +125,8 @@
   flex-grow: 1;
   cursor: pointer;
 }
+
+.DrawHelp h1 img {
+  width: 35vmin;
+  margin-top: 2.3vmin;
+}

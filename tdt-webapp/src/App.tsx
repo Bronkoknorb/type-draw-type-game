@@ -5,7 +5,7 @@ import { getRandomCharacterFromString } from "./helpers";
 import Home from "./Home";
 import Draw from "./Draw";
 import Logo from "./Logo";
-import type from "./type.svg";
+import typeImg from "./img/type.svg";
 import "./App.css";
 
 const App = () => {
@@ -154,7 +154,7 @@ const Type = ({ first }: { first: boolean }) => {
         <div>
           <div className="small">Round X of Y</div>
           <h1>
-            <img src={type} alt="Type" />
+            <img src={typeImg} alt="Type" />
           </h1>
           <div>
             {first
