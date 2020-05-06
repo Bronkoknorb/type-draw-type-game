@@ -1,14 +1,12 @@
 import React from "react";
-import { RouteComponentProps, Router, navigate } from "@reach/router";
+import { RouteComponentProps, Router } from "@reach/router";
 import { v4 as uuidv4 } from "uuid";
 
-import {
-  toggleToFullscreenAndLandscapeOnMobile,
-  getRandomCharacterFromString,
-} from "./helpers";
+import { getRandomCharacterFromString } from "./helpers";
+import Home from "./Home";
 import Draw from "./Draw";
+import Logo from "./Logo";
 
-import logo from "./logo.svg";
 import type from "./type.svg";
 
 import "./App.css";
@@ -25,78 +23,6 @@ const App = () => {
 };
 
 export default App;
-
-const Home = (props: RouteComponentProps) => {
-  const handleStartNewGame = () => {
-    navigate("/g/xyz"); // TODO game id
-    toggleToFullscreenAndLandscapeOnMobile();
-  };
-
-  return (
-    <div className="Home">
-      <div className="Home-content">
-        <div className="Home-header">
-          <Decoration
-            className="Decoration-left"
-            chars="AFGHJKLMNOPRSTUVWXYZ"
-          />
-          <Logo />
-          <Decoration
-            className="Decoration-right"
-            chars="abcefghijklmnopqrstu"
-          />
-        </div>
-        <div className="Home-buttons">
-          <button className="button" onClick={handleStartNewGame}>
-            Start new game
-          </button>
-        </div>
-      </div>
-      <div className="Home-footer">
-        <div>
-          <a href="https://github.com/Bronkoknorb/type-draw-type-game">
-            Open Source
-          </a>{" "}
-          by Hermann Czedik-Eysenberg
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const Logo = () => (
-  <div className="Logo">
-    <img
-      src={logo}
-      alt="Type Draw Type Game"
-      onClick={toggleToFullscreenAndLandscapeOnMobile}
-    />
-  </div>
-);
-
-const Decoration = ({
-  chars,
-  className,
-}: {
-  chars: string;
-  className: string;
-}) => {
-  const getRandomDecorationChar = () => getRandomCharacterFromString(chars);
-
-  const [decorationChar, setDecorationChar] = React.useState(
-    getRandomDecorationChar
-  );
-
-  const nextDecoration = () => {
-    setDecorationChar(getRandomDecorationChar());
-  };
-
-  return (
-    <div className={"Decoration " + className} onClick={nextDecoration}>
-      {decorationChar}
-    </div>
-  );
-};
 
 interface GameProps extends RouteComponentProps {
   gameId?: string;
