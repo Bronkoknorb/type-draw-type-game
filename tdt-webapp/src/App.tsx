@@ -1,14 +1,11 @@
 import React from "react";
 import { RouteComponentProps, Router } from "@reach/router";
 import { v4 as uuidv4 } from "uuid";
-
 import { getRandomCharacterFromString } from "./helpers";
 import Home from "./Home";
 import Draw from "./Draw";
 import Logo from "./Logo";
-
 import type from "./type.svg";
-
 import "./App.css";
 
 const App = () => {
@@ -176,7 +173,7 @@ const Type = ({ first }: { first: boolean }) => {
         )}
         {!first && (
           <div>
-            by Player:
+            Art by Player:
             <img src="/api/image" className="Drawing" alt="Drawing" />
           </div>
         )}

@@ -1,0 +1,9 @@
+.Logo {
+  flex-grow: 2;
+}
+
+.Logo img {
+  display: block;
+  width: 100%;
+  max-height: 45vh;
+}

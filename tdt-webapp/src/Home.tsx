@@ -1,12 +1,11 @@
 import React from "react";
 import { RouteComponentProps, navigate } from "@reach/router";
-
 import {
   getRandomCharacterFromString,
   toggleToFullscreenAndLandscapeOnMobile,
 } from "./helpers";
-
 import Logo from "./Logo";
+import "./Home.css";
 
 const Home = (props: RouteComponentProps) => {
   const handleStartNewGame = () => {

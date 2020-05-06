@@ -1,8 +1,7 @@
 import React from "react";
-
 import { useWindowSize, getCanvasSize } from "./helpers";
 import Dialog from "./Dialog";
-
+import "./Draw.css";
 import colorwheel from "./colorwheel.svg";
 
 interface Brush {
