@@ -5,27 +5,197 @@ import Dialog from "./Dialog";
 
 import colorwheel from "./colorwheel.svg";
 
+interface Brush {
+  pixelSize: number;
+  displaySize: number;
+}
+
+function getBrushes(scale: number): Brush[] {
+  const sizes = [2, 8, 16, 32, 64];
+  return sizes.map((size) => ({
+    pixelSize: size,
+    displaySize: Math.ceil(size * scale),
+  }));
+}
+
 const Draw = ({ handleDone }: { handleDone: (image: Blob) => void }) => {
   const [color, setColor] = React.useState("#000");
-
-  interface Brush {
-    pixelSize: number;
-    displaySize: number;
-  }
-
-  const getBrushes: (scale: number) => Brush[] = (scale: number) => {
-    const sizes = [2, 8, 16, 32, 64];
-    return sizes.map((size) => ({
-      pixelSize: size,
-      displaySize: Math.ceil(size * scale),
-    }));
-  };
 
   const [brushSizes, setBrushSizes] = React.useState(() => getBrushes(1));
 
   const [selectedBrushIndex, setSelectedBrushIndex] = React.useState(1);
 
   const selectedBrush: Brush = brushSizes[selectedBrushIndex];
+
+  const [showBrushPopup, setShowBrushPopup] = React.useState(false);
+
+  const brushButton = React.useRef<HTMLDivElement>(null);
+  const brushPopup = React.useRef<HTMLDivElement>(null);
+
+  const selectBrush = () => {
+    setShowBrushPopup(!showBrushPopup);
+  };
+
+  const windowSize = useWindowSize();
+
+  React.useEffect(() => {
+    const setBrushPopupPosition = () => {
+      if (brushPopup.current !== null && brushButton.current !== null) {
+        brushPopup.current.style.left = `${
+          brushButton.current.offsetLeft + brushButton.current.offsetWidth
+        }px`;
+        brushPopup.current.style.top = `calc(${brushButton.current.offsetTop}px - 2vmin)`;
+      }
+    };
+
+    setBrushPopupPosition();
+  }, [windowSize, brushButton, brushPopup]);
+
+  const [showColorPicker, setShowColorPicker] = React.useState(false);
+
+  const triggerColorPicker = () => {
+    setShowColorPicker(true);
+  };
+
+  const handlePickColor = (color: string) => {
+    setColor(color);
+    setShowColorPicker(false);
+  };
+
+  const handleSetBrush = (brushIndex: number) => {
+    setShowBrushPopup(false);
+    setSelectedBrushIndex(brushIndex);
+  };
+
+  const handleScaleChange = React.useCallback((scale: number) => {
+    setBrushSizes(getBrushes(scale));
+  }, []);
+
+  const imageProviderRef = React.useRef<ImageProvider>();
+
+  const handleClickDone = () => {
+    const imageProvider = imageProviderRef.current!;
+    const imageDataUrl = imageProvider.getImageDataURL();
+    // nice trick using fetch to get the image as binary Blob instead of data url
+    window
+      .fetch(imageDataUrl)
+      .then((res) => res.blob())
+      .then((image) => handleDone(image));
+  };
+
+  return (
+    <div className="Draw">
+      <div className="Draw-tools">
+        <div className="tool-button tool-button-info">
+          <div>Info</div>
+        </div>
+        <div
+          className="tool-button tool-button-brush"
+          onClick={selectBrush}
+          ref={brushButton}
+        >
+          <div
+            style={{
+              width: selectedBrush.displaySize,
+              height: selectedBrush.displaySize,
+              backgroundColor: color,
+            }}
+          ></div>
+        </div>
+        <div
+          className={"tool-popup" + (showBrushPopup ? "" : " hidden")}
+          ref={brushPopup}
+        >
+          {brushSizes.map((brush, index) => (
+            <div
+              className="tool-button tool-button-brush"
+              onClick={() => handleSetBrush(index)}
+              key={index}
+            >
+              <div
+                style={{
+                  width: brush.displaySize,
+                  height: brush.displaySize,
+                  backgroundColor: color,
+                }}
+              ></div>
+            </div>
+          ))}
+        </div>
+        <div className="tool-color" onClick={triggerColorPicker}>
+          <div
+            className="tool-color-selectedcolor"
+            style={{ backgroundColor: color }}
+          ></div>
+          <img src={colorwheel} alt="Pick color" title="Pick color" />
+        </div>
+        <Dialog show={showColorPicker}>
+          <ColorPicker handlePickColor={handlePickColor} />
+        </Dialog>
+        <div className="button tool-button-done" onClick={handleClickDone}>
+          <div>Done</div>
+        </div>
+      </div>
+      <DrawCanvas
+        color={color}
+        brushPixelSize={selectedBrush.pixelSize}
+        imageProviderRef={imageProviderRef}
+        handleScaleChange={handleScaleChange}
+      />
+    </div>
+  );
+};
+
+export default Draw;
+
+interface ImageProvider {
+  getImageDataURL: () => string;
+}
+
+const DrawCanvas = ({
+  color,
+  brushPixelSize,
+  imageProviderRef,
+  handleScaleChange,
+}: {
+  color: string;
+  brushPixelSize: number;
+  imageProviderRef: React.MutableRefObject<ImageProvider | undefined>;
+  handleScaleChange: (scale: number) => void;
+}) => {
+  const [canvas, setCanvas] = React.useState<HTMLCanvasElement | null>(null);
+
+  const canvasRefCallback = React.useCallback(
+    (canvasElement: HTMLCanvasElement | null) => {
+      if (canvasElement !== null) {
+        setCanvas(canvasElement);
+        imageProviderRef.current = {
+          getImageDataURL: () => canvasElement.toDataURL("image/png"),
+        };
+      }
+    },
+    [imageProviderRef]
+  );
+
+  const windowSize = useWindowSize();
+
+  React.useEffect(() => {
+    if (canvas !== null) {
+      const canvasSize = getCanvasSize(canvas);
+      const scale = canvasSize.width / canvas.width;
+      handleScaleChange(scale);
+    }
+  }, [canvas, windowSize, handleScaleChange]);
+
+  const clearCanvas = () => {
+    if (canvas === null) return;
+    const ctx = getCanvas2DContext(canvas);
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+  };
+
+  // initial clear
+  React.useEffect(clearCanvas, [canvas]);
 
   // gets position in "natural" canvas coordinates for mouse/touch events
   function getPositionInCanvas(
@@ -58,7 +228,7 @@ const Draw = ({ handleDone }: { handleDone: (image: Blob) => void }) => {
       paint_start(ctx, x, y);
     }
     ctx.lineCap = "round";
-    ctx.lineWidth = selectedBrush.pixelSize;
+    ctx.lineWidth = brushPixelSize;
     ctx.strokeStyle = color;
     ctx.beginPath();
     ctx.moveTo(pos!.x, pos!.y);
@@ -144,149 +314,23 @@ const Draw = ({ handleDone }: { handleDone: (image: Blob) => void }) => {
     paint_end(ctx);
   };
 
-  const [showBrushPopup, setShowBrushPopup] = React.useState(false);
-
-  const brushButton = React.useRef<HTMLDivElement>(null);
-  const brushPopup = React.useRef<HTMLDivElement>(null);
-
-  const selectBrush = () => {
-    setShowBrushPopup(!showBrushPopup);
-  };
-
-  const windowSize = useWindowSize();
-
-  React.useEffect(() => {
-    const setBrushPopupPosition = () => {
-      if (brushPopup.current !== null && brushButton.current !== null) {
-        brushPopup.current.style.left = `${
-          brushButton.current.offsetLeft + brushButton.current.offsetWidth
-        }px`;
-        brushPopup.current.style.top = `calc(${brushButton.current.offsetTop}px - 2vmin)`;
-      }
-    };
-
-    setBrushPopupPosition();
-  }, [windowSize, brushButton, brushPopup]);
-
-  const [showColorPicker, setShowColorPicker] = React.useState(false);
-
-  const triggerColorPicker = () => {
-    setShowColorPicker(true);
-  };
-
-  const handlePickColor = (color: string) => {
-    setColor(color);
-    setShowColorPicker(false);
-  };
-
-  const canvasRef = React.useRef<HTMLCanvasElement>(null);
-
-  const clearCanvas = () => {
-    const canvas = canvasRef.current!;
-    const ctx = getCanvas2DContext(canvas);
-    ctx.fillStyle = "#ffffff";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-  };
-
-  // initial clear
-  React.useEffect(clearCanvas, []);
-
-  React.useEffect(() => {
-    const canvas = canvasRef.current;
-    if (canvas !== null) {
-      const canvasSize = getCanvasSize(canvas);
-      const scale = canvasSize.width / canvas.width;
-      setBrushSizes(getBrushes(scale));
-    }
-  }, [windowSize]);
-
-  const handleSetBrush = (brushIndex: number) => {
-    setShowBrushPopup(false);
-    setSelectedBrushIndex(brushIndex);
-  };
-
-  const handleClickDone = () => {
-    const canvas = canvasRef.current!;
-    const imageDataUrl = canvas.toDataURL("image/png");
-    // nice trick using fetch to get the image as binary Blob instead of data url
-    window
-      .fetch(imageDataUrl)
-      .then((res) => res.blob())
-      .then((image) => handleDone(image));
-  };
-
   return (
-    <div className="Draw">
-      <div className="Draw-tools">
-        <div className="tool-button tool-button-info">
-          <div>Info</div>
-        </div>
-        <div
-          className="tool-button tool-button-brush"
-          onClick={selectBrush}
-          ref={brushButton}
-        >
-          <div
-            style={{
-              width: selectedBrush.displaySize,
-              height: selectedBrush.displaySize,
-              backgroundColor: color,
-            }}
-          ></div>
-        </div>
-        <div
-          className={"tool-popup" + (showBrushPopup ? "" : " hidden")}
-          ref={brushPopup}
-        >
-          {brushSizes.map((brush, index) => (
-            <div
-              className="tool-button tool-button-brush"
-              onClick={() => handleSetBrush(index)}
-              key={index}
-            >
-              <div
-                style={{
-                  width: brush.displaySize,
-                  height: brush.displaySize,
-                  backgroundColor: color,
-                }}
-              ></div>
-            </div>
-          ))}
-        </div>
-        <div className="tool-color" onClick={triggerColorPicker}>
-          <div
-            className="tool-color-selectedcolor"
-            style={{ backgroundColor: color }}
-          ></div>
-          <img src={colorwheel} alt="Pick color" title="Pick color" />
-        </div>
-        <Dialog show={showColorPicker}>
-          <ColorPicker handlePickColor={handlePickColor} />
-        </Dialog>
-        <div className="button tool-button-done" onClick={handleClickDone}>
-          <div>Done</div>
-        </div>
-      </div>
-      <div className="Draw-canvas">
-        <canvas
-          width="1440"
-          height="1080"
-          onMouseDown={handleMouseDown}
-          onMouseMove={handleMouseMove}
-          onMouseUp={handleMouseUp}
-          onMouseOut={handleMouseOut}
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
-          ref={canvasRef}
-        ></canvas>
-      </div>
+    <div className="Draw-canvas">
+      <canvas
+        width="1440"
+        height="1080"
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseOut={handleMouseOut}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        ref={canvasRefCallback}
+      ></canvas>
     </div>
   );
 };
-
-export default Draw;
 
 const ColorPicker = ({
   handlePickColor,

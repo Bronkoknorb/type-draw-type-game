@@ -149,13 +149,13 @@ const Game = (props: GameProps) => {
     };
   }, [gameId]);
 
-  const handleDrawDone = (image: Blob) => {
+  const handleDrawDone = React.useCallback((image: Blob) => {
     console.log("Sending drawn image");
     socketRef.current!.send(image);
-  };
+  }, []);
 
   // TODO
-  if (false) {
+  if (true) {
     return <Draw handleDone={handleDrawDone} />;
   } else if (false) {
     return <Join />;
