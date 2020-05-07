@@ -51,13 +51,18 @@ h1 {
 }
 
 input,
-textarea {
+textarea,
+.field {
   outline: none;
   border: 0.7vmin solid black;
   border-radius: 2vmin;
-  padding: 1vmin;
+  padding: 1vmin 2vmin;
   background-color: white;
   box-shadow: 0.5vmin 0.7vmin 1vmin rgba(0, 0, 0, 0.2);
+}
+
+.field {
+  user-select: all;
 }
 
 .hidden {

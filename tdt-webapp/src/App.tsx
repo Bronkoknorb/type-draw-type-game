@@ -78,16 +78,28 @@ const Game = (props: GameProps) => {
   }, []);
 
   // TODO
-  if (true) {
+  if (false) {
     return <Draw handleDone={handleDrawDone} />;
   } else if (false) {
+    return <Create />;
+  } else if (false) {
     return <Join />;
+  } else if (true) {
+    return <WaitForPlayers />;
   } else {
     return <Type first={false} />;
   }
 };
 
 const Join = () => {
+  return <CreateOrJoin buttonLabel="Join game" />;
+};
+
+const Create = () => {
+  return <CreateOrJoin buttonLabel="Create game" />;
+};
+
+const CreateOrJoin = ({ buttonLabel }: { buttonLabel: string }) => {
   const [avatar, setAvatar] = React.useState("");
 
   const [name, setName] = React.useState("");
@@ -102,7 +114,7 @@ const Join = () => {
       <div className="Join-content">
         Click to pick your look:
         <br />
-        <Avatar handleChange={(face) => setAvatar(face)} />
+        <SelectAvatar handleChange={(face) => setAvatar(face)} />
         <label htmlFor="name">Enter your name:</label>
         <input
           type="text"
@@ -114,14 +126,18 @@ const Join = () => {
         />
         <br />
         <button className="button" disabled={buttonDisabled}>
-          Join game
+          {buttonLabel}
         </button>
       </div>
     </div>
   );
 };
 
-const Avatar = ({ handleChange }: { handleChange: (face: string) => void }) => {
+const SelectAvatar = ({
+  handleChange,
+}: {
+  handleChange: (face: string) => void;
+}) => {
   const faces = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
   const [face, setFace] = React.useState(() => {
@@ -137,8 +153,89 @@ const Avatar = ({ handleChange }: { handleChange: (face: string) => void }) => {
   };
 
   return (
-    <div className="Avatar" onClick={nextFace}>
-      {face}
+    <div className="SelectAvatar" onClick={nextFace}>
+      <Avatar face={face} small={false} />
+    </div>
+  );
+};
+
+const Avatar = ({ face, small }: { face: string; small: boolean }) => {
+  const className = small ? "Avatar Avatar-small" : "Avatar";
+
+  return <div className={className}>{face}</div>;
+};
+
+const WaitForPlayers = () => {
+  const buttonDisabled = true;
+
+  const link = window.location.toString();
+
+  return (
+    <div className="WaitForPlayers">
+      <div className="WaitForPlayers-left">
+        <div className="Players-title">Players:</div>
+        <div className="Players">
+          <Player face="A">Player1</Player>
+          <Player face="B">Player2</Player>
+          <Player face="C">Player3</Player>
+          <Player face="D">Player4</Player>
+          <Player face="E">Player5</Player>
+          <Player face="F">Player6</Player>
+          <Player face="G">Player7</Player>
+          <Player face="H">Player8</Player>
+          <Player face="I">Player9</Player>
+          <Player face="J">
+            Player10xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+          </Player>
+          <Player face="K">
+            Player11 with a really really long name name name name name name
+            name name name name name name name name name name name name name
+            name name name name name name name name name name name name name
+            name name name name name name name name name name name name name
+            name name name name name
+          </Player>
+        </div>
+      </div>
+      <div className="WaitForPlayers-right">
+        <Logo />
+        <div>Waiting for players...</div>
+        <div>Game Code:</div>
+        <div className="field">xxxxx</div>
+        <div>Link:</div>
+        <div className="field">{link}</div>
+        <div className="buttons">
+          <button
+            className="button"
+            disabled={buttonDisabled}
+            title={
+              buttonDisabled
+                ? "Waiting for more players"
+                : "Let's get this party started!"
+            }
+          >
+            Start Game
+          </button>
+          <button className="button button-red">Cancel Game</button>
+        </div>
+        <div className="small">
+          Once the game is started, additional players cannot join any longer!
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const Player = ({
+  face,
+  children,
+}: {
+  face: string;
+  children: React.ReactNode;
+}) => {
+  return (
+    <div className="Player">
+      <Avatar face={face} small={true}></Avatar>
+      <div>{children}</div>
     </div>
   );
 };
@@ -185,6 +282,6 @@ const Type = ({ first }: { first: boolean }) => {
   );
 };
 
-const Scrollable = ({ children }: { children: JSX.Element }) => {
+const Scrollable = ({ children }: { children: React.ReactNode }) => {
   return <div className="Scrollable">{children}</div>;
 };

@@ -39,7 +39,7 @@
   flex-basis: 50%;
 }
 
-.Join-content .Avatar {
+.Join-content .SelectAvatar {
   margin-top: 0.5vmin;
   margin-bottom: 3vmin;
 }
@@ -54,20 +54,119 @@
   margin-bottom: 4vmin;
 }
 
+.WaitForPlayers {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+}
+
+.WaitForPlayers-left {
+  width: 50vw;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.Players-title {
+  padding-left: 2vmin;
+}
+
+.Players {
+  flex: auto;
+  min-height: 10vmin;
+  border: 0.7vmin solid black;
+  border-left-width: 0;
+  border-bottom-width: 0;
+  border-radius: 2vmin;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  padding: 2vmin;
+  margin-right: 5vmin;
+  background-color: white;
+  box-shadow: 0.5vmin 0.7vmin 1vmin rgba(0, 0, 0, 0.2);
+  overflow: auto;
+}
+
+.Players .Player {
+  margin-bottom: 2vmin;
+}
+
+.Player {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.Player .Avatar {
+  flex: none;
+  margin-right: 2vmin;
+}
+
+.WaitForPlayers-right {
+  height: 100%;
+  width: 50vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+}
+
+.WaitForPlayers-right .field {
+  max-width: 40vw;
+  overflow: auto;
+}
+
+.WaitForPlayers-right .Logo {
+  flex-grow: 0;
+}
+
+.WaitForPlayers-right .Logo img {
+  width: 30vmin;
+}
+
+.SelectAvatar {
+  cursor: pointer;
+  width: 24vmin;
+  height: 24vmin;
+  vertical-align: middle;
+  margin: 0 auto;
+}
+
 .Avatar {
   font-family: "TheFreakyFace";
   font-size: 25vmin;
-  vertical-align: middle;
   border: 0.7vmin solid black;
   border-radius: 50%;
   background-color: white;
   width: 24vmin;
   height: 24vmin;
   line-height: 29vmin;
-  margin: 0 auto;
-  cursor: pointer;
   user-select: none;
   box-shadow: 0.5vmin 0.7vmin 1vmin rgba(0, 0, 0, 0.2);
+  text-align: center;
+  overflow: hidden;
+}
+
+.Avatar-small {
+  width: 16vmin;
+  height: 16vmin;
+  font-size: 22vmin;
+  line-height: 20.5vmin;
+}
+
+.buttons {
+  width: 100%;
+  display: flex;
+  justify-content: space-evenly;
+  flex-wrap: wrap;
+  padding: 1vmin;
+}
+
+.buttons .button {
+  margin: 1vmin;
 }
 
 .button {
@@ -83,6 +182,10 @@
   box-shadow: 0.5vmin 0.7vmin 1vmin rgba(0, 0, 0, 0.2);
   cursor: pointer;
   outline: none;
+}
+
+.button-red {
+  background-color: #800;
 }
 
 .button:disabled {
