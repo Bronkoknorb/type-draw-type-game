@@ -81,9 +81,21 @@ const Game = (props: GameProps) => {
   if (false) {
     return <Draw handleDone={handleDrawDone} />;
   } else if (false) {
-    return <Create />;
+    return (
+      <Create
+        handleDone={() => {
+          /*TODO*/
+        }}
+      />
+    );
   } else if (false) {
-    return <Join />;
+    return (
+      <Join
+        handleDone={() => {
+          /*TODO*/
+        }}
+      />
+    );
   } else if (true) {
     return <WaitForPlayers />;
   } else {
@@ -91,15 +103,21 @@ const Game = (props: GameProps) => {
   }
 };
 
-const Join = () => {
-  return <CreateOrJoin buttonLabel="Join game" />;
+const Join = ({ handleDone }: { handleDone: () => void }) => {
+  return <CreateOrJoin buttonLabel="Join game" handleDone={handleDone} />;
 };
 
-const Create = () => {
-  return <CreateOrJoin buttonLabel="Create game" />;
+const Create = ({ handleDone }: { handleDone: () => void }) => {
+  return <CreateOrJoin buttonLabel="Create game" handleDone={handleDone} />;
 };
 
-const CreateOrJoin = ({ buttonLabel }: { buttonLabel: string }) => {
+const CreateOrJoin = ({
+  buttonLabel,
+  handleDone,
+}: {
+  buttonLabel: string;
+  handleDone: (avatar: string, name: string) => void;
+}) => {
   const [avatar, setAvatar] = React.useState("");
 
   const [name, setName] = React.useState("");
@@ -125,7 +143,11 @@ const CreateOrJoin = ({ buttonLabel }: { buttonLabel: string }) => {
           onChange={(event) => setName(event.target.value)}
         />
         <br />
-        <button className="button" disabled={buttonDisabled}>
+        <button
+          className="button"
+          disabled={buttonDisabled}
+          onClick={() => handleDone(avatar, name)}
+        >
           {buttonLabel}
         </button>
       </div>
