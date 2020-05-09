@@ -13,6 +13,7 @@ const App = () => {
     <div className="App">
       <Router>
         <Home path="/" default />
+        <Create path="/new" />
         <Game path="/g/:gameId" />
       </Router>
     </div>
@@ -25,18 +26,18 @@ interface GameProps extends RouteComponentProps {
   gameId?: string;
 }
 
+function getUserId() {
+  const store = window.localStorage;
+  let userId = store.getItem("userId");
+  if (userId === null) {
+    userId = uuidv4();
+    store.setItem("userId", userId);
+  }
+  return userId;
+}
+
 const Game = (props: GameProps) => {
   let gameId = props.gameId;
-
-  function getUserId() {
-    const store = window.localStorage;
-    let userId = store.getItem("userId");
-    if (userId === null) {
-      userId = uuidv4();
-      store.setItem("userId", userId);
-    }
-    return userId;
-  }
 
   const socketRef = React.useRef<WebSocket>();
 
@@ -82,14 +83,6 @@ const Game = (props: GameProps) => {
     return <Draw handleDone={handleDrawDone} />;
   } else if (false) {
     return (
-      <Create
-        handleDone={() => {
-          /*TODO*/
-        }}
-      />
-    );
-  } else if (false) {
-    return (
       <Join
         handleDone={() => {
           /*TODO*/
@@ -107,7 +100,26 @@ const Join = ({ handleDone }: { handleDone: () => void }) => {
   return <CreateOrJoin buttonLabel="Join game" handleDone={handleDone} />;
 };
 
-const Create = ({ handleDone }: { handleDone: () => void }) => {
+const Create = (props: RouteComponentProps) => {
+  const handleDone = async (avatar: string, name: string) => {
+    // TODO store and load username and avatar in localStorage
+
+    const response = await window.fetch("/api/create", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        userId: getUserId(),
+        userName: name,
+        userAvatar: avatar,
+      }),
+    });
+
+    // TODO
+    console.log(await response.json());
+  };
+
   return <CreateOrJoin buttonLabel="Create game" handleDone={handleDone} />;
 };
 
@@ -124,6 +136,8 @@ const CreateOrJoin = ({
 
   const buttonDisabled = name === "";
 
+  const handleChangeAvatar = React.useCallback((face) => setAvatar(face), []);
+
   return (
     <div className="Join">
       <div className="Join-logo">
@@ -132,7 +146,7 @@ const CreateOrJoin = ({
       <div className="Join-content">
         Click to pick your look:
         <br />
-        <SelectAvatar handleChange={(face) => setAvatar(face)} />
+        <SelectAvatar handleChange={handleChangeAvatar} />
         <label htmlFor="name">Enter your name:</label>
         <input
           type="text"
@@ -162,17 +176,18 @@ const SelectAvatar = ({
 }) => {
   const faces = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-  const [face, setFace] = React.useState(() => {
-    const initialFace = getRandomCharacterFromString(faces);
-    handleChange(initialFace);
-    return initialFace;
-  });
+  const [face, setFace] = React.useState(() =>
+    getRandomCharacterFromString(faces)
+  );
 
   const nextFace = () => {
     const newFace = faces.charAt((faces.indexOf(face) + 1) % faces.length);
-    handleChange(newFace);
     setFace(newFace);
   };
+
+  React.useEffect(() => {
+    handleChange(face);
+  }, [face, handleChange]);
 
   return (
     <div className="SelectAvatar" onClick={nextFace}>

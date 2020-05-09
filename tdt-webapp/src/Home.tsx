@@ -9,7 +9,7 @@ import "./Home.css";
 
 const Home = (props: RouteComponentProps) => {
   const handleStartNewGame = () => {
-    navigate("/g/xyz"); // TODO game id
+    navigate("/new");
     toggleToFullscreenAndLandscapeOnMobile();
   };
 

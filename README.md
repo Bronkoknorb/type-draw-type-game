@@ -47,6 +47,10 @@ Run the server in development mode:
     cd tdt-server
     ./gradlew bootRun
 
+To get live-reloads on changes, run in a second terminal:
+
+    ./gradlew build --continuous
+
 See also [Spring-Boot-HELP.md](tdt-server/Spring-Boot-HELP.md).
 
 ### Frontend Web App
