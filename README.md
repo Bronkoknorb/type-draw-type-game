@@ -2,6 +2,8 @@
 
 ![Build & Publish Docker images](https://github.com/Bronkoknorb/type-draw-type-game/workflows/Build%20&%20Publish%20Docker%20images/badge.svg)
 
+![Type Draw Type Logo](/tdt-webapp/src/img/logo.svg?raw=true&sanitize=true)
+
 TODO describe game
 
 ## Installation
