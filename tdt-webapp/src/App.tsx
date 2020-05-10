@@ -1,5 +1,5 @@
 import React from "react";
-import { RouteComponentProps, Router } from "@reach/router";
+import { RouteComponentProps, Router, navigate } from "@reach/router";
 import { v4 as uuidv4 } from "uuid";
 import { getRandomCharacterFromString } from "./helpers";
 import Home from "./Home";
@@ -37,7 +37,7 @@ function getUserId() {
 }
 
 const Game = (props: GameProps) => {
-  let gameId = props.gameId;
+  let gameId = props.gameId!;
 
   const socketRef = React.useRef<WebSocket>();
 
@@ -90,7 +90,7 @@ const Game = (props: GameProps) => {
       />
     );
   } else if (true) {
-    return <WaitForPlayers />;
+    return <WaitForPlayers gameId={gameId} />;
   } else {
     return <Type first={false} />;
   }
@@ -104,6 +104,10 @@ const Create = (props: RouteComponentProps) => {
   const handleDone = async (avatar: string, name: string) => {
     // TODO store and load username and avatar in localStorage
 
+    interface CreatedGameResponse {
+      gameId: string;
+    }
+
     const response = await window.fetch("/api/create", {
       method: "POST",
       headers: {
@@ -116,8 +120,10 @@ const Create = (props: RouteComponentProps) => {
       }),
     });
 
-    // TODO
-    console.log(await response.json());
+    const createdGame: CreatedGameResponse = await response.json();
+    const gameId = createdGame.gameId;
+
+    navigate(`/g/${gameId}`);
   };
 
   return <CreateOrJoin buttonLabel="Create game" handleDone={handleDone} />;
@@ -202,8 +208,9 @@ const Avatar = ({ face, small }: { face: string; small: boolean }) => {
   return <div className={className}>{face}</div>;
 };
 
-const WaitForPlayers = () => {
-  const buttonDisabled = true;
+const WaitForPlayers = ({ gameId }: { gameId: string }) => {
+  // TODO should depend on number of players
+  const buttonDisabled = false;
 
   const link = window.location.toString();
 
@@ -235,11 +242,15 @@ const WaitForPlayers = () => {
       </div>
       <div className="WaitForPlayers-right">
         <Logo />
-        <div>Waiting for players...</div>
-        <div>Game Code:</div>
-        <div className="field">xxxxx</div>
-        <div>Link:</div>
-        <div className="field">{link}</div>
+        <div>Ask your friends to join the game:</div>
+        <div>
+          <div className="field-label">Game Code:</div>
+          <div className="field">{gameId}</div>
+        </div>
+        <div>
+          <div className="field-label">Link:</div>
+          <div className="field">{link}</div>
+        </div>
         <div className="buttons">
           <button
             className="button"
@@ -252,10 +263,10 @@ const WaitForPlayers = () => {
           >
             Start Game
           </button>
-          <button className="button button-red">Cancel Game</button>
+          {/*<button className="button button-red">Cancel Game</button>*/}
         </div>
         <div className="small">
-          Once the game is started, additional players cannot join any longer!
+          Once the game is started, no more players can join!
         </div>
       </div>
     </div>

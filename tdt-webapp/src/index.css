@@ -62,7 +62,12 @@ textarea,
 }
 
 .field {
+  white-space: nowrap;
   user-select: all;
+}
+
+.field-label {
+  font-size: 0.7em;
 }
 
 .hidden {
