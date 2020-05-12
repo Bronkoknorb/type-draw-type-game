@@ -1,5 +1,6 @@
 package net.czedik.hermann.tdt;
 
+import net.czedik.hermann.tdt.model.AccessAction;
 import net.czedik.hermann.tdt.model.CreateGameRequest;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
@@ -18,35 +19,49 @@ import java.util.concurrent.locks.ReentrantLock;
 
 @Service
 public class GameManager {
+    private static final Logger log = LoggerFactory.getLogger(GameManager.class);
 
-    public static final String CHARACTERS_WITHOUT_AMBIGUOUS = "23456789abcdefghijkmnpqrstuvwxyz";
-    private static final Logger log = LoggerFactory.getLogger(Controller.class);
-    @Value("${storage.dir}")
-    private String storageDir;
-
-    private Path storageDirPath;
-    private Path gamesPath;
+    private static final String CHARACTERS_WITHOUT_AMBIGUOUS = "23456789abcdefghijkmnpqrstuvwxyz";
 
     private final Lock idGenerationLock = new ReentrantLock();
 
     // guarded by itself
     private final Map<String, Game> loadedGames = new HashMap<>();
 
+    @Value("${storage.dir}")
+    private String storageDir;
+
+    // TODO check sync
+    private Path gamesPath;
+
     // TODO make sure to unload games again, to not run out of memory
 
     @PostConstruct
     private void init() {
-        storageDirPath = Path.of(storageDir).toAbsolutePath().normalize();
+        Path storageDirPath = Path.of(storageDir).toAbsolutePath().normalize();
         log.info("Using storage path: {}", storageDirPath);
         gamesPath = storageDirPath.resolve("games");
     }
 
     public Game newGame(CreateGameRequest createGameRequest) {
-        Game game = new Game(generateAndReserveNewGameId(), new Player(createGameRequest.userId, createGameRequest.userName, createGameRequest.userAvatar));
+        Game game = new Game(generateAndReserveNewGameId(), new Player(createGameRequest.userId, createGameRequest.userName, createGameRequest.userAvatar, true));
         synchronized (loadedGames) {
             loadedGames.put(game.gameId, game);
         }
         return game;
+    }
+
+    public void handleAccessAction(Client client, AccessAction accessAction) {
+        Game game;
+        synchronized (loadedGames) {
+            game = loadedGames.get(accessAction.gameId);
+        }
+        if (game == null) {
+            log.info("Access to unknown game {}", accessAction.gameId);
+            // TODO handle unknown game
+            return;
+        }
+        game.access(client, accessAction);
     }
 
     private String generateAndReserveNewGameId() {

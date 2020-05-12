@@ -5,6 +5,7 @@ import { getRandomCharacterFromString } from "./helpers";
 import Type from "./Type";
 import Draw from "./Draw";
 import Logo from "./Logo";
+import BigLogoScreen from "./BigLogoScreen";
 import Avatar from "./Avatar";
 import WaitForPlayers from "./WaitForPlayers";
 
@@ -22,8 +23,14 @@ interface GameProps extends RouteComponentProps {
   gameId?: string;
 }
 
+interface PlayerState {
+  state: string;
+}
+
 const Game = (props: GameProps) => {
   let gameId = props.gameId!;
+
+  const [playerState, setPlayerState] = React.useState({ state: "loading" });
 
   const socketRef = React.useRef<WebSocket>();
 
@@ -36,12 +43,12 @@ const Game = (props: GameProps) => {
     socketRef.current = socket;
 
     socket.onopen = () => {
-      console.log("Websocket opened. Sending join action.");
+      console.log("Websocket opened. Sending access action.");
 
       socket.send(
         JSON.stringify({
-          action: "join",
-          join: {
+          action: "access",
+          content: {
             gameId,
             userId: getUserId(),
           },
@@ -49,6 +56,12 @@ const Game = (props: GameProps) => {
       );
     };
 
+    socket.onmessage = (messageEvent) => {
+      const playerState: PlayerState = JSON.parse(messageEvent.data);
+      setPlayerState(playerState);
+    };
+
+    // TODO handle close/error with dialog where the player can re-connect with a button
     socket.onerror = (error) => {
       console.log("Websocket error", error);
     };
@@ -64,10 +77,13 @@ const Game = (props: GameProps) => {
     socketRef.current!.send(image);
   }, []);
 
-  // TODO
-  if (false) {
+  if (playerState.state === "loading") {
+    return <Message text="Loading game..." />;
+  } else if (false) {
+    // TODO
     return <Draw handleDone={handleDrawDone} />;
   } else if (false) {
+    // TODO
     return (
       <Join
         handleDone={() => {
@@ -75,7 +91,7 @@ const Game = (props: GameProps) => {
         }}
       />
     );
-  } else if (true) {
+  } else if (playerState.state === "waitForPlayers") {
     return <WaitForPlayers gameId={gameId} />;
   } else {
     return <Type first={false} />;
@@ -83,6 +99,14 @@ const Game = (props: GameProps) => {
 };
 
 export default Game;
+
+const Message = ({ text }: { text: string }) => {
+  return (
+    <BigLogoScreen>
+      <div>{text}</div>
+    </BigLogoScreen>
+  );
+};
 
 const Join = ({ handleDone }: { handleDone: () => void }) => {
   return <CreateOrJoin buttonLabel="Join game" handleDone={handleDone} />;

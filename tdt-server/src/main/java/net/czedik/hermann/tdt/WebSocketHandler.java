@@ -1,8 +1,12 @@
 package net.czedik.hermann.tdt;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import net.czedik.hermann.tdt.model.AccessAction;
+import net.czedik.hermann.tdt.model.JSONHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.socket.BinaryMessage;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -13,29 +17,51 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.channels.FileChannel;
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class WebSocketHandler extends AbstractWebSocketHandler {
 
-    // TODO make sure that all calls to sendMessage() are single threaded
+    // TODO make sure that all calls to WebSocketSession.sendMessage() are single threaded
 
     private static final Logger log = LoggerFactory.getLogger(WebSocketHandler.class);
 
-    private static final ObjectMapper jsonMapper = new ObjectMapper();
+    private final Map<WebSocketSession, Client> clients = new ConcurrentHashMap<>();
+
+    private final GameManager gameManager;
+
+    @Autowired
+    public WebSocketHandler(GameManager gameManager) {
+        this.gameManager = gameManager;
+    }
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) {
-        log.info("Connection {} from: {}", session.getId(), getHostname(session));
+        log.info("Connection {} from: {} (total clients: {})", session.getId(), getHostname(session), clients.size());
+        clients.put(session, new Client(session));
     }
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
-        log.info("Closed connection {} ({})", session.getId(), getHostname(session));
+        clients.remove(session);
+        log.info("Closed connection {} ({}) with status {} (total clients: {})", session.getId(), getHostname(session), status, clients.size());
     }
 
     @Override
-    public void handleTextMessage(WebSocketSession session, TextMessage message) {
+    public void handleTextMessage(WebSocketSession session, TextMessage message) throws JsonProcessingException {
+        Client client = Objects.requireNonNull(clients.get(session));
         String payload = message.getPayload();
         log.info("Received message: {}", payload);
+        JsonNode actionMessage = JSONHelper.stringToJsonNode(payload);
+        String action = actionMessage.get("action").asText();
+        JsonNode content = actionMessage.get("content");
+        if ("access".equals(action)) {
+            AccessAction accessAction = JSONHelper.objectMapper.treeToValue(content, AccessAction.class);
+            gameManager.handleAccessAction(client, accessAction);
+        } else {
+            throw new IllegalArgumentException("Unknown action: " + action);
+        }
     }
 
     @Override

@@ -9,7 +9,6 @@ import org.springframework.http.MediaType;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.*;
 
-import javax.naming.ldap.Control;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.FileInputStream;

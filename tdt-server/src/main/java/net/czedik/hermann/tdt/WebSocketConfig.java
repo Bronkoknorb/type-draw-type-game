@@ -1,5 +1,6 @@
 package net.czedik.hermann.tdt;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
@@ -13,6 +14,9 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
     private static final int TWENTY_MB = 20 * 1024 * 1024;
 
+    @Autowired
+    private GameManager gameManager;
+
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         registry.addHandler(myHandler(), "/api/websocket");
@@ -20,7 +24,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
     @Bean
     public WebSocketHandler myHandler() {
-        return new WebSocketHandler();
+        return new WebSocketHandler(gameManager);
     }
 
     @Bean
