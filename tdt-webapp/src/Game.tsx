@@ -2,11 +2,11 @@ import React from "react";
 import { RouteComponentProps, navigate } from "@reach/router";
 import { v4 as uuidv4 } from "uuid";
 import { getRandomCharacterFromString } from "./helpers";
+import Type from "./Type";
 import Draw from "./Draw";
 import Logo from "./Logo";
 import Avatar from "./Avatar";
 import WaitForPlayers from "./WaitForPlayers";
-import typeImg from "./img/type.svg";
 
 function getUserId() {
   const store = window.localStorage;
@@ -188,50 +188,4 @@ const SelectAvatar = ({
       <Avatar face={face} small={false} />
     </div>
   );
-};
-
-const Type = ({ first }: { first: boolean }) => {
-  const [text, setText] = React.useState("");
-
-  const buttonDisabled = text === "";
-
-  return (
-    <Scrollable>
-      <div className="Type">
-        <div>
-          <div className="small">Round X of Y</div>
-          <h1>
-            <img src={typeImg} alt="Type" />
-          </h1>
-          <div>
-            {first
-              ? "... a sentence or short story:"
-              : "... what you see on the drawing below:"}
-          </div>
-        </div>
-        <textarea
-          value={text}
-          onChange={(event) => setText(event.target.value)}
-        />
-        {first && (
-          <div className="small">
-            Note: The next player will have to draw your text.
-          </div>
-        )}
-        {!first && (
-          <div>
-            Art by Player:
-            <img src="/api/image" className="Drawing" alt="Drawing" />
-          </div>
-        )}
-        <button className="button" disabled={buttonDisabled}>
-          Done
-        </button>
-      </div>
-    </Scrollable>
-  );
-};
-
-const Scrollable = ({ children }: { children: React.ReactNode }) => {
-  return <div className="Scrollable">{children}</div>;
 };
