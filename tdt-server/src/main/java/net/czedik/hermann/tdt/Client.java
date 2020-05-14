@@ -18,6 +18,10 @@ public class Client {
         this.session = session;
     }
 
+    public String getId() {
+        return session.getId();
+    }
+
     public void send(PlayerState state) {
         String stateJson = JSONHelper.objectToJsonString(state);
         log.info("Sending player state: {}", stateJson); // TODO document to which player/client we send
@@ -26,8 +30,8 @@ public class Client {
             synchronized (this) {
                 session.sendMessage(new TextMessage(stateJson));
             }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } catch (IOException | RuntimeException e) {
+            log.error("Exception when updating client session {}", session.getId(), e);
         }
     }
 }

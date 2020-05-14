@@ -7,16 +7,17 @@ import Draw from "./Draw";
 import Logo from "./Logo";
 import BigLogoScreen from "./BigLogoScreen";
 import Avatar from "./Avatar";
-import WaitForPlayers from "./WaitForPlayers";
+import WaitForPlayersScreen, { WaitForGameStartScreen } from "./WaitForPlayers";
+import { PlayerInfo } from "./model";
 
-function getUserId() {
+function getPlayerId() {
   const store = window.localStorage;
-  let userId = store.getItem("userId");
-  if (userId === null) {
-    userId = uuidv4();
-    store.setItem("userId", userId);
+  let playerId = store.getItem("playerId");
+  if (playerId === null) {
+    playerId = uuidv4();
+    store.setItem("playerId", playerId);
   }
-  return userId;
+  return playerId;
 }
 
 interface GameProps extends RouteComponentProps {
@@ -27,12 +28,45 @@ interface PlayerState {
   state: string;
 }
 
+interface WaitForPlayers extends PlayerState {
+  state: "waitForPlayers";
+  players: PlayerInfo[];
+}
+
+function isWaitForPlayers(
+  playerState: PlayerState
+): playerState is WaitForPlayers {
+  return playerState.state === "waitForPlayers";
+}
+
+interface WaitForGameStart extends PlayerState {
+  state: "waitForGameStart";
+  players: PlayerInfo[];
+}
+
+function isWaitForGameStart(
+  playerState: PlayerState
+): playerState is WaitForGameStart {
+  return playerState.state === "waitForGameStart";
+}
+
+interface Action {
+  action: string;
+  content: {
+    [key: string]: string;
+  };
+}
+
 const Game = (props: GameProps) => {
   let gameId = props.gameId!;
 
   const [playerState, setPlayerState] = React.useState({ state: "loading" });
 
   const socketRef = React.useRef<WebSocket>();
+
+  const send = (action: Action) => {
+    socketRef.current!.send(JSON.stringify(action));
+  };
 
   React.useEffect(() => {
     const wsProtocol =
@@ -45,15 +79,13 @@ const Game = (props: GameProps) => {
     socket.onopen = () => {
       console.log("Websocket opened. Sending access action.");
 
-      socket.send(
-        JSON.stringify({
-          action: "access",
-          content: {
-            gameId,
-            userId: getUserId(),
-          },
-        })
-      );
+      send({
+        action: "access",
+        content: {
+          gameId,
+          playerId: getPlayerId(),
+        },
+      });
     };
 
     socket.onmessage = (messageEvent) => {
@@ -64,6 +96,9 @@ const Game = (props: GameProps) => {
     // TODO handle close/error with dialog where the player can re-connect with a button
     socket.onerror = (error) => {
       console.log("Websocket error", error);
+    };
+    socket.onclose = (closeEvent) => {
+      console.log("Websocket closed", closeEvent);
     };
 
     return () => {
@@ -78,22 +113,34 @@ const Game = (props: GameProps) => {
   }, []);
 
   if (playerState.state === "loading") {
+    // TODO replace by almost empty screen (only text, no logo), to avoid flicker
     return <Message text="Loading game..." />;
+  } else if (playerState.state === "join") {
+    const handleJoinDone = (avatar: string, name: string) => {
+      send({
+        action: "join",
+        content: {
+          gameId,
+          playerId: getPlayerId(),
+          name,
+          avatar,
+        },
+      });
+    };
+
+    return <Join handleDone={handleJoinDone} />;
+  } else if (isWaitForPlayers(playerState)) {
+    return (
+      <WaitForPlayersScreen gameId={gameId} players={playerState.players} />
+    );
+  } else if (isWaitForGameStart(playerState)) {
+    // TODO
+    return <WaitForGameStartScreen players={playerState.players} />;
   } else if (false) {
     // TODO
     return <Draw handleDone={handleDrawDone} />;
-  } else if (false) {
-    // TODO
-    return (
-      <Join
-        handleDone={() => {
-          /*TODO*/
-        }}
-      />
-    );
-  } else if (playerState.state === "waitForPlayers") {
-    return <WaitForPlayers gameId={gameId} />;
   } else {
+    // TODO
     return <Type first={false} />;
   }
 };
@@ -108,13 +155,17 @@ const Message = ({ text }: { text: string }) => {
   );
 };
 
-const Join = ({ handleDone }: { handleDone: () => void }) => {
+const Join = ({
+  handleDone,
+}: {
+  handleDone: (avatar: string, name: string) => void;
+}) => {
   return <CreateOrJoin buttonLabel="Join game" handleDone={handleDone} />;
 };
 
 export const Create = (props: RouteComponentProps) => {
   const handleDone = async (avatar: string, name: string) => {
-    // TODO store and load username and avatar in localStorage
+    // TODO store name and avatar in localStorage
 
     interface CreatedGameResponse {
       gameId: string;
@@ -126,9 +177,9 @@ export const Create = (props: RouteComponentProps) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        userId: getUserId(),
-        userName: name,
-        userAvatar: avatar,
+        playerId: getPlayerId(),
+        playerName: name,
+        playerAvatar: avatar,
       }),
     });
 

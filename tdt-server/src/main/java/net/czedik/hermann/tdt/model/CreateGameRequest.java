@@ -4,11 +4,11 @@ import javax.validation.constraints.NotBlank;
 
 public class CreateGameRequest {
     @NotBlank
-    public String userId;
+    public String playerId;
     @NotBlank
-    public String userName;
+    public String playerName;
     @NotBlank
-    public String userAvatar;
+    public String playerAvatar;
 
     @Override
     public String toString() {

@@ -2,6 +2,7 @@ package net.czedik.hermann.tdt;
 
 import net.czedik.hermann.tdt.model.AccessAction;
 import net.czedik.hermann.tdt.model.CreateGameRequest;
+import net.czedik.hermann.tdt.model.JoinAction;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,7 +45,7 @@ public class GameManager {
     }
 
     public Game newGame(CreateGameRequest createGameRequest) {
-        Game game = new Game(generateAndReserveNewGameId(), new Player(createGameRequest.userId, createGameRequest.userName, createGameRequest.userAvatar, true));
+        Game game = new Game(generateAndReserveNewGameId(), new Player(createGameRequest.playerId, createGameRequest.playerName, createGameRequest.playerAvatar, true));
         synchronized (loadedGames) {
             loadedGames.put(game.gameId, game);
         }
@@ -52,16 +53,25 @@ public class GameManager {
     }
 
     public void handleAccessAction(Client client, AccessAction accessAction) {
+        getGame(accessAction.gameId).access(client, accessAction);
+    }
+
+    public void handleJoinAction(Client client, JoinAction joinAction) {
+        getGame(joinAction.gameId).join(client, joinAction);
+    }
+
+    private Game getGame(String gameId) {
         Game game;
         synchronized (loadedGames) {
-            game = loadedGames.get(accessAction.gameId);
+            game = loadedGames.get(gameId);
         }
         if (game == null) {
-            log.info("Access to unknown game {}", accessAction.gameId);
-            // TODO handle unknown game
-            return;
+            log.info("Access to unknown game {}", gameId);
+            // TODO handle unknown game. might be different for different actions
+            return null;
+            // TODO handle null case in callers
         }
-        game.access(client, accessAction);
+        return game;
     }
 
     private String generateAndReserveNewGameId() {

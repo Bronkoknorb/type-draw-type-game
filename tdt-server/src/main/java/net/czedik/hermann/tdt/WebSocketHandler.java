@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import net.czedik.hermann.tdt.model.AccessAction;
 import net.czedik.hermann.tdt.model.JSONHelper;
+import net.czedik.hermann.tdt.model.JoinAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,8 +39,8 @@ public class WebSocketHandler extends AbstractWebSocketHandler {
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) {
-        log.info("Connection {} from: {} (total clients: {})", session.getId(), getHostname(session), clients.size());
         clients.put(session, new Client(session));
+        log.info("Connection {} from: {} (total clients: {})", session.getId(), getHostname(session), clients.size());
     }
 
     @Override
@@ -52,13 +53,16 @@ public class WebSocketHandler extends AbstractWebSocketHandler {
     public void handleTextMessage(WebSocketSession session, TextMessage message) throws JsonProcessingException {
         Client client = Objects.requireNonNull(clients.get(session));
         String payload = message.getPayload();
-        log.info("Received message: {}", payload);
+        log.info("Client {} sent message: {}", client.getId(), payload);
         JsonNode actionMessage = JSONHelper.stringToJsonNode(payload);
         String action = actionMessage.get("action").asText();
         JsonNode content = actionMessage.get("content");
         if ("access".equals(action)) {
             AccessAction accessAction = JSONHelper.objectMapper.treeToValue(content, AccessAction.class);
             gameManager.handleAccessAction(client, accessAction);
+        } else if ("join".equals(action)) {
+            JoinAction joinAction = JSONHelper.objectMapper.treeToValue(content, JoinAction.class);
+            gameManager.handleJoinAction(client, joinAction);
         } else {
             throw new IllegalArgumentException("Unknown action: " + action);
         }
