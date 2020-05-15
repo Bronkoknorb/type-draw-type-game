@@ -9,8 +9,7 @@ public class WebConfiguration implements WebMvcConfigurer {
 
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
-        registry.addViewController("/g/{gameId:\\w+}")
-                .setViewName("forward:/");
+        registry.addViewController("/g/{gameId:\\w+}").setViewName("forward:/");
         registry.addViewController("/new").setViewName("forward:/");
     }
 }

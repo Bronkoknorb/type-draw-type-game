@@ -45,8 +45,9 @@ public class WebSocketHandler extends AbstractWebSocketHandler {
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
-        clients.remove(session);
+        Client client = clients.remove(session);
         log.info("Closed connection {} ({}) with status {} (total clients: {})", session.getId(), getHostname(session), status, clients.size());
+        gameManager.clientDisconnected(client);
     }
 
     @Override
@@ -63,6 +64,8 @@ public class WebSocketHandler extends AbstractWebSocketHandler {
         } else if ("join".equals(action)) {
             JoinAction joinAction = JSONHelper.objectMapper.treeToValue(content, JoinAction.class);
             gameManager.handleJoinAction(client, joinAction);
+        } else if ("start".equals(action)) {
+            gameManager.handleStartAction(client);
         } else {
             throw new IllegalArgumentException("Unknown action: " + action);
         }
@@ -78,7 +81,7 @@ public class WebSocketHandler extends AbstractWebSocketHandler {
         }
     }
 
-    private String getHostname(WebSocketSession session) {
+    private static String getHostname(WebSocketSession session) {
         InetSocketAddress remoteAddress = session.getRemoteAddress();
         return remoteAddress != null ? remoteAddress.getHostName() : null;
     }

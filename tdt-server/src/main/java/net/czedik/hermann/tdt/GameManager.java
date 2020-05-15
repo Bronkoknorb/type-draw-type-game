@@ -29,10 +29,13 @@ public class GameManager {
     // guarded by itself
     private final Map<String, Game> loadedGames = new HashMap<>();
 
+    private final Map<Client, Game> clientToGame = new HashMap<>();
+
     @Value("${storage.dir}")
     private String storageDir;
 
     // TODO check sync
+
     private Path gamesPath;
 
     // TODO make sure to unload games again, to not run out of memory
@@ -53,11 +56,21 @@ public class GameManager {
     }
 
     public void handleAccessAction(Client client, AccessAction accessAction) {
-        getGame(accessAction.gameId).access(client, accessAction);
+        Game game = getGame(accessAction.gameId);
+        // TODO handle game null/unkown
+        boolean added = game.access(client, accessAction);
+        if (added) {
+            clientToGame.put(client, game);
+        }
     }
 
     public void handleJoinAction(Client client, JoinAction joinAction) {
-        getGame(joinAction.gameId).join(client, joinAction);
+        Game game = getGame(joinAction.gameId);
+        // TODO handle game null/unkown
+        boolean added = game.join(client, joinAction);
+        if (added) {
+            clientToGame.put(client, game);
+        }
     }
 
     private Game getGame(String gameId) {
@@ -69,7 +82,6 @@ public class GameManager {
             log.info("Access to unknown game {}", gameId);
             // TODO handle unknown game. might be different for different actions
             return null;
-            // TODO handle null case in callers
         }
         return game;
     }
@@ -102,5 +114,21 @@ public class GameManager {
     private Path getGameDir(String gameId) {
         // split gameId into two parts. this makes sure we do not create too many folders on one level
         return gamesPath.resolve(gameId.substring(0, 2)).resolve(gameId.substring(2, 5));
+    }
+
+    public void clientDisconnected(Client client) {
+        Game game = clientToGame.get(client);
+        if (game != null) {
+            game.clientDisconnected(client);
+        }
+    }
+
+    public void handleStartAction(Client client) {
+        Game game = clientToGame.get(client);
+        if (game == null) {
+            log.warn("Cannot start. Client {} unknown", client.getId());
+            return;
+        }
+        game.start(client);
     }
 }

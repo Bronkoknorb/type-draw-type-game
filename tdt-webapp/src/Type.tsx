@@ -1,7 +1,15 @@
 import React from "react";
 import typeImg from "./img/type.svg";
 
-const Type = ({ first }: { first: boolean }) => {
+const Type = ({
+  first,
+  round,
+  rounds,
+}: {
+  first: boolean;
+  round: number;
+  rounds: number;
+}) => {
   const [text, setText] = React.useState("");
 
   const buttonDisabled = text === "";
@@ -10,7 +18,9 @@ const Type = ({ first }: { first: boolean }) => {
     <Scrollable>
       <div className="Type">
         <div>
-          <div className="small">Round X of Y</div>
+          <div className="small">
+            Round {round} of {rounds}
+          </div>
           <h1>
             <img src={typeImg} alt="Type" />
           </h1>

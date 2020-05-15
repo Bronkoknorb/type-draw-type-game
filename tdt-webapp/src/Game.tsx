@@ -28,31 +28,42 @@ interface PlayerState {
   state: string;
 }
 
-interface WaitForPlayers extends PlayerState {
+interface WaitForPlayersState extends PlayerState {
   state: "waitForPlayers";
   players: PlayerInfo[];
 }
 
-function isWaitForPlayers(
+function isWaitForPlayersState(
   playerState: PlayerState
-): playerState is WaitForPlayers {
+): playerState is WaitForPlayersState {
   return playerState.state === "waitForPlayers";
 }
 
-interface WaitForGameStart extends PlayerState {
+interface WaitForGameStartState extends PlayerState {
   state: "waitForGameStart";
   players: PlayerInfo[];
 }
 
-function isWaitForGameStart(
+function isWaitForGameStartState(
   playerState: PlayerState
-): playerState is WaitForGameStart {
+): playerState is WaitForGameStartState {
   return playerState.state === "waitForGameStart";
+}
+
+interface TypeFirstState extends PlayerState {
+  state: "typeFirst";
+  rounds: number;
+}
+
+function isTypeFirstState(
+  playerState: PlayerState
+): playerState is TypeFirstState {
+  return playerState.state === "typeFirst";
 }
 
 interface Action {
   action: string;
-  content: {
+  content?: {
     [key: string]: string;
   };
 }
@@ -129,19 +140,28 @@ const Game = (props: GameProps) => {
     };
 
     return <Join handleDone={handleJoinDone} />;
-  } else if (isWaitForPlayers(playerState)) {
+  } else if (isWaitForPlayersState(playerState)) {
+    const handleStartGame = () => {
+      send({ action: "start" });
+    };
+
     return (
-      <WaitForPlayersScreen gameId={gameId} players={playerState.players} />
+      <WaitForPlayersScreen
+        gameId={gameId}
+        players={playerState.players}
+        handleStart={handleStartGame}
+      />
     );
-  } else if (isWaitForGameStart(playerState)) {
-    // TODO
+  } else if (isWaitForGameStartState(playerState)) {
     return <WaitForGameStartScreen players={playerState.players} />;
+  } else if (isTypeFirstState(playerState)) {
+    return <Type first={true} round={1} rounds={playerState.rounds} />;
   } else if (false) {
     // TODO
     return <Draw handleDone={handleDrawDone} />;
   } else {
     // TODO
-    return <Type first={false} />;
+    return <Type first={false} round={999999} rounds={99999} />;
   }
 };
 

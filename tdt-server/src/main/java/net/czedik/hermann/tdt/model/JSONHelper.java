@@ -20,7 +20,7 @@ public class JSONHelper {
         }
     }
 
-    public static JsonNode stringToJsonNode (String json) {
+    public static JsonNode stringToJsonNode(String json) {
         try {
             return objectMapper.readTree(json);
         } catch (JsonProcessingException e) {

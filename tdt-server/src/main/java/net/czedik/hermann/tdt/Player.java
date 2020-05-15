@@ -25,4 +25,8 @@ public class Player {
     public void addClient(Client client) {
         clients.add(client);
     }
+
+    public void removeClient(Client client) {
+        clients.remove(client);
+    }
 }

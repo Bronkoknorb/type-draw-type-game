@@ -6,12 +6,13 @@ import { PlayerInfo } from "./model";
 const WaitForPlayersScreen = ({
   gameId,
   players,
+  handleStart,
 }: {
   gameId: string;
   players: PlayerInfo[];
+  handleStart: () => void;
 }) => {
-  // TODO should depend on number of players
-  const buttonDisabled = false;
+  const buttonDisabled = players.length <= 1;
 
   const link = window.location.toString();
 
@@ -36,10 +37,10 @@ const WaitForPlayersScreen = ({
               ? "Waiting for more players"
               : "Let's get this party started!"
           }
+          onClick={handleStart}
         >
           Start Game
         </button>
-        {/*<button className="button button-red">Cancel Game</button>*/}
       </div>
       <div className="small">
         Once the game is started, no more players can join!

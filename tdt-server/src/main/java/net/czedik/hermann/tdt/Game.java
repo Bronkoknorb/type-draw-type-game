@@ -4,10 +4,7 @@ import net.czedik.hermann.tdt.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Game {
@@ -16,16 +13,24 @@ public class Game {
     // TODO synchronization
 
     public final String gameId;
-    public final Map<String, Player> players = new LinkedHashMap<>();
+
+    private final Map<String, Player> players = new LinkedHashMap<>();
+
+    private final Map<Client, Player> clientToPlayer = new HashMap<>();
+
+    private final int round = 0;
 
     private State state = State.WaitingForPlayers;
+
+    private int[][] gameMatrix = null;
 
     public Game(String gameId, Player creator) {
         this.gameId = Objects.requireNonNull(gameId);
         players.put(creator.id, creator);
     }
 
-    public void access(Client client, AccessAction accessAction) {
+    // returns whether the client has been added as a player to the game
+    public synchronized boolean access(Client client, AccessAction accessAction) {
         Player player = players.get(accessAction.playerId);
         if (player == null) {
             if (state == State.WaitingForPlayers) {
@@ -34,14 +39,22 @@ public class Game {
             } else {
                 // TODO
             }
+            return false;
         } else {
             log.info("Game {}: New client {} connected for known player {}", gameId, client.getId(), player.id);
-            player.addClient(client);
+            addClientForPlayer(client, player);
             updateStateForPlayer(player);
+            return true;
         }
     }
 
-    public void join(Client client, JoinAction joinAction) {
+    private void addClientForPlayer(Client client, Player player) {
+        clientToPlayer.put(client, player);
+        player.addClient(client);
+    }
+
+    // returns whether the client has been added as a player to the game
+    public synchronized boolean join(Client client, JoinAction joinAction) {
         if (state == State.WaitingForPlayers) {
             log.info("Game {}: Player {} joining with name '{}' via client {}", gameId, joinAction.playerId, joinAction.name, client.getId());
             Player player = players.get(joinAction.playerId);
@@ -51,11 +64,13 @@ public class Game {
                 player = new Player(joinAction.playerId, joinAction.name, joinAction.avatar, false);
                 players.put(joinAction.playerId, player);
             }
-            player.addClient(client);
+            addClientForPlayer(client, player);
             updateStateForAllPlayers();
+            return true;
         } else {
             log.info("Game {}: Join not possible in state {}", gameId, state);
             // TODO handle this case
+            return false;
         }
     }
 
@@ -76,9 +91,16 @@ public class Game {
         if (state == State.WaitingForPlayers) {
             List<PlayerInfo> playerInfos = players.values().stream().map(p -> new PlayerInfo(p.name, p.avatar)).collect(Collectors.toList());
             if (player.isCreator) {
-                return new WaitForPlayers(playerInfos);
+                return new WaitForPlayersState(playerInfos);
             } else {
-                return new WaitForGameStart(playerInfos);
+                return new WaitForGameStartState(playerInfos);
+            }
+        } else if (state == State.Started) {
+            if (round == 0) {
+                return new TypeFirstState(players.size());
+            } else {
+                // TODO
+                return null;
             }
         } else {
             // TODO
@@ -86,7 +108,55 @@ public class Game {
         }
     }
 
+    public synchronized void clientDisconnected(Client client) {
+        Player player = clientToPlayer.remove(client);
+        if (player != null) {
+            player.removeClient(client);
+            if (state == State.WaitingForPlayers) {
+                if (!player.isCreator && player.clients.isEmpty()) {
+                    log.info("Game {}: Player {} has left the game", gameId, player.id);
+                    players.remove(player.id);
+                    updateStateForAllPlayers();
+                }
+
+                // TODO if the creator leaves (clients.isEmpty()) we should probably drop the game (and inform all other players)
+            } else {
+                // TODO
+            }
+        }
+    }
+
+    public synchronized void start(Client client) {
+        Player player = clientToPlayer.get(client);
+        if (player == null) {
+            log.warn("Game {}: Client {} is not a known player", gameId, client.getId());
+            return;
+        }
+        if (state == State.WaitingForPlayers) {
+            if (player.isCreator) {
+                if (players.size() > 1) {
+                    startGame();
+                } else {
+                    log.warn("Game {}: Cannot start game with less than 2 players", gameId);
+                    updateStateForAllPlayers();
+                }
+            } else {
+                log.warn("Game {}: Non-creator {} cannot start the game (client: {})", gameId, player.id, client.getId());
+            }
+        } else {
+            log.warn("Game {}: Ignoring start in state {}", gameId, state);
+        }
+    }
+
+    private void startGame() {
+        log.info("Game {}: Starting", gameId);
+        state = State.Started;
+        gameMatrix = GameRoundsGenerator.generate(players.size());
+        updateStateForAllPlayers();
+    }
+
     public enum State {
-        WaitingForPlayers
+        WaitingForPlayers,
+        Started
     }
 }
