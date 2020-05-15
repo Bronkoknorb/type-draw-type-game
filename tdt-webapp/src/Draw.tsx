@@ -59,8 +59,8 @@ const Draw = ({ handleDone }: { handleDone: (image: Blob) => void }) => {
     setShowColorPicker(true);
   };
 
-  const handlePickColor = (color: string) => {
-    setColor(color);
+  const handlePickColor = (newColor: string) => {
+    setColor(newColor);
     setShowColorPicker(false);
   };
 
@@ -168,6 +168,24 @@ interface ImageProvider {
   getImageDataURL: () => string;
 }
 
+// gets position in "natural" canvas coordinates for mouse/touch events
+function getPositionInCanvas(
+  canvas: HTMLCanvasElement,
+  event: { clientX: number; clientY: number }
+) {
+  const rect = canvas.getBoundingClientRect();
+
+  const canvasSize = getCanvasSize(canvas);
+
+  const scaleX = canvas.width / canvasSize.width;
+  const scaleY = canvas.height / canvasSize.height;
+
+  const x = (event.clientX - rect.left - canvasSize.x) * scaleX;
+  const y = (event.clientY - rect.top - canvasSize.y) * scaleY;
+
+  return { x, y };
+}
+
 const DrawCanvas = ({
   color,
   brushPixelSize,
@@ -213,27 +231,6 @@ const DrawCanvas = ({
   // initial clear
   React.useEffect(clearCanvas, [canvas]);
 
-  // gets position in "natural" canvas coordinates for mouse/touch events
-  function getPositionInCanvas(
-    canvas: HTMLCanvasElement,
-    event: { clientX: number; clientY: number }
-  ) {
-    const rect = canvas.getBoundingClientRect();
-
-    const canvasSize = getCanvasSize(canvas);
-
-    const scaleX = canvas.width / canvasSize.width;
-    const scaleY = canvas.height / canvasSize.height;
-
-    const x = (event.clientX - rect.left - canvasSize.x) * scaleX;
-    const y = (event.clientY - rect.top - canvasSize.y) * scaleY;
-
-    return {
-      x: x,
-      y: y,
-    };
-  }
-
   let pos: { x: number; y: number } | null = null;
 
   function paint_start(ctx: CanvasRenderingContext2D, x: number, y: number) {
@@ -270,17 +267,17 @@ const DrawCanvas = ({
     if (event.buttons !== 1) {
       return;
     }
-    const canvas = event.currentTarget;
-    const { x, y } = getPositionInCanvas(canvas, event);
-    const ctx = getCanvas2DContext(canvas);
+    const canvasTarget = event.currentTarget;
+    const { x, y } = getPositionInCanvas(canvasTarget, event);
+    const ctx = getCanvas2DContext(canvasTarget);
     paint_start(ctx, x, y);
   };
   const handleMouseMove = (
     event: React.MouseEvent<HTMLCanvasElement, MouseEvent>
   ) => {
-    const canvas = event.currentTarget;
-    const { x, y } = getPositionInCanvas(canvas, event);
-    const ctx = getCanvas2DContext(canvas);
+    const canvasTarget = event.currentTarget;
+    const { x, y } = getPositionInCanvas(canvasTarget, event);
+    const ctx = getCanvas2DContext(canvasTarget);
     if (event.buttons !== 1) {
       paint_end(ctx);
       return;
@@ -290,16 +287,16 @@ const DrawCanvas = ({
   const handleMouseUp = (
     event: React.MouseEvent<HTMLCanvasElement, MouseEvent>
   ) => {
-    const canvas = event.currentTarget;
-    const ctx = getCanvas2DContext(canvas);
+    const canvasTarget = event.currentTarget;
+    const ctx = getCanvas2DContext(canvasTarget);
     paint_end(ctx);
   };
   const handleMouseOut = (
     event: React.MouseEvent<HTMLCanvasElement, MouseEvent>
   ) => {
-    const canvas = event.currentTarget;
-    const ctx = getCanvas2DContext(canvas);
-    const { x, y } = getPositionInCanvas(canvas, event);
+    const canvasTarget = event.currentTarget;
+    const ctx = getCanvas2DContext(canvasTarget);
+    const { x, y } = getPositionInCanvas(canvasTarget, event);
     paint_end(ctx, x, y);
   };
   const handleTouchStart = (event: React.TouchEvent<HTMLCanvasElement>) => {
@@ -307,26 +304,26 @@ const DrawCanvas = ({
     if (event.touches.length !== 1) {
       return;
     }
-    const canvas = event.currentTarget;
-    const { x, y } = getPositionInCanvas(canvas, event.touches[0]);
-    const ctx = getCanvas2DContext(canvas);
+    const canvasTarget = event.currentTarget;
+    const { x, y } = getPositionInCanvas(canvasTarget, event.touches[0]);
+    const ctx = getCanvas2DContext(canvasTarget);
     paint_start(ctx, x, y);
   };
   const handleTouchMove = (event: React.TouchEvent<HTMLCanvasElement>) => {
     event.preventDefault();
-    const canvas = event.currentTarget;
-    const ctx = getCanvas2DContext(canvas);
+    const canvasTarget = event.currentTarget;
+    const ctx = getCanvas2DContext(canvasTarget);
     if (event.touches.length !== 1) {
       paint_end(ctx);
       return;
     }
-    const { x, y } = getPositionInCanvas(canvas, event.touches[0]);
+    const { x, y } = getPositionInCanvas(canvasTarget, event.touches[0]);
     paint_move(ctx, x, y);
   };
   const handleTouchEnd = (event: React.TouchEvent<HTMLCanvasElement>) => {
     event.preventDefault();
-    const canvas = event.currentTarget;
-    const ctx = getCanvas2DContext(canvas);
+    const canvasTarget = event.currentTarget;
+    const ctx = getCanvas2DContext(canvasTarget);
     paint_end(ctx);
   };
 
@@ -371,13 +368,13 @@ const ColorPicker = ({
     <div className="ColorPicker">
       {colors.map((colorRow, index) => (
         <div key={index}>
-          {colorRow.map((color, index) => {
+          {colorRow.map((color, indexInner) => {
             const style = {
               backgroundColor: color,
             };
             return (
               <div
-                key={index}
+                key={indexInner}
                 style={style}
                 onClick={() => handlePickColor(color)}
               ></div>

@@ -58,7 +58,7 @@ interface Action {
 }
 
 const Game = (props: GameProps) => {
-  let gameId = props.gameId!;
+  const gameId = props.gameId!;
 
   const [playerState, setPlayerState] = React.useState({ state: "loading" });
 
@@ -71,7 +71,7 @@ const Game = (props: GameProps) => {
   React.useEffect(() => {
     const wsProtocol =
       window.location.protocol === "https:" ? "wss://" : "ws://";
-    const wsUrl = wsProtocol + window.location.host + "/api/websocket";
+    const wsUrl = `${wsProtocol}${window.location.host}/api/websocket`;
     console.log("Connecting to websocket " + wsUrl);
     const socket = new WebSocket(wsUrl);
     socketRef.current = socket;
@@ -89,8 +89,8 @@ const Game = (props: GameProps) => {
     };
 
     socket.onmessage = (messageEvent) => {
-      const playerState: PlayerState = JSON.parse(messageEvent.data);
-      setPlayerState(playerState);
+      const newPlayerState: PlayerState = JSON.parse(messageEvent.data);
+      setPlayerState(newPlayerState);
     };
 
     // TODO handle close/error with dialog where the player can re-connect with a button
