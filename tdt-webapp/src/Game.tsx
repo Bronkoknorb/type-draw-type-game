@@ -50,15 +50,36 @@ function isWaitForGameStartState(
   return playerState.state === "waitForGameStart";
 }
 
-interface TypeFirstState extends PlayerState {
-  state: "typeFirst";
+interface TypeState extends PlayerState {
+  state: "type";
+  round: number;
   rounds: number;
 }
 
-function isTypeFirstState(
+function isTypeState(playerState: PlayerState): playerState is TypeState {
+  return playerState.state === "type";
+}
+
+interface DrawState extends PlayerState {
+  state: "draw";
+  round: number;
+  rounds: number;
+}
+
+function isDrawState(playerState: PlayerState): playerState is DrawState {
+  return playerState.state === "draw";
+}
+
+interface WaitForRoundFinishState extends PlayerState {
+  state: "waitForRoundFinish";
+  waitingForPlayers: PlayerInfo[];
+  isTypeRound: boolean;
+}
+
+function isWaitForRoundFinishState(
   playerState: PlayerState
-): playerState is TypeFirstState {
-  return playerState.state === "typeFirst";
+): playerState is WaitForRoundFinishState {
+  return playerState.state === "waitForRoundFinish";
 }
 
 interface Action {
@@ -125,7 +146,7 @@ const Game = (props: GameProps) => {
 
   if (playerState.state === "loading") {
     // TODO replace by almost empty screen (only text, no logo), to avoid flicker
-    return <Message text="Loading game..." />;
+    return <Message>Loading game...</Message>;
   } else if (playerState.state === "join") {
     const handleJoinDone = (avatar: string, name: string) => {
       send({
@@ -154,25 +175,45 @@ const Game = (props: GameProps) => {
     );
   } else if (isWaitForGameStartState(playerState)) {
     return <WaitForGameStartScreen players={playerState.players} />;
-  } else if (isTypeFirstState(playerState)) {
-    return <Type first={true} round={1} rounds={playerState.rounds} />;
-  } else if (false) {
-    // TODO
+  } else if (isTypeState(playerState)) {
+    const handleTypeDone = (text: string) => {
+      send({ action: "type", content: { text } });
+    };
+
+    return (
+      <Type
+        first={playerState.round === 1}
+        round={playerState.round}
+        rounds={playerState.rounds}
+        handleDone={handleTypeDone}
+      />
+    );
+  } else if (isDrawState(playerState)) {
     return <Draw handleDone={handleDrawDone} />;
+  } else if (isWaitForRoundFinishState(playerState)) {
+    const roundAction = playerState.isTypeRound ? "typing" : "drawing";
+
+    const waitingForPlayers = playerState.waitingForPlayers
+      .map((p) => p.name)
+      .join(", ");
+
+    return (
+      <Message>
+        {`Waiting for other players to finish ${roundAction}:`}
+        <br />
+        {waitingForPlayers}
+      </Message>
+    );
   } else {
     // TODO
-    return <Type first={false} round={999999} rounds={99999} />;
+    return <Message>Unknown game</Message>;
   }
 };
 
 export default Game;
 
-const Message = ({ text }: { text: string }) => {
-  return (
-    <BigLogoScreen>
-      <div>{text}</div>
-    </BigLogoScreen>
-  );
+const Message = ({ children }: { children: React.ReactNode }) => {
+  return <BigLogoScreen>{children}</BigLogoScreen>;
 };
 
 const Join = ({

@@ -3,6 +3,7 @@ package net.czedik.hermann.tdt;
 import net.czedik.hermann.tdt.model.AccessAction;
 import net.czedik.hermann.tdt.model.CreateGameRequest;
 import net.czedik.hermann.tdt.model.JoinAction;
+import net.czedik.hermann.tdt.model.TypeAction;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -126,9 +127,18 @@ public class GameManager {
     public void handleStartAction(Client client) {
         Game game = clientToGame.get(client);
         if (game == null) {
-            log.warn("Cannot start. Client {} unknown", client.getId());
+            log.warn("Cannot handle start. Client {} unknown", client.getId());
             return;
         }
         game.start(client);
+    }
+
+    public void handleTypeAction(Client client, TypeAction typeAction) {
+        Game game = clientToGame.get(client);
+        if (game == null) {
+            log.warn("Cannot handle type. Client {} unknown", client.getId());
+            return;
+        }
+        game.type(client, typeAction);
     }
 }

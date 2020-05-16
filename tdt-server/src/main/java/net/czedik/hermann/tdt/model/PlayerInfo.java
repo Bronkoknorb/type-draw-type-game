@@ -7,9 +7,11 @@ public class PlayerInfo {
 
     public final String name;
     public final String avatar;
+    public final boolean isCreator;
 
-    public PlayerInfo(String name, String avatar) {
+    public PlayerInfo(String name, String avatar, boolean isCreator) {
         this.name = Objects.requireNonNull(name);
         this.avatar = Objects.requireNonNull(avatar);
+        this.isCreator = isCreator;
     }
 }

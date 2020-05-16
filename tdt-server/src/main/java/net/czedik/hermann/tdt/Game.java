@@ -1,6 +1,7 @@
 package net.czedik.hermann.tdt;
 
 import net.czedik.hermann.tdt.model.*;
+import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,11 +19,16 @@ public class Game {
 
     private final Map<Client, Player> clientToPlayer = new HashMap<>();
 
-    private final int round = 0;
+    /**
+     * Current round number (zero based)
+     */
+    private int round = 0;
 
     private State state = State.WaitingForPlayers;
 
     private int[][] gameMatrix = null;
+
+    private Story[] stories = null;
 
     public Game(String gameId, Player creator) {
         this.gameId = Objects.requireNonNull(gameId);
@@ -89,23 +95,37 @@ public class Game {
 
     private PlayerState getPlayerState(Player player) {
         if (state == State.WaitingForPlayers) {
-            List<PlayerInfo> playerInfos = players.values().stream().map(p -> new PlayerInfo(p.name, p.avatar)).collect(Collectors.toList());
+            List<PlayerInfo> playerInfos = mapPlayersToPlayerInfos(players.values());
             if (player.isCreator) {
                 return new WaitForPlayersState(playerInfos);
             } else {
                 return new WaitForGameStartState(playerInfos);
             }
         } else if (state == State.Started) {
-            if (round == 0) {
-                return new TypeFirstState(players.size());
+            if (!hasPlayerFinishedCurrentRound(player)) {
+                if (isTypeRound()) {
+                    // TODO need to add artwork (if it is not the first round)
+                    return new TypeState(round + 1, gameMatrix.length);
+                } else {
+                    String text = getCurrentStoryForPlayer(player).elements[round - 1].content;
+                    return new DrawState(round + 1, gameMatrix.length, text);
+                }
             } else {
-                // TODO
-                return null;
+                List<Player> playersNotFinished = players.values().stream().filter(p -> !hasPlayerFinishedCurrentRound(p)).collect(Collectors.toList());
+                return new WaitForRoundFinishState(mapPlayersToPlayerInfos(playersNotFinished), isTypeRound());
             }
         } else {
             // TODO
             throw new IllegalStateException();
         }
+    }
+
+    private boolean hasPlayerFinishedCurrentRound(Player player) {
+        return getCurrentStoryForPlayer(player).elements[round] != null;
+    }
+
+    private static List<PlayerInfo> mapPlayersToPlayerInfos(Collection<Player> players) {
+        return players.stream().map(p -> new PlayerInfo(p.name, p.avatar, p.isCreator)).collect(Collectors.toList());
     }
 
     public synchronized void clientDisconnected(Client client) {
@@ -151,8 +171,58 @@ public class Game {
     private void startGame() {
         log.info("Game {}: Starting", gameId);
         state = State.Started;
+
         gameMatrix = GameRoundsGenerator.generate(players.size());
+
+        stories = new Story[players.size()];
+        Arrays.setAll(stories, i -> new Story(players.size()));
+
         updateStateForAllPlayers();
+    }
+
+    public synchronized void type(Client client, TypeAction typeAction) {
+        Player player = clientToPlayer.get(client);
+        if (player == null) {
+            log.warn("Game {}: Client {} is not a known player", gameId, client.getId());
+            return;
+        }
+        if (Strings.isEmpty(typeAction.text)) {
+            throw new IllegalArgumentException("Empty text");
+        }
+        if (state == State.Started) {
+            if (isTypeRound()) {
+                Story story = getCurrentStoryForPlayer(player);
+                story.elements[round] = StoryElement.createTextElement(typeAction.text);
+
+                if (isCurrentRoundFinished()) {
+                    round = round + 1;
+                    // TODO handle case that we are at the end of the game
+                }
+
+                updateStateForAllPlayers();
+            } else {
+                log.warn("Game {}: Ignoring type in draw round {}", gameId, round);
+            }
+        } else {
+            log.warn("Game {}: Ignoring type in state {}", gameId, state);
+        }
+    }
+
+    private Story getCurrentStoryForPlayer(Player player) {
+        // TODO need nicer method to find index of player
+        return stories[gameMatrix[round][new ArrayList<>(players.values()).indexOf(player)]];
+    }
+
+    private boolean isCurrentRoundFinished() {
+        return Arrays.stream(stories).allMatch(s -> s.elements[round] != null);
+    }
+
+    private boolean isTypeRound() {
+        return isTypeRound(round);
+    }
+
+    private static boolean isTypeRound(int roundNo) {
+        return roundNo % 2 == 0;
     }
 
     public enum State {

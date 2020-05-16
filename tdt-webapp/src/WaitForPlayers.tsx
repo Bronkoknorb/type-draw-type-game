@@ -55,9 +55,11 @@ export const WaitForGameStartScreen = ({
 }: {
   players: PlayerInfo[];
 }) => {
+  const creator = players.find((p) => p.isCreator)!;
+
   return (
     <BeforeGameStartScreen players={players}>
-      <div>Waiting for the creator to start game.</div>
+      <div>Waiting for {creator.name} to start game.</div>
     </BeforeGameStartScreen>
   );
 };

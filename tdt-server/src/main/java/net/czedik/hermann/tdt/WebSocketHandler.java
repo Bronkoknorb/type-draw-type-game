@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import net.czedik.hermann.tdt.model.AccessAction;
 import net.czedik.hermann.tdt.model.JSONHelper;
 import net.czedik.hermann.tdt.model.JoinAction;
+import net.czedik.hermann.tdt.model.TypeAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,6 +67,9 @@ public class WebSocketHandler extends AbstractWebSocketHandler {
             gameManager.handleJoinAction(client, joinAction);
         } else if ("start".equals(action)) {
             gameManager.handleStartAction(client);
+        } else if ("type".equals(action)) {
+            TypeAction typeAction = JSONHelper.objectMapper.treeToValue(content, TypeAction.class);
+            gameManager.handleTypeAction(client, typeAction);
         } else {
             throw new IllegalArgumentException("Unknown action: " + action);
         }

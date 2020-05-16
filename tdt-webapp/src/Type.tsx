@@ -5,10 +5,12 @@ const Type = ({
   first,
   round,
   rounds,
+  handleDone,
 }: {
   first: boolean;
   round: number;
   rounds: number;
+  handleDone: (text: string) => void;
 }) => {
   const [text, setText] = React.useState("");
 
@@ -36,7 +38,7 @@ const Type = ({
         />
         {first && (
           <div className="small">
-            Note: The next player will have to draw your text.
+            The next player will have to draw your text.
           </div>
         )}
         {!first && (
@@ -45,7 +47,11 @@ const Type = ({
             <img src="/api/image" className="Drawing" alt="Drawing" />
           </div>
         )}
-        <button className="button" disabled={buttonDisabled}>
+        <button
+          className="button"
+          disabled={buttonDisabled}
+          onClick={() => handleDone(text)}
+        >
           Done
         </button>
       </div>
