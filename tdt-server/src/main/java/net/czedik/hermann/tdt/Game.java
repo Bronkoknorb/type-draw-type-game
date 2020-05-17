@@ -107,14 +107,21 @@ public class Game {
     }
 
     private PlayerState getPlayerState(Player player) {
-        if (state == State.WaitingForPlayers) {
-            return getWaitingForPlayersState(player);
-        } else if (state == State.Started) {
-            return getStartedState(player);
-        } else {
-            // TODO
-            throw new IllegalStateException();
+        switch (state) {
+            case WaitingForPlayers:
+                return getWaitingForPlayersState(player);
+            case Started:
+                return getStartedState(player);
+            case Finished:
+                return getFinishedState(player);
+            default:
+                throw new IllegalStateException("Unknown state: " + state);
         }
+    }
+
+    private PlayerState getFinishedState(Player player) {
+        // TODO
+        throw new UnsupportedOperationException("TODO");
     }
 
     private PlayerState getStartedState(Player player) {
@@ -344,12 +351,20 @@ public class Game {
     private void checkAndHandleRoundFinished() {
         if (isCurrentRoundFinished()) {
             round = round + 1;
-            // TODO handle case that we are at the end of the game
+
+            if (isGameFinished()) {
+                state = State.Finished;
+            }
         }
+    }
+
+    private boolean isGameFinished() {
+        return round >= gameMatrix.length;
     }
 
     public enum State {
         WaitingForPlayers,
-        Started
+        Started,
+        Finished
     }
 }
