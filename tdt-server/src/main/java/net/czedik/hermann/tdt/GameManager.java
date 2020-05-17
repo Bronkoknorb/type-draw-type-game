@@ -118,7 +118,7 @@ public class GameManager {
     }
 
     public void clientDisconnected(Client client) {
-        Game game = clientToGame.get(client);
+        Game game = clientToGame.remove(client);
         if (game != null) {
             game.clientDisconnected(client);
         }

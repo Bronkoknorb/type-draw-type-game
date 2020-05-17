@@ -62,6 +62,8 @@ function isTypeState(playerState: PlayerState): playerState is TypeState {
 
 interface DrawState extends PlayerState {
   state: "draw";
+  text: string;
+  textWriter: PlayerInfo;
   round: number;
   rounds: number;
 }
@@ -189,7 +191,15 @@ const Game = (props: GameProps) => {
       />
     );
   } else if (isDrawState(playerState)) {
-    return <Draw handleDone={handleDrawDone} />;
+    return (
+      <Draw
+        text={playerState.text}
+        textWriter={playerState.textWriter}
+        round={playerState.round}
+        rounds={playerState.rounds}
+        handleDone={handleDrawDone}
+      />
+    );
   } else if (isWaitForRoundFinishState(playerState)) {
     const roundAction = playerState.isTypeRound ? "typing" : "drawing";
 

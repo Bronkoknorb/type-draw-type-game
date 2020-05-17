@@ -1,9 +1,12 @@
 import React from "react";
+import styled from "styled-components/macro";
 import { useWindowSize, getCanvasSize } from "./helpers";
 import Dialog from "./Dialog";
 import "./Draw.css";
 import colorwheelImg from "./img/colorwheel.svg";
 import drawImg from "./img/draw.svg";
+import { PlayerInfo } from "./model";
+import Scrollable from "./Scrollable";
 
 interface Brush {
   pixelSize: number;
@@ -18,7 +21,28 @@ function getBrushes(scale: number): Brush[] {
   }));
 }
 
-const Draw = ({ handleDone }: { handleDone: (image: Blob) => void }) => {
+const Text = styled.div`
+  border-radius: 2vmin;
+  padding: 1vmin 2vmin;
+  background-color: #def5ff;
+  width: 90%;
+  box-shadow: 0 0 1vmin #def5ff;
+  margin: 2vmin 0;
+`;
+
+const Draw = ({
+  text,
+  textWriter,
+  round,
+  rounds,
+  handleDone,
+}: {
+  text: string;
+  textWriter: PlayerInfo;
+  round: number;
+  rounds: number;
+  handleDone: (image: Blob) => void;
+}) => {
   const [showHelpDialog, setShowHelpDialog] = React.useState(true);
 
   const [color, setColor] = React.useState("#000");
@@ -88,15 +112,26 @@ const Draw = ({ handleDone }: { handleDone: (image: Blob) => void }) => {
   return (
     <div className="Draw">
       <Dialog show={showHelpDialog}>
-        <div className="DrawHelp">
-          <div className="small">Round X of Y</div>
-          <h1>
-            <img src={drawImg} alt="Draw" />
-          </h1>
-          <button className="button" onClick={() => setShowHelpDialog(false)}>
-            Okay, start drawing
-          </button>
-        </div>
+        <Scrollable>
+          <div className="DrawHelp">
+            <div>
+              <div className="small">
+                Round {round} of {rounds}
+              </div>
+              <h1>
+                <img src={drawImg} alt="Draw" />
+              </h1>
+              {
+                // TODO add avatar
+              }
+              <div>... this text by {textWriter.name}:</div>
+            </div>
+            <Text>{text}</Text>
+            <button className="button" onClick={() => setShowHelpDialog(false)}>
+              Okay, start drawing
+            </button>
+          </div>
+        </Scrollable>
       </Dialog>
       <div className="Draw-tools">
         <div

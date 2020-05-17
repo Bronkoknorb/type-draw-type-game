@@ -19,10 +19,13 @@ public class DrawState implements PlayerState {
      */
     public final String text;
 
-    public DrawState(int round, int rounds, String text) {
+    public final PlayerInfo textWriter;
+
+    public DrawState(int round, int rounds, String text, PlayerInfo textWriter) {
         this.round = round;
         this.rounds = rounds;
         this.text = Objects.requireNonNull(text);
+        this.textWriter = Objects.requireNonNull(textWriter);
     }
 
     @Override

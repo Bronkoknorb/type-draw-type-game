@@ -1,6 +1,7 @@
 package net.czedik.hermann.tdt;
 
 import net.czedik.hermann.tdt.model.*;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -107,11 +108,13 @@ public class Game {
                     // TODO need to add artwork (if it is not the first round)
                     return new TypeState(round + 1, gameMatrix.length);
                 } else {
-                    String text = getCurrentStoryForPlayer(player).elements[round - 1].content;
-                    return new DrawState(round + 1, gameMatrix.length, text);
+                    int storyIndex = getCurrentStoryIndexForPlayer(player);
+                    String text = getStoryByIndex(storyIndex).elements[round - 1].content;
+                    Player previousPlayer = getPreviousPlayerForStory(storyIndex);
+                    return new DrawState(round + 1, gameMatrix.length, text, mapPlayerToPlayerInfo(previousPlayer));
                 }
             } else {
-                List<Player> playersNotFinished = players.values().stream().filter(p -> !hasPlayerFinishedCurrentRound(p)).collect(Collectors.toList());
+                List<Player> playersNotFinished = getNotFinishedPlayers();
                 return new WaitForRoundFinishState(mapPlayersToPlayerInfos(playersNotFinished), isTypeRound());
             }
         } else {
@@ -120,12 +123,30 @@ public class Game {
         }
     }
 
+    private Player getPreviousPlayerForStory(int storyIndex) {
+        int previousPlayerIndexForStory = ArrayUtils.indexOf(gameMatrix[round - 1], storyIndex);
+        // TODO find nicer method to access player by player index
+        return new ArrayList<>(players.values()).get(previousPlayerIndexForStory);
+    }
+
+    private Story getStoryByIndex(int storyIndex) {
+        return stories[storyIndex];
+    }
+
+    private List<Player> getNotFinishedPlayers() {
+        return players.values().stream().filter(p -> !hasPlayerFinishedCurrentRound(p)).collect(Collectors.toList());
+    }
+
     private boolean hasPlayerFinishedCurrentRound(Player player) {
         return getCurrentStoryForPlayer(player).elements[round] != null;
     }
 
     private static List<PlayerInfo> mapPlayersToPlayerInfos(Collection<Player> players) {
-        return players.stream().map(p -> new PlayerInfo(p.name, p.avatar, p.isCreator)).collect(Collectors.toList());
+        return players.stream().map(Game::mapPlayerToPlayerInfo).collect(Collectors.toList());
+    }
+
+    private static PlayerInfo mapPlayerToPlayerInfo(Player p) {
+        return new PlayerInfo(p.name, p.avatar, p.isCreator);
     }
 
     public synchronized void clientDisconnected(Client client) {
@@ -209,8 +230,12 @@ public class Game {
     }
 
     private Story getCurrentStoryForPlayer(Player player) {
+        return getStoryByIndex(getCurrentStoryIndexForPlayer(player));
+    }
+
+    private int getCurrentStoryIndexForPlayer(Player player) {
         // TODO need nicer method to find index of player
-        return stories[gameMatrix[round][new ArrayList<>(players.values()).indexOf(player)]];
+        return gameMatrix[round][new ArrayList<>(players.values()).indexOf(player)];
     }
 
     private boolean isCurrentRoundFinished() {

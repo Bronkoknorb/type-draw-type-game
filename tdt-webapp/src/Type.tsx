@@ -1,5 +1,6 @@
 import React from "react";
 import typeImg from "./img/type.svg";
+import Scrollable from "./Scrollable";
 
 const Type = ({
   first,
@@ -60,7 +61,3 @@ const Type = ({
 };
 
 export default Type;
-
-const Scrollable = ({ children }: { children: React.ReactNode }) => {
-  return <div className="Scrollable">{children}</div>;
-};

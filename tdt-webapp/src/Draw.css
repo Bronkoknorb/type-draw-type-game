@@ -22,6 +22,7 @@
 }
 
 .Draw-tools .tool-button-done {
+  margin: 2vmin;
   margin-top: 5vmin;
 }
 
@@ -126,7 +127,16 @@
   cursor: pointer;
 }
 
+.DrawHelp {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+  overflow: auto;
+}
+
 .DrawHelp h1 img {
-  width: 35vmin;
+  height: 14vmin;
   margin-top: 2.3vmin;
 }
