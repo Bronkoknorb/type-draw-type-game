@@ -54,6 +54,8 @@ interface TypeState extends PlayerState {
   state: "type";
   round: number;
   rounds: number;
+  drawingSrc: string | null;
+  artist: PlayerInfo | null;
 }
 
 function isTypeState(playerState: PlayerState): playerState is TypeState {
@@ -142,7 +144,6 @@ const Game = (props: GameProps) => {
   }, [gameId]);
 
   const handleDrawDone = React.useCallback((image: Blob) => {
-    console.log("Sending drawn image");
     socketRef.current!.send(image);
   }, []);
 
@@ -184,9 +185,10 @@ const Game = (props: GameProps) => {
 
     return (
       <Type
-        first={playerState.round === 1}
         round={playerState.round}
         rounds={playerState.rounds}
+        drawingSrc={playerState.drawingSrc}
+        artist={playerState.artist}
         handleDone={handleTypeDone}
       />
     );

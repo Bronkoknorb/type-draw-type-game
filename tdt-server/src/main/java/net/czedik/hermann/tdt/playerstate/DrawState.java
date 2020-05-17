@@ -24,6 +24,8 @@ public class DrawState implements PlayerState {
     public final PlayerInfo textWriter;
 
     public DrawState(int round, int rounds, String text, PlayerInfo textWriter) {
+        if (round < 1)
+            throw new IllegalArgumentException("Round must be positive number");
         this.round = round;
         this.rounds = rounds;
         this.text = Objects.requireNonNull(text);

@@ -9,14 +9,14 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 @RestController
 @RequestMapping("/api")
 public class Controller {
-
     private static final Logger log = LoggerFactory.getLogger(Controller.class);
 
     private final GameManager gameManager;
@@ -37,13 +37,12 @@ public class Controller {
         return response;
     }
 
-    @GetMapping(path = "/image")
-    public void getImage(HttpServletResponse response) throws IOException {
+    @GetMapping(path = "/image/{gameId:\\w+}/{imageId:[\\w\\-]+}.png")
+    public void getImage(HttpServletResponse response, @PathVariable String gameId, @PathVariable String imageId) throws IOException {
         response.setContentType(MediaType.IMAGE_PNG_VALUE);
-        // TODO path
-        try (InputStream in = new FileInputStream("/home/hermann/test.png")) {
+        Path imagePath = gameManager.getGameDir(gameId).resolve(imageId + ".png");
+        try (InputStream in = Files.newInputStream(imagePath)) {
             StreamUtils.copy(in, response.getOutputStream());
         }
     }
-
 }

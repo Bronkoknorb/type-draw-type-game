@@ -14,10 +14,8 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.AbstractWebSocketHandler;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.nio.channels.FileChannel;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
@@ -76,12 +74,11 @@ public class WebSocketHandler extends AbstractWebSocketHandler {
 
     @Override
     protected void handleBinaryMessage(WebSocketSession session, BinaryMessage message) throws IOException {
+        Client client = Objects.requireNonNull(clients.get(session));
+        log.info("Received image (size: {}KB) from client {}", message.getPayloadLength() / 1000, client.getId());
+
         // TODO test what happens if we get IOException here
-        log.info("Received image of size: {}kB", message.getPayloadLength() / 1024);
-        // TODO make path configurable, write for the right game
-        try (FileChannel fc = new FileOutputStream("/home/hermann/test.png").getChannel()) {
-            fc.write(message.getPayload());
-        }
+        gameManager.handleReceiveDrawing(client, message.getPayload());
     }
 
     private static String getHostname(WebSocketSession session) {

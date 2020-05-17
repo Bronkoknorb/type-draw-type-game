@@ -9,6 +9,12 @@ import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.channels.ByteChannel;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -18,6 +24,8 @@ public class Game {
     // TODO synchronization
 
     public final String gameId;
+
+    private final Path gameDir;
 
     private final Map<String, Player> players = new LinkedHashMap<>();
 
@@ -34,8 +42,9 @@ public class Game {
 
     private Story[] stories = null;
 
-    public Game(String gameId, Player creator) {
+    public Game(String gameId, Path gameDir, Player creator) {
         this.gameId = Objects.requireNonNull(gameId);
+        this.gameDir = gameDir;
         players.put(creator.id, creator);
     }
 
@@ -99,31 +108,69 @@ public class Game {
 
     private PlayerState getPlayerState(Player player) {
         if (state == State.WaitingForPlayers) {
-            List<PlayerInfo> playerInfos = mapPlayersToPlayerInfos(players.values());
-            if (player.isCreator) {
-                return new WaitForPlayersState(playerInfos);
-            } else {
-                return new WaitForGameStartState(playerInfos);
-            }
+            return getWaitingForPlayersState(player);
         } else if (state == State.Started) {
-            if (!hasPlayerFinishedCurrentRound(player)) {
-                if (isTypeRound()) {
-                    // TODO need to add artwork (if it is not the first round)
-                    return new TypeState(round + 1, gameMatrix.length);
-                } else {
-                    int storyIndex = getCurrentStoryIndexForPlayer(player);
-                    String text = getStoryByIndex(storyIndex).elements[round - 1].content;
-                    Player previousPlayer = getPreviousPlayerForStory(storyIndex);
-                    return new DrawState(round + 1, gameMatrix.length, text, mapPlayerToPlayerInfo(previousPlayer));
-                }
-            } else {
-                List<Player> playersNotFinished = getNotFinishedPlayers();
-                return new WaitForRoundFinishState(mapPlayersToPlayerInfos(playersNotFinished), isTypeRound());
-            }
+            return getStartedState(player);
         } else {
             // TODO
             throw new IllegalStateException();
         }
+    }
+
+    private PlayerState getStartedState(Player player) {
+        if (state != State.Started)
+            throw new IllegalStateException("Only valid to call this method in started state");
+
+        if (!hasPlayerFinishedCurrentRound(player)) {
+            if (isTypeRound()) {
+                return getTypeState(player);
+            } else { // draw round
+                return getDrawState(player);
+            }
+        } else {
+            return getWaitForRoundFinishedState();
+        }
+    }
+
+    private PlayerState getWaitForRoundFinishedState() {
+        List<Player> playersNotFinished = getNotFinishedPlayers();
+        return new WaitForRoundFinishState(mapPlayersToPlayerInfos(playersNotFinished), isTypeRound());
+    }
+
+    private PlayerState getDrawState(Player player) {
+        int storyIndex = getCurrentStoryIndexForPlayer(player);
+        String text = getStoryByIndex(storyIndex).elements[round - 1].content;
+        Player previousPlayer = getPreviousPlayerForStory(storyIndex);
+        return new DrawState(round + 1, gameMatrix.length, text, mapPlayerToPlayerInfo(previousPlayer));
+    }
+
+    private PlayerState getTypeState(Player player) {
+        int roundOneBased = round + 1;
+        int rounds = gameMatrix.length;
+        if (round == 0) {
+            return new TypeState(roundOneBased, rounds);
+        } else {
+            int storyIndex = getCurrentStoryIndexForPlayer(player);
+            String imageFilename = getStoryByIndex(storyIndex).elements[round - 1].content;
+            Player previousPlayer = getPreviousPlayerForStory(storyIndex);
+            return new TypeState(roundOneBased, rounds, getDrawingSrc(imageFilename), mapPlayerToPlayerInfo(previousPlayer));
+        }
+    }
+
+    private PlayerState getWaitingForPlayersState(Player player) {
+        if (state != State.WaitingForPlayers)
+            throw new IllegalStateException("Only valid to call this method in started state");
+
+        List<PlayerInfo> playerInfos = mapPlayersToPlayerInfos(players.values());
+        if (player.isCreator) {
+            return new WaitForPlayersState(playerInfos);
+        } else {
+            return new WaitForGameStartState(playerInfos);
+        }
+    }
+
+    private String getDrawingSrc(String imageFilename) {
+        return "/api/image/" + gameId + "/" + imageFilename;
     }
 
     private Player getPreviousPlayerForStory(int storyIndex) {
@@ -154,19 +201,22 @@ public class Game {
 
     public synchronized void clientDisconnected(Client client) {
         Player player = clientToPlayer.remove(client);
-        if (player != null) {
-            player.removeClient(client);
-            if (state == State.WaitingForPlayers) {
-                if (!player.isCreator && player.clients.isEmpty()) {
-                    log.info("Game {}: Player {} has left the game", gameId, player.id);
-                    players.remove(player.id);
-                    updateStateForAllPlayers();
-                }
+        if (player == null) {
+            return;
+        }
 
-                // TODO if the creator leaves (clients.isEmpty()) we should probably drop the game (and inform all other players)
-            } else {
-                // TODO
+        player.removeClient(client);
+
+        if (state == State.WaitingForPlayers) {
+            if (!player.isCreator && player.clients.isEmpty()) {
+                log.info("Game {}: Player {} has left the game", gameId, player.id);
+                players.remove(player.id);
+                updateStateForAllPlayers();
             }
+
+            // TODO if the creator leaves (clients.isEmpty()) we should probably drop the game (and inform all other players)
+        } else {
+            // TODO
         }
     }
 
@@ -176,19 +226,20 @@ public class Game {
             log.warn("Game {}: Client {} is not a known player", gameId, client.getId());
             return;
         }
-        if (state == State.WaitingForPlayers) {
-            if (player.isCreator) {
-                if (players.size() > 1) {
-                    startGame();
-                } else {
-                    log.warn("Game {}: Cannot start game with less than 2 players", gameId);
-                    updateStateForAllPlayers();
-                }
-            } else {
-                log.warn("Game {}: Non-creator {} cannot start the game (client: {})", gameId, player.id, client.getId());
-            }
-        } else {
+        if (state != State.WaitingForPlayers) {
             log.warn("Game {}: Ignoring start in state {}", gameId, state);
+            return;
+        }
+        if (!player.isCreator) {
+            log.warn("Game {}: Non-creator {} cannot start the game (client: {})", gameId, player.id, client.getId());
+            return;
+        }
+
+        if (players.size() > 1) {
+            startGame();
+        } else {
+            log.warn("Game {}: Cannot start game with less than 2 players", gameId);
+            updateStateForAllPlayers();
         }
     }
 
@@ -210,26 +261,24 @@ public class Game {
             log.warn("Game {}: Client {} is not a known player", gameId, client.getId());
             return;
         }
+        if (state != State.Started) {
+            log.warn("Game {}: Ignoring type in state {}", gameId, state);
+            return;
+        }
+        if (!isTypeRound()) {
+            log.warn("Game {}: Ignoring type in draw round {}", gameId, round);
+            return;
+        }
         if (Strings.isEmpty(typeAction.text)) {
             throw new IllegalArgumentException("Empty text");
         }
-        if (state == State.Started) {
-            if (isTypeRound()) {
-                Story story = getCurrentStoryForPlayer(player);
-                story.elements[round] = StoryElement.createTextElement(typeAction.text);
 
-                if (isCurrentRoundFinished()) {
-                    round = round + 1;
-                    // TODO handle case that we are at the end of the game
-                }
+        Story story = getCurrentStoryForPlayer(player);
+        story.elements[round] = StoryElement.createTextElement(typeAction.text);
 
-                updateStateForAllPlayers();
-            } else {
-                log.warn("Game {}: Ignoring type in draw round {}", gameId, round);
-            }
-        } else {
-            log.warn("Game {}: Ignoring type in state {}", gameId, state);
-        }
+        checkAndHandleRoundFinished();
+
+        updateStateForAllPlayers();
     }
 
     private Story getCurrentStoryForPlayer(Player player) {
@@ -249,8 +298,54 @@ public class Game {
         return isTypeRound(round);
     }
 
+    private boolean isDrawRound() {
+        return !isTypeRound();
+    }
+
     private static boolean isTypeRound(int roundNo) {
         return roundNo % 2 == 0;
+    }
+
+    public synchronized void draw(Client client, ByteBuffer image) throws IOException {
+        Player player = clientToPlayer.get(client);
+        if (player == null) {
+            log.warn("Game {}: Client {} is not a known player", gameId, client.getId());
+            return;
+        }
+        if (state != State.Started) {
+            log.warn("Game {}: Ignoring draw in state {}", gameId, state);
+            return;
+        }
+        if (!isDrawRound()) {
+            log.warn("Game {}: Ignoring draw in type round {}", gameId, round);
+            return;
+        }
+
+        Story story = getCurrentStoryForPlayer(player);
+
+        // TODO check that the player did not already send an image? (make consistent with type(.))
+
+        String imageName = UUID.randomUUID().toString() + ".png";
+        Path imagePath = gameDir.resolve(imageName);
+
+        // TODO would be better to do the actual writing outside of the synchronized lock (but has to be done carefully)
+        try (ByteChannel channel =
+                     Files.newByteChannel(imagePath, EnumSet.of(StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE))) {
+            channel.write(image);
+        }
+
+        story.elements[round] = StoryElement.createImageElement(imageName);
+
+        checkAndHandleRoundFinished();
+
+        updateStateForAllPlayers();
+    }
+
+    private void checkAndHandleRoundFinished() {
+        if (isCurrentRoundFinished()) {
+            round = round + 1;
+            // TODO handle case that we are at the end of the game
+        }
     }
 
     public enum State {

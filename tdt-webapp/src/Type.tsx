@@ -1,21 +1,26 @@
 import React from "react";
 import typeImg from "./img/type.svg";
 import Scrollable from "./Scrollable";
+import { PlayerInfo } from "./model";
 
 const Type = ({
-  first,
   round,
   rounds,
+  drawingSrc,
+  artist,
   handleDone,
 }: {
-  first: boolean;
   round: number;
   rounds: number;
+  drawingSrc: string | null;
+  artist: PlayerInfo | null;
   handleDone: (text: string) => void;
 }) => {
   const [text, setText] = React.useState("");
 
   const buttonDisabled = text === "";
+
+  const first = drawingSrc === null;
 
   return (
     <Scrollable>
@@ -44,8 +49,11 @@ const Type = ({
         )}
         {!first && (
           <div>
-            Art by Player:
-            <img src="/api/image" className="Drawing" alt="Drawing" />
+            {
+              // TODO add Avatar?
+            }
+            Art by {artist!.name}:
+            <img src={drawingSrc!} className="Drawing" alt="Drawing" />
           </div>
         )}
         <button

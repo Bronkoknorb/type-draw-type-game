@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -23,6 +24,7 @@ public class GameManager {
     private static final Logger log = LoggerFactory.getLogger(GameManager.class);
 
     private static final String CHARACTERS_WITHOUT_AMBIGUOUS = "23456789abcdefghijkmnpqrstuvwxyz";
+    private static final int GAME_ID_LENGTH = 5;
 
     private final Lock idGenerationLock = new ReentrantLock();
 
@@ -48,7 +50,9 @@ public class GameManager {
     }
 
     public Game newGame(CreateGameRequest createGameRequest) {
-        Game game = new Game(generateAndReserveNewGameId(), new Player(createGameRequest.playerId, createGameRequest.playerName, createGameRequest.playerAvatar, true));
+        String gameId = generateAndReserveNewGameId();
+        Path gameDir = getGameDir(gameId);
+        Game game = new Game(gameId, gameDir, new Player(createGameRequest.playerId, createGameRequest.playerName, createGameRequest.playerAvatar, true));
         synchronized (loadedGames) {
             loadedGames.put(game.gameId, game);
         }
@@ -93,7 +97,7 @@ public class GameManager {
             Path gameDir;
             boolean retry = false;
             do {
-                gameId = RandomStringUtils.random(5, CHARACTERS_WITHOUT_AMBIGUOUS);
+                gameId = RandomStringUtils.random(GAME_ID_LENGTH, CHARACTERS_WITHOUT_AMBIGUOUS);
                 gameDir = getGameDir(gameId);
                 retry = Files.exists(gameDir);
                 if (retry) {
@@ -111,9 +115,11 @@ public class GameManager {
         }
     }
 
-    private Path getGameDir(String gameId) {
+    public Path getGameDir(String gameId) {
+        if (gameId.length() != GAME_ID_LENGTH)
+            throw new IllegalArgumentException("Wrong gameId length");
         // split gameId into two parts. this makes sure we do not create too many folders on one level
-        return gamesPath.resolve(gameId.substring(0, 2)).resolve(gameId.substring(2, 5));
+        return gamesPath.resolve(gameId.substring(0, 2)).resolve(gameId.substring(2, GAME_ID_LENGTH));
     }
 
     public void clientDisconnected(Client client) {
@@ -139,5 +145,14 @@ public class GameManager {
             return;
         }
         game.type(client, typeAction);
+    }
+
+    public void handleReceiveDrawing(Client client, ByteBuffer image) throws IOException {
+        Game game = clientToGame.get(client);
+        if (game == null) {
+            log.warn("Cannot handle receive drawing. Client {} unknown", client.getId());
+            return;
+        }
+        game.draw(client, image);
     }
 }
