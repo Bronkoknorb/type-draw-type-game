@@ -162,8 +162,7 @@ const Game = (props: GameProps) => {
 
   const getComponentForState = () => {
     if (playerState.state === "loading") {
-      // TODO replace by almost empty screen (only text, no logo), to avoid flicker
-      return <Message>Loading game...</Message>;
+      return <LoadingGame />;
     } else if (playerState.state === "join") {
       const handleJoinDone = (avatar: string, name: string) => {
         send({
@@ -289,6 +288,10 @@ const ConnectionLostErrorDialog = ({
 
 const Message = ({ children }: { children: React.ReactNode }) => {
   return <BigLogoScreen>{children}</BigLogoScreen>;
+};
+
+const LoadingGame = () => {
+  return <div>Loading game...</div>;
 };
 
 const Join = ({
