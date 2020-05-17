@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components/macro";
-import { useWindowSize, getCanvasSize } from "./helpers";
+import { useWindowSize, getCanvasSize, NewlineToBreak } from "./helpers";
 import Dialog from "./Dialog";
 import "./Draw.css";
 import colorwheelImg from "./img/colorwheel.svg";
@@ -28,6 +28,7 @@ const Text = styled.div`
   width: 90%;
   box-shadow: 0 0 1vmin #def5ff;
   margin: 2vmin 0;
+  word-break: break-all;
 `;
 
 const Draw = ({
@@ -126,7 +127,7 @@ const Draw = ({
               }
               <div>... this text by {textWriter.name}:</div>
             </div>
-            <Text>{text}</Text>
+            <Text>{NewlineToBreak(text)}</Text>
             <button className="button" onClick={() => setShowHelpDialog(false)}>
               Okay, start drawing
             </button>

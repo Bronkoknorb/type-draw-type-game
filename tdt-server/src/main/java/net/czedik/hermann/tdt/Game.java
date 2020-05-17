@@ -113,15 +113,38 @@ public class Game {
             case Started:
                 return getStartedState(player);
             case Finished:
-                return getFinishedState(player);
+                return getFinishedState();
             default:
                 throw new IllegalStateException("Unknown state: " + state);
         }
     }
 
-    private PlayerState getFinishedState(Player player) {
-        // TODO
-        throw new UnsupportedOperationException("TODO");
+    private PlayerState getFinishedState() {
+        StoriesState storiesState = new StoriesState();
+        storiesState.stories = mapStoriesToFrontendStories();
+        return storiesState;
+    }
+
+    private FrontendStory[] mapStoriesToFrontendStories() {
+        FrontendStory[] frontendStories = new FrontendStory[stories.length];
+        for (int storyIndex = 0; storyIndex < stories.length; storyIndex++) {
+            StoryElement[] elements = stories[storyIndex].elements;
+            FrontendStory frontendStory = mapStoryElementsToFrontendStoryElements(storyIndex, elements);
+            frontendStories[storyIndex] = frontendStory;
+        }
+        return frontendStories;
+    }
+
+    private FrontendStory mapStoryElementsToFrontendStoryElements(int storyIndex, StoryElement[] elements) {
+        FrontendStory frontendStory = new FrontendStory();
+        frontendStory.elements = new FrontendStoryElement[elements.length];
+        for (int roundNo = 0; roundNo < elements.length; roundNo++) {
+            StoryElement e = elements[roundNo];
+            Player player = getPlayerForStoryInRound(storyIndex, roundNo);
+            String content = "image".equals(e.type) ? getDrawingSrc(e.content) : e.content;
+            frontendStory.elements[roundNo] = new FrontendStoryElement(e.type, content, mapPlayerToPlayerInfo(player));
+        }
+        return frontendStory;
     }
 
     private PlayerState getStartedState(Player player) {
@@ -181,7 +204,11 @@ public class Game {
     }
 
     private Player getPreviousPlayerForStory(int storyIndex) {
-        int previousPlayerIndexForStory = ArrayUtils.indexOf(gameMatrix[round - 1], storyIndex);
+        return getPlayerForStoryInRound(storyIndex, round - 1);
+    }
+
+    private Player getPlayerForStoryInRound(int storyIndex, int roundNo) {
+        int previousPlayerIndexForStory = ArrayUtils.indexOf(gameMatrix[roundNo], storyIndex);
         // TODO find nicer method to access player by player index
         return new ArrayList<>(players.values()).get(previousPlayerIndexForStory);
     }

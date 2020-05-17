@@ -3,3 +3,13 @@ export interface PlayerInfo {
   avatar: string;
   isCreator: boolean;
 }
+
+export interface StoryElement {
+  type: "text" | "image";
+  content: string;
+  player: PlayerInfo;
+}
+
+export interface StoryContent {
+  elements: StoryElement[];
+}

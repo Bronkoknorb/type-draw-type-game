@@ -4,7 +4,7 @@ public class StoryElement {
     public String type;
     public String content;
 
-    public StoryElement(String type, String content) {
+    private StoryElement(String type, String content) {
         this.type = type;
         this.content = content;
     }

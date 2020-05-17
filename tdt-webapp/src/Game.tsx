@@ -9,8 +9,9 @@ import Logo from "./Logo";
 import BigLogoScreen from "./BigLogoScreen";
 import Avatar from "./Avatar";
 import WaitForPlayersScreen, { WaitForGameStartScreen } from "./WaitForPlayers";
-import { PlayerInfo } from "./model";
+import { PlayerInfo, StoryContent } from "./model";
 import Dialog from "./Dialog";
+import Stories from "./Stories";
 
 function getPlayerId() {
   const store = window.localStorage;
@@ -86,6 +87,15 @@ function isWaitForRoundFinishState(
   playerState: PlayerState
 ): playerState is WaitForRoundFinishState {
   return playerState.state === "waitForRoundFinish";
+}
+
+interface StoriesState extends PlayerState {
+  state: "stories";
+  stories: StoryContent[];
+}
+
+function isStoriesState(playerState: PlayerState): playerState is StoriesState {
+  return playerState.state === "stories";
 }
 
 interface Action {
@@ -229,6 +239,8 @@ const Game = (props: GameProps) => {
           {waitingForPlayers}
         </Message>
       );
+    } else if (isStoriesState(playerState)) {
+      return <Stories stories={playerState.stories} />;
     } else {
       // TODO
       return <Message>Unknown game</Message>;
@@ -367,7 +379,7 @@ const CreateOrJoin = ({
         <Logo />
       </div>
       <div className="Join-content">
-        Click to pick your look:
+        Pick your look:
         <br />
         <SelectAvatar handleChange={handleChangeAvatar} />
         <label htmlFor="name">Enter your name:</label>

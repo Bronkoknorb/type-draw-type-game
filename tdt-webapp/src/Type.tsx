@@ -2,6 +2,7 @@ import React from "react";
 import typeImg from "./img/type.svg";
 import Scrollable from "./Scrollable";
 import { PlayerInfo } from "./model";
+import { isBlank } from "./helpers";
 
 const Type = ({
   round,
@@ -18,7 +19,7 @@ const Type = ({
 }) => {
   const [text, setText] = React.useState("");
 
-  const buttonDisabled = text === "";
+  const buttonDisabled = isBlank(text);
 
   const first = drawingSrc === null;
 
@@ -59,7 +60,7 @@ const Type = ({
         <button
           className="button"
           disabled={buttonDisabled}
-          onClick={() => handleDone(text)}
+          onClick={() => handleDone(text.trim())}
         >
           Done
         </button>

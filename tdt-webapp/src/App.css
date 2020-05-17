@@ -115,6 +115,8 @@
 }
 
 .WaitForPlayers-right .field {
+  white-space: nowrap;
+  user-select: all;
   max-width: 40vw;
   overflow: auto;
 }

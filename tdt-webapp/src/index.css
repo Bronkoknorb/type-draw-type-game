@@ -59,11 +59,11 @@ textarea,
   padding: 1vmin 2vmin;
   background-color: white;
   box-shadow: 0.5vmin 0.7vmin 1vmin rgba(0, 0, 0, 0.2);
+  text-align: center;
 }
 
 .field {
-  white-space: nowrap;
-  user-select: all;
+  word-break: break-all;
 }
 
 .field-label {

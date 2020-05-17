@@ -84,3 +84,16 @@ export function getCanvasSize(canvas: HTMLCanvasElement) {
     canvas.height
   );
 }
+
+export const NewlineToBreak = (text: string) => {
+  return text.split("\n").map((item, index) => (
+    <React.Fragment key={index}>
+      {item}
+      <br />
+    </React.Fragment>
+  ));
+};
+
+export function isBlank(str: string) {
+  return !/\S/.test(str);
+}
