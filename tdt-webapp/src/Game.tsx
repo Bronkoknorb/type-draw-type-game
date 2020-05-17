@@ -1,6 +1,7 @@
 import React from "react";
 import { RouteComponentProps, navigate } from "@reach/router";
 import { v4 as uuidv4 } from "uuid";
+import styled from "styled-components/macro";
 import { getRandomCharacterFromString } from "./helpers";
 import Type from "./Type";
 import Draw from "./Draw";
@@ -9,6 +10,7 @@ import BigLogoScreen from "./BigLogoScreen";
 import Avatar from "./Avatar";
 import WaitForPlayersScreen, { WaitForGameStartScreen } from "./WaitForPlayers";
 import { PlayerInfo } from "./model";
+import Dialog from "./Dialog";
 
 function getPlayerId() {
   const store = window.localStorage;
@@ -98,6 +100,10 @@ const Game = (props: GameProps) => {
 
   const [playerState, setPlayerState] = React.useState({ state: "loading" });
 
+  const [connectionError, setConnectionError] = React.useState(false);
+
+  const [reconnectCount, setReconnectCount] = React.useState(0);
+
   const socketRef = React.useRef<WebSocket>();
 
   const send = (action: Action) => {
@@ -111,6 +117,7 @@ const Game = (props: GameProps) => {
     console.log("Connecting to websocket " + wsUrl);
     const socket = new WebSocket(wsUrl);
     socketRef.current = socket;
+    let closed = false;
 
     socket.onopen = () => {
       console.log("Websocket opened. Sending access action.");
@@ -129,100 +136,156 @@ const Game = (props: GameProps) => {
       setPlayerState(newPlayerState);
     };
 
-    // TODO handle close/error with dialog where the player can re-connect with a button
     socket.onerror = (error) => {
-      console.log("Websocket error", error);
+      if (!closed) {
+        console.log("Websocket error", error);
+        setConnectionError(true);
+      }
     };
     socket.onclose = (closeEvent) => {
-      console.log("Websocket closed", closeEvent);
+      if (!closed) {
+        console.log("Websocket closed", closeEvent);
+        setConnectionError(true);
+      }
     };
 
     return () => {
       console.log("Disconnecting from websocket");
+      closed = true;
       socket.close();
     };
-  }, [gameId]);
+  }, [gameId, reconnectCount]);
 
   const handleDrawDone = React.useCallback((image: Blob) => {
     socketRef.current!.send(image);
   }, []);
 
-  if (playerState.state === "loading") {
-    // TODO replace by almost empty screen (only text, no logo), to avoid flicker
-    return <Message>Loading game...</Message>;
-  } else if (playerState.state === "join") {
-    const handleJoinDone = (avatar: string, name: string) => {
-      send({
-        action: "join",
-        content: {
-          gameId,
-          playerId: getPlayerId(),
-          name,
-          avatar,
-        },
-      });
-    };
+  const getComponentForState = () => {
+    if (playerState.state === "loading") {
+      // TODO replace by almost empty screen (only text, no logo), to avoid flicker
+      return <Message>Loading game...</Message>;
+    } else if (playerState.state === "join") {
+      const handleJoinDone = (avatar: string, name: string) => {
+        send({
+          action: "join",
+          content: {
+            gameId,
+            playerId: getPlayerId(),
+            name,
+            avatar,
+          },
+        });
+      };
 
-    return <Join handleDone={handleJoinDone} />;
-  } else if (isWaitForPlayersState(playerState)) {
-    const handleStartGame = () => {
-      send({ action: "start" });
-    };
+      return <Join handleDone={handleJoinDone} />;
+    } else if (isWaitForPlayersState(playerState)) {
+      const handleStartGame = () => {
+        send({ action: "start" });
+      };
 
-    return (
-      <WaitForPlayersScreen
-        gameId={gameId}
-        players={playerState.players}
-        handleStart={handleStartGame}
+      return (
+        <WaitForPlayersScreen
+          gameId={gameId}
+          players={playerState.players}
+          handleStart={handleStartGame}
+        />
+      );
+    } else if (isWaitForGameStartState(playerState)) {
+      return <WaitForGameStartScreen players={playerState.players} />;
+    } else if (isTypeState(playerState)) {
+      const handleTypeDone = (text: string) => {
+        send({ action: "type", content: { text } });
+      };
+
+      return (
+        <Type
+          round={playerState.round}
+          rounds={playerState.rounds}
+          drawingSrc={playerState.drawingSrc}
+          artist={playerState.artist}
+          handleDone={handleTypeDone}
+        />
+      );
+    } else if (isDrawState(playerState)) {
+      return (
+        <Draw
+          text={playerState.text}
+          textWriter={playerState.textWriter}
+          round={playerState.round}
+          rounds={playerState.rounds}
+          handleDone={handleDrawDone}
+        />
+      );
+    } else if (isWaitForRoundFinishState(playerState)) {
+      const roundAction = playerState.isTypeRound ? "typing" : "drawing";
+
+      const waitingForPlayers = playerState.waitingForPlayers
+        .map((p) => p.name)
+        .join(", ");
+
+      return (
+        <Message>
+          {`Waiting for other players to finish ${roundAction}:`}
+          <br />
+          {waitingForPlayers}
+        </Message>
+      );
+    } else {
+      // TODO
+      return <Message>Unknown game</Message>;
+    }
+  };
+
+  const handleReconnect = () => {
+    setConnectionError(false);
+    setReconnectCount(reconnectCount + 1);
+  };
+
+  return (
+    <>
+      <ConnectionLostErrorDialog
+        show={connectionError}
+        handleReconnect={handleReconnect}
       />
-    );
-  } else if (isWaitForGameStartState(playerState)) {
-    return <WaitForGameStartScreen players={playerState.players} />;
-  } else if (isTypeState(playerState)) {
-    const handleTypeDone = (text: string) => {
-      send({ action: "type", content: { text } });
-    };
-
-    return (
-      <Type
-        round={playerState.round}
-        rounds={playerState.rounds}
-        drawingSrc={playerState.drawingSrc}
-        artist={playerState.artist}
-        handleDone={handleTypeDone}
-      />
-    );
-  } else if (isDrawState(playerState)) {
-    return (
-      <Draw
-        text={playerState.text}
-        textWriter={playerState.textWriter}
-        round={playerState.round}
-        rounds={playerState.rounds}
-        handleDone={handleDrawDone}
-      />
-    );
-  } else if (isWaitForRoundFinishState(playerState)) {
-    const roundAction = playerState.isTypeRound ? "typing" : "drawing";
-
-    const waitingForPlayers = playerState.waitingForPlayers
-      .map((p) => p.name)
-      .join(", ");
-
-    return (
-      <Message>
-        {`Waiting for other players to finish ${roundAction}:`}
-        <br />
-        {waitingForPlayers}
-      </Message>
-    );
-  } else {
-    // TODO
-    return <Message>Unknown game</Message>;
-  }
+      {getComponentForState()}
+    </>
+  );
 };
 
 export default Game;
+
+const ConnectionLostErrorDialogContent = styled.div`
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+
+  h1 {
+    color: red;
+  }
+`;
+
+const ConnectionLostErrorDialog = ({
+  show,
+  handleReconnect,
+}: {
+  show: boolean;
+  handleReconnect: () => void;
+}) => {
+  return (
+    <Dialog show={show} highPriority={true}>
+      <ConnectionLostErrorDialogContent>
+        <div></div>
+        <h1>ERROR</h1>
+        <div>Connection to server lost</div>
+        <button className="button" onClick={handleReconnect}>
+          Click to re-connect
+        </button>
+      </ConnectionLostErrorDialogContent>
+    </Dialog>
+  );
+};
 
 const Message = ({ children }: { children: React.ReactNode }) => {
   return <BigLogoScreen>{children}</BigLogoScreen>;
@@ -237,6 +300,8 @@ const Join = ({
 };
 
 export const Create = (props: RouteComponentProps) => {
+  const [error, setError] = React.useState(false);
+
   const handleDone = async (avatar: string, name: string) => {
     // TODO store name and avatar in localStorage
 
@@ -244,25 +309,38 @@ export const Create = (props: RouteComponentProps) => {
       gameId: string;
     }
 
-    const response = await window.fetch("/api/create", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        playerId: getPlayerId(),
-        playerName: name,
-        playerAvatar: avatar,
-      }),
-    });
+    try {
+      const response = await window.fetch("/api/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          playerId: getPlayerId(),
+          playerName: name,
+          playerAvatar: avatar,
+        }),
+      });
 
-    const createdGame: CreatedGameResponse = await response.json();
-    const gameId = createdGame.gameId;
+      const createdGame: CreatedGameResponse = await response.json();
+      const gameId = createdGame.gameId;
 
-    navigate(`/g/${gameId}`);
+      navigate(`/g/${gameId}`);
+    } catch (e) {
+      console.log("Error creating game", e);
+      setError(true);
+    }
   };
 
-  return <CreateOrJoin buttonLabel="Create game" handleDone={handleDone} />;
+  return (
+    <>
+      <ConnectionLostErrorDialog
+        show={error}
+        handleReconnect={() => setError(false)}
+      />
+      <CreateOrJoin buttonLabel="Create game" handleDone={handleDone} />
+    </>
+  );
 };
 
 const CreateOrJoin = ({
