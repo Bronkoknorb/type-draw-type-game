@@ -2,10 +2,9 @@ package net.czedik.hermann.tdt;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import net.czedik.hermann.tdt.model.AccessAction;
-import net.czedik.hermann.tdt.model.JSONHelper;
-import net.czedik.hermann.tdt.model.JoinAction;
-import net.czedik.hermann.tdt.model.TypeAction;
+import net.czedik.hermann.tdt.actions.AccessAction;
+import net.czedik.hermann.tdt.actions.JoinAction;
+import net.czedik.hermann.tdt.actions.TypeAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

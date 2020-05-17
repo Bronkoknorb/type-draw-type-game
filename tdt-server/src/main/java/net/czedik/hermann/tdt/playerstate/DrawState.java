@@ -1,4 +1,6 @@
-package net.czedik.hermann.tdt.model;
+package net.czedik.hermann.tdt.playerstate;
+
+import net.czedik.hermann.tdt.PlayerInfo;
 
 import java.util.Objects;
 

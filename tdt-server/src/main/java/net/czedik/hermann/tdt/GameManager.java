@@ -1,9 +1,8 @@
 package net.czedik.hermann.tdt;
 
-import net.czedik.hermann.tdt.model.AccessAction;
-import net.czedik.hermann.tdt.model.CreateGameRequest;
-import net.czedik.hermann.tdt.model.JoinAction;
-import net.czedik.hermann.tdt.model.TypeAction;
+import net.czedik.hermann.tdt.actions.AccessAction;
+import net.czedik.hermann.tdt.actions.JoinAction;
+import net.czedik.hermann.tdt.actions.TypeAction;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,7 +1,6 @@
 package net.czedik.hermann.tdt;
 
-import net.czedik.hermann.tdt.model.JSONHelper;
-import net.czedik.hermann.tdt.model.PlayerState;
+import net.czedik.hermann.tdt.playerstate.PlayerState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.socket.TextMessage;

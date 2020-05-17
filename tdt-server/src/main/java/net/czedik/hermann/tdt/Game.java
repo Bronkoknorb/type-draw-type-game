@@ -1,6 +1,9 @@
 package net.czedik.hermann.tdt;
 
-import net.czedik.hermann.tdt.model.*;
+import net.czedik.hermann.tdt.actions.AccessAction;
+import net.czedik.hermann.tdt.actions.JoinAction;
+import net.czedik.hermann.tdt.actions.TypeAction;
+import net.czedik.hermann.tdt.playerstate.*;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;

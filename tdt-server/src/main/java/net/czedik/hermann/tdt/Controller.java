@@ -1,7 +1,5 @@
 package net.czedik.hermann.tdt;
 
-import net.czedik.hermann.tdt.model.CreateGameRequest;
-import net.czedik.hermann.tdt.model.CreateGameResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,4 +1,4 @@
-package net.czedik.hermann.tdt.model;
+package net.czedik.hermann.tdt;
 
 public class Story {
     public StoryElement[] elements;
