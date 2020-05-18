@@ -9,20 +9,17 @@ body,
 
 @font-face {
   font-family: "Comic Neue";
-  src: url(./fonts/ComicNeue-Regular.woff) format("woff"),
-    url(./fonts/ComicNeue-Regular.woff2) format("woff2");
+  src: url(./fonts/ComicNeue-Regular.woff) format("woff");
 }
 
 @font-face {
   font-family: "KidsDrawings";
-  src: url(./fonts/KidsDrawings.woff) format("woff"),
-    url(./fonts/KidsDrawings.woff2) format("woff2");
+  src: url(./fonts/KidsDrawings.woff) format("woff");
 }
 
 @font-face {
   font-family: "TheFreakyFace";
-  src: url(./fonts/TheFreakyFace.woff) format("woff"),
-    url(./fonts/TheFreakyFace.woff2) format("woff2");
+  src: url(./fonts/TheFreakyFace.woff) format("woff");
 }
 
 body {

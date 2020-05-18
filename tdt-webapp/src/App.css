@@ -139,13 +139,13 @@
 
 .Avatar {
   font-family: "TheFreakyFace";
-  font-size: 25vmin;
+  font-size: 30vmin;
   border: 0.7vmin solid black;
   border-radius: 50%;
   background-color: white;
   width: 24vmin;
   height: 24vmin;
-  line-height: 29vmin;
+  line-height: 22vmin;
   user-select: none;
   box-shadow: 0.5vmin 0.7vmin 1vmin rgba(0, 0, 0, 0.2);
   text-align: center;
@@ -155,8 +155,8 @@
 .Avatar-small {
   width: 16vmin;
   height: 16vmin;
-  font-size: 22vmin;
-  line-height: 20.5vmin;
+  font-size: 20vmin;
+  line-height: 15vmin;
 }
 
 .buttons {
