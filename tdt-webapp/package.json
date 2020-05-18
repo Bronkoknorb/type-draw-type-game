@@ -12,7 +12,7 @@
     "react-is": "^16.13.1",
     "react-scripts": "3.4.1",
     "styled-components": "^5.1.0",
-    "typescript": "~3.8.3",
+    "typescript": "~3.9.2",
     "uuid": "^8.0.0"
   },
   "scripts": {
