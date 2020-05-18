@@ -27,7 +27,7 @@ public class Game {
 
     private final Path gameDir;
 
-    private final Map<String, Player> players = new LinkedHashMap<>();
+    private final List<Player> players = new ArrayList<>();
 
     private final Map<Client, Player> clientToPlayer = new HashMap<>();
 
@@ -45,25 +45,38 @@ public class Game {
     public Game(String gameId, Path gameDir, Player creator) {
         this.gameId = Objects.requireNonNull(gameId);
         this.gameDir = gameDir;
-        players.put(creator.id, creator);
+        players.add(creator);
     }
 
     // returns whether the client has been added as a player to the game
     public synchronized boolean access(Client client, AccessAction accessAction) {
-        Player player = players.get(accessAction.playerId);
+        Player player = getPlayerById(accessAction.playerId);
         if (player == null) {
-            if (state == State.WaitingForPlayers) {
-                log.info("Game {}: New player {} accessing via client {}", gameId, accessAction.playerId, client.getId());
-                client.send(new JoinState());
-            } else {
-                // TODO
-            }
+            log.info("Game {}: New player {} accessing via client {}", gameId, accessAction.playerId, client.getId());
+            client.send(getStateForAccessByNewPlayer());
             return false;
         } else {
             log.info("Game {}: New client {} connected for known player {}", gameId, client.getId(), player.id);
             addClientForPlayer(client, player);
             updateStateForPlayer(player);
             return true;
+        }
+    }
+
+    private Player getPlayerById(String playerId) {
+        return players.stream().filter(p -> p.id.equals(playerId)).findAny().orElse(null);
+    }
+
+    private PlayerState getStateForAccessByNewPlayer() {
+        switch (state) {
+            case WaitingForPlayers:
+                return new JoinState();
+            case Started:
+                return new AlreadyStartedGameState();
+            case Finished:
+                return getFinishedState();
+            default:
+                throw new IllegalStateException("Unknown state " + state);
         }
     }
 
@@ -76,25 +89,25 @@ public class Game {
     public synchronized boolean join(Client client, JoinAction joinAction) {
         if (state == State.WaitingForPlayers) {
             log.info("Game {}: Player {} joining with name '{}' via client {}", gameId, joinAction.playerId, joinAction.name, client.getId());
-            Player player = players.get(joinAction.playerId);
+            Player player = getPlayerById(joinAction.playerId);
             if (player != null) {
                 log.warn("Game {}: Player {} has already joined", gameId, joinAction.playerId);
             } else {
                 player = new Player(joinAction.playerId, joinAction.name, joinAction.avatar, false);
-                players.put(joinAction.playerId, player);
+                players.add(player);
             }
             addClientForPlayer(client, player);
             updateStateForAllPlayers();
             return true;
         } else {
             log.info("Game {}: Join not possible in state {}", gameId, state);
-            // TODO handle this case
+            client.send(getStateForAccessByNewPlayer());
             return false;
         }
     }
 
     private void updateStateForAllPlayers() {
-        for (Player player : players.values()) {
+        for (Player player : players) {
             updateStateForPlayer(player);
         }
     }
@@ -191,7 +204,7 @@ public class Game {
         if (state != State.WaitingForPlayers)
             throw new IllegalStateException("Only valid to call this method in started state");
 
-        List<PlayerInfo> playerInfos = mapPlayersToPlayerInfos(players.values());
+        List<PlayerInfo> playerInfos = mapPlayersToPlayerInfos(players);
         if (player.isCreator) {
             return new WaitForPlayersState(playerInfos);
         } else {
@@ -209,8 +222,7 @@ public class Game {
 
     private Player getPlayerForStoryInRound(int storyIndex, int roundNo) {
         int previousPlayerIndexForStory = ArrayUtils.indexOf(gameMatrix[roundNo], storyIndex);
-        // TODO find nicer method to access player by player index
-        return new ArrayList<>(players.values()).get(previousPlayerIndexForStory);
+        return players.get(previousPlayerIndexForStory);
     }
 
     private Story getStoryByIndex(int storyIndex) {
@@ -218,7 +230,7 @@ public class Game {
     }
 
     private List<Player> getNotFinishedPlayers() {
-        return players.values().stream().filter(p -> !hasPlayerFinishedCurrentRound(p)).collect(Collectors.toList());
+        return players.stream().filter(p -> !hasPlayerFinishedCurrentRound(p)).collect(Collectors.toList());
     }
 
     private boolean hasPlayerFinishedCurrentRound(Player player) {
@@ -244,7 +256,7 @@ public class Game {
         if (state == State.WaitingForPlayers) {
             if (!player.isCreator && player.clients.isEmpty()) {
                 log.info("Game {}: Player {} has left the game", gameId, player.id);
-                players.remove(player.id);
+                players.remove(player);
                 updateStateForAllPlayers();
             }
 
@@ -257,7 +269,7 @@ public class Game {
     public synchronized void start(Client client) {
         Player player = clientToPlayer.get(client);
         if (player == null) {
-            log.warn("Game {}: Client {} is not a known player", gameId, client.getId());
+            log.warn("Game {}: Cannot start game. Client {} is not a known player", gameId, client.getId());
             return;
         }
         if (state != State.WaitingForPlayers) {
@@ -292,7 +304,7 @@ public class Game {
     public synchronized void type(Client client, TypeAction typeAction) {
         Player player = clientToPlayer.get(client);
         if (player == null) {
-            log.warn("Game {}: Client {} is not a known player", gameId, client.getId());
+            log.warn("Game {}: Cannot type. Client {} is not a known player", gameId, client.getId());
             return;
         }
         if (state != State.Started) {
@@ -320,8 +332,7 @@ public class Game {
     }
 
     private int getCurrentStoryIndexForPlayer(Player player) {
-        // TODO need nicer method to find index of player
-        return gameMatrix[round][new ArrayList<>(players.values()).indexOf(player)];
+        return gameMatrix[round][players.indexOf(player)];
     }
 
     private boolean isCurrentRoundFinished() {
@@ -343,7 +354,7 @@ public class Game {
     public synchronized void draw(Client client, ByteBuffer image) throws IOException {
         Player player = clientToPlayer.get(client);
         if (player == null) {
-            log.warn("Game {}: Client {} is not a known player", gameId, client.getId());
+            log.warn("Game {}: Cannot draw. Client {} is not a known player", gameId, client.getId());
             return;
         }
         if (state != State.Started) {
@@ -362,7 +373,6 @@ public class Game {
         String imageName = UUID.randomUUID().toString() + ".png";
         Path imagePath = gameDir.resolve(imageName);
 
-        // TODO would be better to do the actual writing outside of the synchronized lock (but has to be done carefully)
         try (ByteChannel channel =
                      Files.newByteChannel(imagePath, EnumSet.of(StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE))) {
             channel.write(image);

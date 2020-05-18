@@ -98,6 +98,14 @@ function isStoriesState(playerState: PlayerState): playerState is StoriesState {
   return playerState.state === "stories";
 }
 
+function isFinalState(newPlayerState: PlayerState) {
+  return (
+    newPlayerState.state === "unknownGame" ||
+    newPlayerState.state === "alreadyStartedGame" ||
+    isStoriesState(newPlayerState)
+  );
+}
+
 interface Action {
   action: string;
   content?: {
@@ -143,6 +151,9 @@ const Game = (props: GameProps) => {
 
     socket.onmessage = (messageEvent) => {
       const newPlayerState: PlayerState = JSON.parse(messageEvent.data);
+      if (isFinalState(newPlayerState)) {
+        closeSocket();
+      }
       setPlayerState(newPlayerState);
     };
 
@@ -159,10 +170,14 @@ const Game = (props: GameProps) => {
       }
     };
 
-    return () => {
+    const closeSocket = () => {
       console.log("Disconnecting from websocket");
       closed = true;
       socket.close();
+    };
+
+    return () => {
+      closeSocket();
     };
   }, [gameId, reconnectCount]);
 
@@ -241,9 +256,20 @@ const Game = (props: GameProps) => {
       );
     } else if (isStoriesState(playerState)) {
       return <Stories stories={playerState.stories} />;
+    } else if (playerState.state === "alreadyStartedGame") {
+      return (
+        <Message>
+          Sorry, the game has already started. You will see the created stories,
+          once that game is finished.
+        </Message>
+      );
     } else {
-      // TODO
-      return <Message>Unknown game</Message>;
+      // unknown game
+      return (
+        <Message>
+          Sorry, the game code <em>{gameId}</em> was not found.
+        </Message>
+      );
     }
   };
 
