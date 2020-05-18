@@ -38,8 +38,8 @@ FROM ubuntu:18.04
 RUN apt-get update && apt-get install openjdk-11-jre -y --no-install-recommends \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 RUN useradd --create-home --user-group draw --shell /bin/bash
-USER draw:draw
 WORKDIR /opt/tdt/
 COPY --from=build-server /opt/tdt-src/build/libs/type-draw-type-server-1.0.0-SNAPSHOT.jar server.jar
 EXPOSE 8080
+USER draw:draw
 ENTRYPOINT ["java","-jar","server.jar"]
