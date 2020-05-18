@@ -145,7 +145,7 @@
   background-color: white;
   width: 24vmin;
   height: 24vmin;
-  line-height: 22vmin;
+  line-height: 21vmin;
   user-select: none;
   box-shadow: 0.5vmin 0.7vmin 1vmin rgba(0, 0, 0, 0.2);
   text-align: center;
@@ -156,7 +156,7 @@
   width: 16vmin;
   height: 16vmin;
   font-size: 20vmin;
-  line-height: 15vmin;
+  line-height: 14.2vmin;
 }
 
 .buttons {
