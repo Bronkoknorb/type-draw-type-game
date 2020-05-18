@@ -2,7 +2,7 @@ import React from "react";
 import { RouteComponentProps, navigate } from "@reach/router";
 import { v4 as uuidv4 } from "uuid";
 import styled from "styled-components/macro";
-import { getRandomCharacterFromString } from "./helpers";
+import { getRandomCharacterFromString, isBlank } from "./helpers";
 import Type from "./Type";
 import Draw from "./Draw";
 import Logo from "./Logo";
@@ -369,7 +369,7 @@ const CreateOrJoin = ({
 
   const [name, setName] = React.useState("");
 
-  const buttonDisabled = name === "";
+  const buttonDisabled = isBlank(name);
 
   const handleChangeAvatar = React.useCallback((face) => setAvatar(face), []);
 
@@ -395,7 +395,7 @@ const CreateOrJoin = ({
         <button
           className="button"
           disabled={buttonDisabled}
-          onClick={() => handleDone(avatar, name)}
+          onClick={() => handleDone(avatar, name.trim())}
         >
           {buttonLabel}
         </button>

@@ -2,7 +2,6 @@ import React from "react";
 import styled from "styled-components/macro";
 import { StoryContent, StoryElement } from "./model";
 import Player from "./Player";
-import Scrollable from "./Scrollable";
 import { NewlineToBreak } from "./helpers";
 
 const Stories = ({ stories }: { stories: StoryContent[] }) => {
