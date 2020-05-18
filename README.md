@@ -12,27 +12,30 @@ Prerequisites:
 
 - Install [Docker](https://www.docker.com/)
 
-To build the app using Docker:
+Pull the newest image from [Docker Hub](https://hub.docker.com/r/bronkoknorb/type-draw-type-game) and tag it with a simpler name:
 
-    docker build --tag draw .
+    docker pull bronkoknorb/type-draw-type-game
+    docker tag bronkoknorb/type-draw-type-game tdt-game
 
-To run the built Docker image (forwarding the internal port 8080 to the external port 8081):
+To run the Docker image (forwarding the internal port 8080 to the external port 8081):
 
-    docker run -p 8081:8080 draw
+    docker run -p 8081:8080 --volume /home/pi/tdt-data:/tdt-data tdt-game
+
+Note that /home/pi/tdt-data is a directory on the host where game data will be stored.
 
 You can then open the game on http://localhost:8081/
 
 To run the Docker image (in the background) and do automatic restarts (e.g. when the machine gets rebooted or the application crashed):
 
-    docker run -d --restart always --name draw -p 8081:8080 draw
+    docker run -d --restart always --name tdt -p 8081:8080 --volume /home/pi/tdt-data:/tdt-data tdt-game
 
-To restart the Docker container after build a new version of the image:
+To restart the Docker container after pulling (or building) a new version of the image:
 
-    docker stop draw && docker rm draw && docker run -d --restart always --name draw -p 8081:8080 draw
+    docker stop tdt && docker rm tdt && docker run -d --restart always --name tdt -p 8081:8080 --volume /home/pi/tdt-data:/tdt-data tdt-game
 
 To check the logs of the running Docker container:
 
-    docker logs draw
+    docker logs tdt
 
 ## Development
 
@@ -76,7 +79,13 @@ To interactively upgrade dependencies of the frontend:
 
 See also [React-App-HELP.md](tdt-webapp/React-App-HELP.md).
 
-## Multi-Architecture build
+## Build
+
+To build the app using Docker:
+
+    docker build --tag tdt-game .
+
+### Multi-Architecture Build
 
 I want to build ARM Docker images to run on my Raspberry Pi:
 
