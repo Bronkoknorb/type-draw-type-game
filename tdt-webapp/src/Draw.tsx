@@ -28,7 +28,8 @@ const Text = styled.div`
   width: 90%;
   box-shadow: 0 0 1vmin #def5ff;
   margin: 2vmin 0;
-  word-break: break-all;
+  word-break: break-word;
+  overflow-wrap: anywhere;
 `;
 
 const Draw = ({
