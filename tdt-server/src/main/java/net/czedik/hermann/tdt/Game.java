@@ -27,25 +27,15 @@ public class Game {
 
     private final Path gameDir;
 
-    private final List<Player> players = new ArrayList<>();
+    private final GameState gameState;
 
     private final Map<Client, Player> clientToPlayer = new HashMap<>();
-
-    /**
-     * Current round number (zero based)
-     */
-    private int round = 0;
-
-    private State state = State.WaitingForPlayers;
-
-    private int[][] gameMatrix = null;
-
-    private Story[] stories = null;
 
     public Game(String gameId, Path gameDir, Player creator) {
         this.gameId = Objects.requireNonNull(gameId);
         this.gameDir = gameDir;
-        players.add(creator);
+        this.gameState = new GameState();
+        gameState.players.add(creator);
     }
 
     // returns whether the client has been added as a player to the game
@@ -64,11 +54,11 @@ public class Game {
     }
 
     private Player getPlayerById(String playerId) {
-        return players.stream().filter(p -> p.id.equals(playerId)).findAny().orElse(null);
+        return gameState.players.stream().filter(p -> p.id.equals(playerId)).findAny().orElse(null);
     }
 
     private PlayerState getStateForAccessByNewPlayer() {
-        switch (state) {
+        switch (gameState.state) {
             case WaitingForPlayers:
                 return new JoinState();
             case Started:
@@ -76,7 +66,7 @@ public class Game {
             case Finished:
                 return getFinishedState();
             default:
-                throw new IllegalStateException("Unknown state " + state);
+                throw new IllegalStateException("Unknown state " + gameState.state);
         }
     }
 
@@ -87,27 +77,27 @@ public class Game {
 
     // returns whether the client has been added as a player to the game
     public synchronized boolean join(Client client, JoinAction joinAction) {
-        if (state == State.WaitingForPlayers) {
+        if (gameState.state == GameState.State.WaitingForPlayers) {
             log.info("Game {}: Player {} joining with name '{}' via client {}", gameId, joinAction.playerId, joinAction.name, client.getId());
             Player player = getPlayerById(joinAction.playerId);
             if (player != null) {
                 log.warn("Game {}: Player {} has already joined", gameId, joinAction.playerId);
             } else {
                 player = new Player(joinAction.playerId, joinAction.name, joinAction.avatar, false);
-                players.add(player);
+                gameState.players.add(player);
             }
             addClientForPlayer(client, player);
             updateStateForAllPlayers();
             return true;
         } else {
-            log.info("Game {}: Join not possible in state {}", gameId, state);
+            log.info("Game {}: Join not possible in state {}", gameId, gameState.state);
             client.send(getStateForAccessByNewPlayer());
             return false;
         }
     }
 
     private void updateStateForAllPlayers() {
-        for (Player player : players) {
+        for (Player player : gameState.players) {
             updateStateForPlayer(player);
         }
     }
@@ -120,7 +110,7 @@ public class Game {
     }
 
     private PlayerState getPlayerState(Player player) {
-        switch (state) {
+        switch (gameState.state) {
             case WaitingForPlayers:
                 return getWaitingForPlayersState(player);
             case Started:
@@ -128,7 +118,7 @@ public class Game {
             case Finished:
                 return getFinishedState();
             default:
-                throw new IllegalStateException("Unknown state: " + state);
+                throw new IllegalStateException("Unknown state: " + gameState.state);
         }
     }
 
@@ -139,9 +129,9 @@ public class Game {
     }
 
     private FrontendStory[] mapStoriesToFrontendStories() {
-        FrontendStory[] frontendStories = new FrontendStory[stories.length];
-        for (int storyIndex = 0; storyIndex < stories.length; storyIndex++) {
-            StoryElement[] elements = stories[storyIndex].elements;
+        FrontendStory[] frontendStories = new FrontendStory[gameState.stories.length];
+        for (int storyIndex = 0; storyIndex < gameState.stories.length; storyIndex++) {
+            StoryElement[] elements = gameState.stories[storyIndex].elements;
             FrontendStory frontendStory = mapStoryElementsToFrontendStoryElements(storyIndex, elements);
             frontendStories[storyIndex] = frontendStory;
         }
@@ -161,7 +151,7 @@ public class Game {
     }
 
     private PlayerState getStartedState(Player player) {
-        if (state != State.Started)
+        if (gameState.state != GameState.State.Started)
             throw new IllegalStateException("Only valid to call this method in started state");
 
         if (!hasPlayerFinishedCurrentRound(player)) {
@@ -182,29 +172,29 @@ public class Game {
 
     private PlayerState getDrawState(Player player) {
         int storyIndex = getCurrentStoryIndexForPlayer(player);
-        String text = getStoryByIndex(storyIndex).elements[round - 1].content;
+        String text = getStoryByIndex(storyIndex).elements[gameState.round - 1].content;
         Player previousPlayer = getPreviousPlayerForStory(storyIndex);
-        return new DrawState(round + 1, gameMatrix.length, text, mapPlayerToPlayerInfo(previousPlayer));
+        return new DrawState(gameState.round + 1, gameState.gameMatrix.length, text, mapPlayerToPlayerInfo(previousPlayer));
     }
 
     private PlayerState getTypeState(Player player) {
-        int roundOneBased = round + 1;
-        int rounds = gameMatrix.length;
-        if (round == 0) {
+        int roundOneBased = gameState.round + 1;
+        int rounds = gameState.gameMatrix.length;
+        if (gameState.round == 0) {
             return new TypeState(roundOneBased, rounds);
         } else {
             int storyIndex = getCurrentStoryIndexForPlayer(player);
-            String imageFilename = getStoryByIndex(storyIndex).elements[round - 1].content;
+            String imageFilename = getStoryByIndex(storyIndex).elements[gameState.round - 1].content;
             Player previousPlayer = getPreviousPlayerForStory(storyIndex);
             return new TypeState(roundOneBased, rounds, getDrawingSrc(imageFilename), mapPlayerToPlayerInfo(previousPlayer));
         }
     }
 
     private PlayerState getWaitingForPlayersState(Player player) {
-        if (state != State.WaitingForPlayers)
+        if (gameState.state != GameState.State.WaitingForPlayers)
             throw new IllegalStateException("Only valid to call this method in started state");
 
-        List<PlayerInfo> playerInfos = mapPlayersToPlayerInfos(players);
+        List<PlayerInfo> playerInfos = mapPlayersToPlayerInfos(gameState.players);
         if (player.isCreator) {
             return new WaitForPlayersState(playerInfos);
         } else {
@@ -217,24 +207,24 @@ public class Game {
     }
 
     private Player getPreviousPlayerForStory(int storyIndex) {
-        return getPlayerForStoryInRound(storyIndex, round - 1);
+        return getPlayerForStoryInRound(storyIndex, gameState.round - 1);
     }
 
     private Player getPlayerForStoryInRound(int storyIndex, int roundNo) {
-        int previousPlayerIndexForStory = ArrayUtils.indexOf(gameMatrix[roundNo], storyIndex);
-        return players.get(previousPlayerIndexForStory);
+        int previousPlayerIndexForStory = ArrayUtils.indexOf(gameState.gameMatrix[roundNo], storyIndex);
+        return gameState.players.get(previousPlayerIndexForStory);
     }
 
     private Story getStoryByIndex(int storyIndex) {
-        return stories[storyIndex];
+        return gameState.stories[storyIndex];
     }
 
     private List<Player> getNotFinishedPlayers() {
-        return players.stream().filter(p -> !hasPlayerFinishedCurrentRound(p)).collect(Collectors.toList());
+        return gameState.players.stream().filter(p -> !hasPlayerFinishedCurrentRound(p)).collect(Collectors.toList());
     }
 
     private boolean hasPlayerFinishedCurrentRound(Player player) {
-        return getCurrentStoryForPlayer(player).elements[round] != null;
+        return getCurrentStoryForPlayer(player).elements[gameState.round] != null;
     }
 
     private static List<PlayerInfo> mapPlayersToPlayerInfos(Collection<Player> players) {
@@ -253,10 +243,10 @@ public class Game {
 
         player.removeClient(client);
 
-        if (state == State.WaitingForPlayers) {
+        if (gameState.state == GameState.State.WaitingForPlayers) {
             if (!player.isCreator && player.clients.isEmpty()) {
                 log.info("Game {}: Player {} has left the game", gameId, player.id);
-                players.remove(player);
+                gameState.players.remove(player);
                 updateStateForAllPlayers();
             }
 
@@ -272,8 +262,8 @@ public class Game {
             log.warn("Game {}: Cannot start game. Client {} is not a known player", gameId, client.getId());
             return;
         }
-        if (state != State.WaitingForPlayers) {
-            log.warn("Game {}: Ignoring start in state {}", gameId, state);
+        if (gameState.state != GameState.State.WaitingForPlayers) {
+            log.warn("Game {}: Ignoring start in state {}", gameId, gameState.state);
             return;
         }
         if (!player.isCreator) {
@@ -281,7 +271,7 @@ public class Game {
             return;
         }
 
-        if (players.size() > 1) {
+        if (gameState.players.size() > 1) {
             startGame();
         } else {
             log.warn("Game {}: Cannot start game with less than 2 players", gameId);
@@ -291,12 +281,12 @@ public class Game {
 
     private void startGame() {
         log.info("Game {}: Starting", gameId);
-        state = State.Started;
+        gameState.state = GameState.State.Started;
 
-        gameMatrix = GameRoundsGenerator.generate(players.size());
+        gameState.gameMatrix = GameRoundsGenerator.generate(gameState.players.size());
 
-        stories = new Story[players.size()];
-        Arrays.setAll(stories, i -> new Story(players.size()));
+        gameState.stories = new Story[gameState.players.size()];
+        Arrays.setAll(gameState.stories, i -> new Story(gameState.players.size()));
 
         updateStateForAllPlayers();
     }
@@ -307,12 +297,12 @@ public class Game {
             log.warn("Game {}: Cannot type. Client {} is not a known player", gameId, client.getId());
             return;
         }
-        if (state != State.Started) {
-            log.warn("Game {}: Ignoring type in state {}", gameId, state);
+        if (gameState.state != GameState.State.Started) {
+            log.warn("Game {}: Ignoring type in state {}", gameId, gameState.state);
             return;
         }
         if (!isTypeRound()) {
-            log.warn("Game {}: Ignoring type in draw round {}", gameId, round);
+            log.warn("Game {}: Ignoring type in draw round {}", gameId, gameState.round);
             return;
         }
         if (Strings.isEmpty(typeAction.text)) {
@@ -320,7 +310,7 @@ public class Game {
         }
 
         Story story = getCurrentStoryForPlayer(player);
-        story.elements[round] = StoryElement.createTextElement(typeAction.text);
+        story.elements[gameState.round] = StoryElement.createTextElement(typeAction.text);
 
         checkAndHandleRoundFinished();
 
@@ -332,15 +322,15 @@ public class Game {
     }
 
     private int getCurrentStoryIndexForPlayer(Player player) {
-        return gameMatrix[round][players.indexOf(player)];
+        return gameState.gameMatrix[gameState.round][gameState.players.indexOf(player)];
     }
 
     private boolean isCurrentRoundFinished() {
-        return Arrays.stream(stories).allMatch(s -> s.elements[round] != null);
+        return Arrays.stream(gameState.stories).allMatch(s -> s.elements[gameState.round] != null);
     }
 
     private boolean isTypeRound() {
-        return isTypeRound(round);
+        return isTypeRound(gameState.round);
     }
 
     private boolean isDrawRound() {
@@ -357,12 +347,12 @@ public class Game {
             log.warn("Game {}: Cannot draw. Client {} is not a known player", gameId, client.getId());
             return;
         }
-        if (state != State.Started) {
-            log.warn("Game {}: Ignoring draw in state {}", gameId, state);
+        if (gameState.state != GameState.State.Started) {
+            log.warn("Game {}: Ignoring draw in state {}", gameId, gameState.state);
             return;
         }
         if (!isDrawRound()) {
-            log.warn("Game {}: Ignoring draw in type round {}", gameId, round);
+            log.warn("Game {}: Ignoring draw in type round {}", gameId, gameState.round);
             return;
         }
 
@@ -378,7 +368,7 @@ public class Game {
             channel.write(image);
         }
 
-        story.elements[round] = StoryElement.createImageElement(imageName);
+        story.elements[gameState.round] = StoryElement.createImageElement(imageName);
 
         checkAndHandleRoundFinished();
 
@@ -387,21 +377,15 @@ public class Game {
 
     private void checkAndHandleRoundFinished() {
         if (isCurrentRoundFinished()) {
-            round = round + 1;
+            gameState.round++;
 
             if (isGameFinished()) {
-                state = State.Finished;
+                gameState.state = GameState.State.Finished;
             }
         }
     }
 
     private boolean isGameFinished() {
-        return round >= gameMatrix.length;
-    }
-
-    public enum State {
-        WaitingForPlayers,
-        Started,
-        Finished
+        return gameState.round >= gameState.gameMatrix.length;
     }
 }
