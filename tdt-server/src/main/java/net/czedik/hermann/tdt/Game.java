@@ -9,7 +9,9 @@ import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.channels.ByteChannel;
 import java.nio.file.Files;
@@ -27,15 +29,20 @@ public class Game {
 
     private final Path gameDir;
 
+    // guarded by this
     private final GameState gameState;
 
+    // guarded by this
     private final Map<Client, Player> clientToPlayer = new HashMap<>();
+
+    // guarded by this
+    private final Map<Player, Set<Client>> playerToClients = new HashMap<>();
 
     public Game(String gameId, Path gameDir, Player creator) {
         this.gameId = Objects.requireNonNull(gameId);
-        this.gameDir = gameDir;
+        this.gameDir = Objects.requireNonNull(gameDir);
         this.gameState = new GameState();
-        gameState.players.add(creator);
+        gameState.players.add(Objects.requireNonNull(creator));
     }
 
     // returns whether the client has been added as a player to the game
@@ -72,7 +79,7 @@ public class Game {
 
     private void addClientForPlayer(Client client, Player player) {
         clientToPlayer.put(client, player);
-        player.addClient(client);
+        playerToClients.computeIfAbsent(player, p -> new HashSet<>()).add(client);
     }
 
     // returns whether the client has been added as a player to the game
@@ -104,7 +111,7 @@ public class Game {
 
     private void updateStateForPlayer(Player player) {
         PlayerState playerState = getPlayerState(player);
-        for (Client client : player.clients) {
+        for (Client client : playerToClients.getOrDefault(player, Collections.emptySet())) {
             client.send(playerState);
         }
     }
@@ -241,10 +248,11 @@ public class Game {
             return;
         }
 
-        player.removeClient(client);
+        Set<Client> clientsOfPlayer = playerToClients.get(player);
+        clientsOfPlayer.remove(client);
 
         if (gameState.state == GameState.State.WaitingForPlayers) {
-            if (!player.isCreator && player.clients.isEmpty()) {
+            if (!player.isCreator && clientsOfPlayer.isEmpty()) {
                 log.info("Game {}: Player {} has left the game", gameId, player.id);
                 gameState.players.remove(player);
                 updateStateForAllPlayers();
@@ -287,6 +295,8 @@ public class Game {
 
         gameState.stories = new Story[gameState.players.size()];
         Arrays.setAll(gameState.stories, i -> new Story(gameState.players.size()));
+
+        storeState();
 
         updateStateForAllPlayers();
     }
@@ -382,10 +392,21 @@ public class Game {
             if (isGameFinished()) {
                 gameState.state = GameState.State.Finished;
             }
+
+            storeState();
         }
     }
 
     private boolean isGameFinished() {
         return gameState.round >= gameState.gameMatrix.length;
+    }
+
+    private void storeState() {
+        log.info("Game {}: Storing state", gameId);
+        try (OutputStream out = new BufferedOutputStream(Files.newOutputStream(gameDir.resolve("state.json")))) {
+            JSONHelper.objectMapper.writeValue(out, gameState);
+        } catch (IOException e) {
+            log.error("Game {}: Error storing state", gameId, e);
+        }
     }
 }
