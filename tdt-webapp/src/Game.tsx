@@ -11,6 +11,7 @@ import Avatar from "./Avatar";
 import WaitForPlayersScreen, { WaitForGameStartScreen } from "./WaitForPlayers";
 import { PlayerInfo, StoryContent } from "./model";
 import Dialog from "./Dialog";
+import GameFinishedAnimation from "./GameFinishedAnimation";
 import Stories from "./Stories";
 
 function getPlayerId() {
@@ -255,7 +256,7 @@ const Game = (props: GameProps) => {
         </Message>
       );
     } else if (isStoriesState(playerState)) {
-      return <Stories stories={playerState.stories} />;
+      return <GameFinished stories={playerState.stories} />;
     } else if (playerState.state === "alreadyStartedGame") {
       return (
         <Message>
@@ -290,6 +291,18 @@ const Game = (props: GameProps) => {
 };
 
 export default Game;
+
+const GameFinished = ({ stories }: { stories: StoryContent[] }) => {
+  const [showStories, setShowStories] = React.useState(false);
+
+  if (!showStories) {
+    return (
+      <GameFinishedAnimation handleShowStories={() => setShowStories(true)} />
+    );
+  } else {
+    return <Stories stories={stories} />;
+  }
+};
 
 const ConnectionLostErrorDialogContent = styled.div`
   min-height: 100%;
