@@ -13,3 +13,8 @@ export interface StoryElement {
 export interface StoryContent {
   elements: StoryElement[];
 }
+
+export interface Brush {
+  pixelSize: number;
+  displaySize: number;
+}
