@@ -54,9 +54,6 @@ const Type = ({
         )}
         {!first && (
           <div>
-            {
-              // TODO add Avatar?
-            }
             Art by {artist!.name}:
             <img src={drawingSrc!} className="Drawing" alt="Drawing" />
           </div>

@@ -6,7 +6,10 @@ import { getPlayerId } from "./helpers";
 import Type from "./Type";
 import Draw from "./Draw";
 import BigLogoScreen from "./BigLogoScreen";
-import WaitForPlayersScreen, { WaitForGameStartScreen } from "./WaitForPlayers";
+import {
+  WaitForPlayersScreen,
+  WaitForGameStartScreen,
+} from "./BeforeGameStartScreens";
 import GameFinishedAnimation from "./GameFinishedAnimation";
 import Stories from "./Stories";
 import { Join } from "./CreateOrJoin";

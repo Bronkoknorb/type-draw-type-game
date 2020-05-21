@@ -4,9 +4,9 @@ import { PlayerInfo } from "./model";
 import Player from "./Player";
 import Logo from "./Logo";
 
-import "./WaitForPlayers.css";
+import "./BeforeGameStartScreens.css";
 
-const WaitForPlayersScreen = ({
+export const WaitForPlayersScreen = ({
   gameId,
   players,
   handleStart,
@@ -52,7 +52,6 @@ const WaitForPlayersScreen = ({
   );
 };
 
-// TODO extract into own file
 export const WaitForGameStartScreen = ({
   players,
 }: {
