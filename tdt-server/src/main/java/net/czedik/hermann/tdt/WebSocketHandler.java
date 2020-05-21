@@ -21,9 +21,6 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class WebSocketHandler extends AbstractWebSocketHandler {
-
-    // TODO make sure that all calls to WebSocketSession.sendMessage() are single threaded
-
     private static final Logger log = LoggerFactory.getLogger(WebSocketHandler.class);
 
     private final Map<WebSocketSession, Client> clients = new ConcurrentHashMap<>();
@@ -77,7 +74,6 @@ public class WebSocketHandler extends AbstractWebSocketHandler {
         Client client = Objects.requireNonNull(clients.get(session));
         log.info("Received image (size: {}KB) from client {}", message.getPayloadLength() / 1000, client.getId());
 
-        // TODO test what happens if we get IOException here
         gameManager.handleReceiveDrawing(client, message.getPayload());
     }
 

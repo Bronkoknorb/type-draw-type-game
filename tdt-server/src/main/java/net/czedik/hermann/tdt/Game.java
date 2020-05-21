@@ -23,8 +23,6 @@ import java.util.stream.Collectors;
 public class Game {
     private static final Logger log = LoggerFactory.getLogger(Game.class);
 
-    // TODO synchronization
-
     public final String gameId;
 
     private final Path gameDir;
@@ -245,8 +243,11 @@ public class Game {
     public synchronized void clientDisconnected(Client client) {
         Player player = clientToPlayer.remove(client);
         if (player == null) {
+            log.info("Game {}: Client {} disconnect. Not a player in this game.", gameId, client.getId());
             return;
         }
+
+        log.info("Game {}: Client {} of player {} disconnected", gameId, client.getId(), player.id);
 
         Set<Client> clientsOfPlayer = playerToClients.get(player);
         clientsOfPlayer.remove(client);
@@ -257,10 +258,6 @@ public class Game {
                 gameState.players.remove(player);
                 updateStateForAllPlayers();
             }
-
-            // TODO if the creator leaves (clients.isEmpty()) we should probably drop the game (and inform all other players)
-        } else {
-            // TODO
         }
     }
 
@@ -367,8 +364,6 @@ public class Game {
         }
 
         Story story = getCurrentStoryForPlayer(player);
-
-        // TODO check that the player did not already send an image? (make consistent with type(.))
 
         String imageName = UUID.randomUUID().toString() + ".png";
         Path imagePath = gameDir.resolve(imageName);

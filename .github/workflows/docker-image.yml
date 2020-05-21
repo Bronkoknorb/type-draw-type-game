@@ -23,5 +23,5 @@ jobs:
             --tag bronkoknorb/type-draw-type-game:latest \
             --push \
             .
-        # TODO platform linux/arm64 not included for now, as it is really slow to build.
+        # Note: platform linux/arm64 not included for now, as it is really slow to build.
         #  might be useful to add it again for future Raspbian versions which will use arm64.

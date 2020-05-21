@@ -23,14 +23,14 @@ public class Client {
 
     public void send(PlayerState state) {
         String stateJson = JSONHelper.objectToJsonString(state);
-        log.info("Sending player state: {}", stateJson); // TODO document to which player/client we send
+        log.info("Sending player state to client {}: {}", getId(), stateJson);
         try {
             // synchronized, because WebSocketSession.sendMessage(.) does not allow concurrent sending
             synchronized (this) {
                 session.sendMessage(new TextMessage(stateJson));
             }
         } catch (IOException | RuntimeException e) {
-            log.error("Exception when updating client session {}", session.getId(), e);
+            log.error("Exception when updating client {}", getId(), e);
         }
     }
 }
