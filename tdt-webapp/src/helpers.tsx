@@ -1,5 +1,5 @@
 import React from "react";
-
+import { v4 as uuidv4 } from "uuid";
 import o9n from "o9n";
 
 function isMobileDevice() {
@@ -96,4 +96,14 @@ export const NewlineToBreak = (text: string) => {
 
 export function isBlank(str: string) {
   return !/\S/.test(str);
+}
+
+export function getPlayerId() {
+  const store = window.localStorage;
+  let playerId = store.getItem("playerId");
+  if (playerId === null) {
+    playerId = uuidv4();
+    store.setItem("playerId", playerId);
+  }
+  return playerId;
 }

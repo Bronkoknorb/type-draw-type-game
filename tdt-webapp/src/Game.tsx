@@ -1,28 +1,15 @@
 import React from "react";
-import { RouteComponentProps, navigate } from "@reach/router";
-import { v4 as uuidv4 } from "uuid";
-import styled from "styled-components/macro";
-import { getRandomCharacterFromString, isBlank } from "./helpers";
+import { RouteComponentProps } from "@reach/router";
 import Type from "./Type";
 import Draw from "./Draw";
-import Logo from "./Logo";
 import BigLogoScreen from "./BigLogoScreen";
-import Avatar from "./Avatar";
 import WaitForPlayersScreen, { WaitForGameStartScreen } from "./WaitForPlayers";
 import { PlayerInfo, StoryContent } from "./model";
-import Dialog from "./Dialog";
+import { getPlayerId } from "./helpers";
 import GameFinishedAnimation from "./GameFinishedAnimation";
 import Stories from "./Stories";
-
-function getPlayerId() {
-  const store = window.localStorage;
-  let playerId = store.getItem("playerId");
-  if (playerId === null) {
-    playerId = uuidv4();
-    store.setItem("playerId", playerId);
-  }
-  return playerId;
-}
+import { Join } from "./CreateOrJoin";
+import { ConnectionLostErrorDialog } from "./ErrorDialogs";
 
 interface GameProps extends RouteComponentProps {
   gameId?: string;
@@ -304,168 +291,10 @@ const GameFinished = ({ stories }: { stories: StoryContent[] }) => {
   }
 };
 
-const ConnectionLostErrorDialogContent = styled.div`
-  min-height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-evenly;
-
-  h1 {
-    color: red;
-  }
-`;
-
-const ConnectionLostErrorDialog = ({
-  show,
-  handleReconnect,
-}: {
-  show: boolean;
-  handleReconnect: () => void;
-}) => {
-  return (
-    <Dialog show={show} highPriority={true}>
-      <ConnectionLostErrorDialogContent>
-        <div></div>
-        <h1>ERROR</h1>
-        <div>Connection to server lost</div>
-        <button className="button" onClick={handleReconnect}>
-          Click to re-connect
-        </button>
-      </ConnectionLostErrorDialogContent>
-    </Dialog>
-  );
-};
-
 const Message = ({ children }: { children: React.ReactNode }) => {
   return <BigLogoScreen>{children}</BigLogoScreen>;
 };
 
 const LoadingGame = () => {
   return <div>Loading game...</div>;
-};
-
-const Join = ({
-  handleDone,
-}: {
-  handleDone: (avatar: string, name: string) => void;
-}) => {
-  return <CreateOrJoin buttonLabel="Join game" handleDone={handleDone} />;
-};
-
-export const Create = (props: RouteComponentProps) => {
-  const [error, setError] = React.useState(false);
-
-  const handleDone = async (avatar: string, name: string) => {
-    // TODO store name and avatar in localStorage
-
-    interface CreatedGameResponse {
-      gameId: string;
-    }
-
-    try {
-      const response = await window.fetch("/api/create", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          playerId: getPlayerId(),
-          playerName: name,
-          playerAvatar: avatar,
-        }),
-      });
-
-      const createdGame: CreatedGameResponse = await response.json();
-      const gameId = createdGame.gameId;
-
-      navigate(`/g/${gameId}`);
-    } catch (e) {
-      console.log("Error creating game", e);
-      setError(true);
-    }
-  };
-
-  return (
-    <>
-      <ConnectionLostErrorDialog
-        show={error}
-        handleReconnect={() => setError(false)}
-      />
-      <CreateOrJoin buttonLabel="Create game" handleDone={handleDone} />
-    </>
-  );
-};
-
-const CreateOrJoin = ({
-  buttonLabel,
-  handleDone,
-}: {
-  buttonLabel: string;
-  handleDone: (avatar: string, name: string) => void;
-}) => {
-  const [avatar, setAvatar] = React.useState("");
-
-  const [name, setName] = React.useState("");
-
-  const buttonDisabled = isBlank(name);
-
-  const handleChangeAvatar = React.useCallback((face) => setAvatar(face), []);
-
-  return (
-    <div className="Join">
-      <div className="Join-logo">
-        <Logo />
-      </div>
-      <div className="Join-content">
-        Pick your look:
-        <br />
-        <SelectAvatar handleChange={handleChangeAvatar} />
-        <label htmlFor="name">Enter your name:</label>
-        <input
-          type="text"
-          id="name"
-          name="name"
-          autoFocus
-          value={name}
-          onChange={(event) => setName(event.target.value)}
-        />
-        <br />
-        <button
-          className="button"
-          disabled={buttonDisabled}
-          onClick={() => handleDone(avatar, name.trim())}
-        >
-          {buttonLabel}
-        </button>
-      </div>
-    </div>
-  );
-};
-
-const SelectAvatar = ({
-  handleChange,
-}: {
-  handleChange: (face: string) => void;
-}) => {
-  const faces = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-
-  const [face, setFace] = React.useState(() =>
-    getRandomCharacterFromString(faces)
-  );
-
-  const nextFace = () => {
-    const newFace = faces.charAt((faces.indexOf(face) + 1) % faces.length);
-    setFace(newFace);
-  };
-
-  React.useEffect(() => {
-    handleChange(face);
-  }, [face, handleChange]);
-
-  return (
-    <div className="SelectAvatar" onClick={nextFace}>
-      <Avatar face={face} small={false} />
-    </div>
-  );
 };

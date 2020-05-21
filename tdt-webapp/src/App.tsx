@@ -1,7 +1,8 @@
 import React from "react";
 import { Router } from "@reach/router";
 import Home from "./Home";
-import Game, { Create } from "./Game";
+import Game from "./Game";
+import { Create } from "./CreateOrJoin";
 import "./App.css";
 
 const App = () => {
