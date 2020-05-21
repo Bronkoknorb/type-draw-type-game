@@ -1,7 +1,9 @@
-import React from "react";
+import styled from "styled-components/macro";
 
-const Scrollable = ({ children }: { children: React.ReactNode }) => {
-  return <div className="Scrollable">{children}</div>;
-};
+const Scrollable = styled.div`
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+`;
 
 export default Scrollable;

@@ -218,12 +218,6 @@
   margin-bottom: 3vmin;
 }
 
-.Scrollable {
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-}
-
 .Drawing {
   display: block;
   margin: 2vmin 0;
