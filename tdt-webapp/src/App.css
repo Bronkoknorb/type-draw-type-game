@@ -186,8 +186,8 @@
   outline: none;
 }
 
-.button-red {
-  background-color: #800;
+.button-cancel {
+  background-color: #b00;
 }
 
 .button:disabled {
