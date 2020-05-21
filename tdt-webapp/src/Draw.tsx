@@ -53,54 +53,18 @@ const Draw = ({
 
   const [color, setColor] = React.useState("#000");
 
-  const [brushSizes, setBrushSizes] = React.useState(() => getBrushes(1));
+  const [brushes, setBrushes] = React.useState(() => getBrushes(1));
 
   const [selectedBrushIndex, setSelectedBrushIndex] = React.useState(1);
 
-  const selectedBrush: Brush = brushSizes[selectedBrushIndex];
+  const selectedBrush: Brush = brushes[selectedBrushIndex];
 
-  const [showBrushPopup, setShowBrushPopup] = React.useState(false);
-
-  const brushButton = React.useRef<HTMLDivElement>(null);
-  const brushPopup = React.useRef<HTMLDivElement>(null);
-
-  const selectBrush = () => {
-    setShowBrushPopup(!showBrushPopup);
-  };
-
-  const windowSize = useWindowSize();
-
-  React.useEffect(() => {
-    const setBrushPopupPosition = () => {
-      if (brushPopup.current !== null && brushButton.current !== null) {
-        brushPopup.current.style.left = `${
-          brushButton.current.offsetLeft + brushButton.current.offsetWidth
-        }px`;
-        brushPopup.current.style.top = `calc(${brushButton.current.offsetTop}px - 2vmin)`;
-      }
-    };
-
-    setBrushPopupPosition();
-  }, [windowSize, brushButton, brushPopup]);
-
-  const [showColorPicker, setShowColorPicker] = React.useState(false);
-
-  const triggerColorPicker = () => {
-    setShowColorPicker(true);
-  };
-
-  const handlePickColor = (newColor: string) => {
-    setColor(newColor);
-    setShowColorPicker(false);
-  };
-
-  const handleSetBrush = (brushIndex: number) => {
-    setShowBrushPopup(false);
+  const handleSelectBrush = (brushIndex: number) => {
     setSelectedBrushIndex(brushIndex);
   };
 
   const handleScaleChange = React.useCallback((scale: number) => {
-    setBrushSizes(getBrushes(scale));
+    setBrushes(getBrushes(scale));
   }, []);
 
   const [showConfirmDialog, setShowConfirmDialog] = React.useState(false);
@@ -154,46 +118,15 @@ const Draw = ({
         firstShow={firstTimeHelpDialog}
         handleClose={handleCloseDrawDialog}
       />
-      <div className="Draw-tools">
-        <div
-          className="tool-button tool-button-help"
-          onClick={() => setShowHelpDialog(true)}
-        >
-          <img src={helpImg} alt="Help" title="Help (Show text to draw)" />
-        </div>
-        <BrushButton
-          size={selectedBrush.displaySize}
-          color={color}
-          onClick={selectBrush}
-          ref={brushButton}
-        />
-        <div
-          className={"tool-popup" + (showBrushPopup ? "" : " hidden")}
-          ref={brushPopup}
-        >
-          {brushSizes.map((brush, index) => (
-            <BrushButton
-              key={index}
-              size={brush.displaySize}
-              color={color}
-              onClick={() => handleSetBrush(index)}
-            />
-          ))}
-        </div>
-        <div className="tool-color" onClick={triggerColorPicker}>
-          <div
-            className="tool-color-selectedcolor"
-            style={{ backgroundColor: color }}
-          ></div>
-          <img src={colorwheelImg} alt="Pick color" title="Pick color" />
-        </div>
-        <Dialog show={showColorPicker}>
-          <ColorPicker handlePickColor={handlePickColor} />
-        </Dialog>
-        <div className="tool-button tool-button-done" onClick={handleClickDone}>
-          <img src={checkImg} alt="Done" title="Done" />
-        </div>
-      </div>
+      <DrawTools
+        color={color}
+        brushes={brushes}
+        selectedBrush={selectedBrush}
+        triggerHelp={() => setShowHelpDialog(true)}
+        onSelectBrush={handleSelectBrush}
+        onChangeColor={(newColor) => setColor(newColor)}
+        onDone={handleClickDone}
+      />
       <DrawCanvas
         color={color}
         brushPixelSize={selectedBrush.pixelSize}
@@ -205,6 +138,104 @@ const Draw = ({
 };
 
 export default Draw;
+
+const DrawTools = ({
+  color,
+  brushes,
+  selectedBrush,
+  triggerHelp,
+  onSelectBrush,
+  onChangeColor,
+  onDone,
+}: {
+  color: string;
+  brushes: Brush[];
+  selectedBrush: Brush;
+  triggerHelp: () => void;
+  onSelectBrush: (brushIndex: number) => void;
+  onChangeColor: (color: string) => void;
+  onDone: () => void;
+}) => {
+  const brushButton = React.useRef<HTMLDivElement>(null);
+  const brushPopup = React.useRef<HTMLDivElement>(null);
+
+  const [showBrushPopup, setShowBrushPopup] = React.useState(false);
+
+  const selectBrush = () => {
+    setShowBrushPopup(!showBrushPopup);
+  };
+
+  const windowSize = useWindowSize();
+
+  React.useEffect(() => {
+    const setBrushPopupPosition = () => {
+      if (brushPopup.current !== null && brushButton.current !== null) {
+        brushPopup.current.style.left = `${
+          brushButton.current.offsetLeft + brushButton.current.offsetWidth
+        }px`;
+        brushPopup.current.style.top = `calc(${brushButton.current.offsetTop}px - 2vmin)`;
+      }
+    };
+
+    setBrushPopupPosition();
+  }, [windowSize, brushButton, brushPopup]);
+
+  const handleSelectBrush = (index: number) => {
+    setShowBrushPopup(false);
+    onSelectBrush(index);
+  };
+
+  const [showColorPicker, setShowColorPicker] = React.useState(false);
+
+  const triggerColorPicker = () => {
+    setShowColorPicker(true);
+  };
+
+  const handlePickColor = (newColor: string) => {
+    onChangeColor(newColor);
+    setShowColorPicker(false);
+  };
+
+  return (
+    <div className="Draw-tools">
+      <div className="tool-button tool-button-help" onClick={triggerHelp}>
+        <img src={helpImg} alt="Help" title="Help (Show text to draw)" />
+      </div>
+      <BrushButton
+        size={selectedBrush.displaySize}
+        color={color}
+        onClick={selectBrush}
+        ref={brushButton}
+      />
+      <div
+        className={"tool-popup" + (showBrushPopup ? "" : " hidden")}
+        ref={brushPopup}
+      >
+        {brushes.map((brush, index) => (
+          <BrushButton
+            key={index}
+            size={brush.displaySize}
+            color={color}
+            onClick={() => handleSelectBrush(index)}
+          />
+        ))}
+      </div>
+      <div className="tool-color" onClick={triggerColorPicker}>
+        <div
+          className="tool-color-selectedcolor"
+          style={{ backgroundColor: color }}
+        ></div>
+        <img src={colorwheelImg} alt="Pick color" title="Pick color" />
+      </div>
+      <Dialog show={showColorPicker}>
+        <ColorPicker handlePickColor={handlePickColor} />
+      </Dialog>
+      <div className="tool-button tool-button-done" onClick={onDone}>
+        <img src={checkImg} alt="Done" title="Done" />
+      </div>
+    </div>
+  );
+};
 
 const DrawHelpDialog = ({
   text,
