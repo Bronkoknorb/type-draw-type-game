@@ -230,18 +230,11 @@ const Game = (props: GameProps) => {
         />
       );
     } else if (isWaitForRoundFinishState(playerState)) {
-      const roundAction = playerState.isTypeRound ? "typing" : "drawing";
-
-      const waitingForPlayers = playerState.waitingForPlayers
-        .map((p) => p.name)
-        .join(", ");
-
       return (
-        <Message>
-          {`Waiting for other players to finish ${roundAction}:`}
-          <br />
-          {waitingForPlayers}
-        </Message>
+        <WaitForRoundFinished
+          isTypeRound={playerState.isTypeRound}
+          waitingForPlayers={playerState.waitingForPlayers}
+        />
       );
     } else if (isStoriesState(playerState)) {
       return <GameFinished stories={playerState.stories} />;
@@ -279,6 +272,26 @@ const Game = (props: GameProps) => {
 };
 
 export default Game;
+
+const WaitForRoundFinished = ({
+  isTypeRound,
+  waitingForPlayers,
+}: {
+  isTypeRound: boolean;
+  waitingForPlayers: PlayerInfo[];
+}) => {
+  const roundAction = isTypeRound ? "typing" : "drawing";
+
+  const waitingForPlayersText = waitingForPlayers.map((p) => p.name).join(", ");
+
+  return (
+    <Message>
+      {`Waiting for other players to finish ${roundAction}:`}
+      <br />
+      {waitingForPlayersText}
+    </Message>
+  );
+};
 
 const GameFinished = ({ stories }: { stories: StoryContent[] }) => {
   const [showStories, setShowStories] = React.useState(false);
