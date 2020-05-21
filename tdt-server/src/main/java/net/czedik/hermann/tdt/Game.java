@@ -20,31 +20,36 @@ import java.nio.file.StandardOpenOption;
 import java.util.*;
 import java.util.stream.Collectors;
 
+// note: this class is not thread-safe, and relies on external synchronization (by the owning GameLoader)
 public class Game {
     private static final Logger log = LoggerFactory.getLogger(Game.class);
+
+    public static final String STATE_FILENAME = "state.json";
 
     public final String gameId;
 
     private final Path gameDir;
 
-    // guarded by this
     private final GameState gameState;
 
-    // guarded by this
     private final Map<Client, Player> clientToPlayer = new HashMap<>();
 
-    // guarded by this
     private final Map<Player, Set<Client>> playerToClients = new HashMap<>();
 
     public Game(String gameId, Path gameDir, Player creator) {
-        this.gameId = Objects.requireNonNull(gameId);
-        this.gameDir = Objects.requireNonNull(gameDir);
-        this.gameState = new GameState();
+        this(gameId, gameDir, new GameState());
+
         gameState.players.add(Objects.requireNonNull(creator));
     }
 
+    public Game(String gameId, Path gameDir, GameState gameState) {
+        this.gameId = Objects.requireNonNull(gameId);
+        this.gameDir = Objects.requireNonNull(gameDir);
+        this.gameState = Objects.requireNonNull(gameState);
+    }
+
     // returns whether the client has been added as a player to the game
-    public synchronized boolean access(Client client, AccessAction accessAction) {
+    public boolean access(Client client, AccessAction accessAction) {
         Player player = getPlayerById(accessAction.playerId);
         if (player == null) {
             log.info("Game {}: New player {} accessing via client {}", gameId, accessAction.playerId, client.getId());
@@ -81,7 +86,7 @@ public class Game {
     }
 
     // returns whether the client has been added as a player to the game
-    public synchronized boolean join(Client client, JoinAction joinAction) {
+    public boolean join(Client client, JoinAction joinAction) {
         if (gameState.state == GameState.State.WaitingForPlayers) {
             log.info("Game {}: Player {} joining with name '{}' via client {}", gameId, joinAction.playerId, joinAction.name, client.getId());
             Player player = getPlayerById(joinAction.playerId);
@@ -240,7 +245,7 @@ public class Game {
         return new PlayerInfo(p.name, p.face, p.isCreator);
     }
 
-    public synchronized void clientDisconnected(Client client) {
+    public void clientDisconnected(Client client) {
         Player player = clientToPlayer.remove(client);
         if (player == null) {
             log.info("Game {}: Client {} disconnect. Not a player in this game.", gameId, client.getId());
@@ -256,12 +261,13 @@ public class Game {
             if (!player.isCreator && clientsOfPlayer.isEmpty()) {
                 log.info("Game {}: Player {} has left the game", gameId, player.id);
                 gameState.players.remove(player);
+                playerToClients.remove(player);
                 updateStateForAllPlayers();
             }
         }
     }
 
-    public synchronized void start(Client client) {
+    public void start(Client client) {
         Player player = clientToPlayer.get(client);
         if (player == null) {
             log.warn("Game {}: Cannot start game. Client {} is not a known player", gameId, client.getId());
@@ -298,7 +304,7 @@ public class Game {
         updateStateForAllPlayers();
     }
 
-    public synchronized void type(Client client, TypeAction typeAction) {
+    public void type(Client client, TypeAction typeAction) {
         Player player = clientToPlayer.get(client);
         if (player == null) {
             log.warn("Game {}: Cannot type. Client {} is not a known player", gameId, client.getId());
@@ -348,7 +354,7 @@ public class Game {
         return roundNo % 2 == 0;
     }
 
-    public synchronized void draw(Client client, ByteBuffer image) throws IOException {
+    public void draw(Client client, ByteBuffer image) throws IOException {
         Player player = clientToPlayer.get(client);
         if (player == null) {
             log.warn("Game {}: Cannot draw. Client {} is not a known player", gameId, client.getId());
@@ -396,9 +402,9 @@ public class Game {
         return gameState.round >= gameState.gameMatrix.length;
     }
 
-    private void storeState() {
+    public void storeState() {
         log.info("Game {}: Storing state", gameId);
-        try (OutputStream out = new BufferedOutputStream(Files.newOutputStream(gameDir.resolve("state.json")))) {
+        try (OutputStream out = new BufferedOutputStream(Files.newOutputStream(gameDir.resolve(STATE_FILENAME)))) {
             JSONHelper.objectMapper.writeValue(out, gameState);
         } catch (IOException e) {
             log.error("Game {}: Error storing state", gameId, e);

@@ -1,5 +1,6 @@
 package net.czedik.hermann.tdt;
 
+import net.czedik.hermann.tdt.GameLoader.GameRef;
 import net.czedik.hermann.tdt.actions.AccessAction;
 import net.czedik.hermann.tdt.actions.JoinAction;
 import net.czedik.hermann.tdt.actions.TypeAction;
@@ -17,6 +18,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 @Service
 public class GameManager {
@@ -26,14 +28,12 @@ public class GameManager {
     private static final int GAME_ID_LENGTH = 5;
 
     // guarded by this
-    private final Map<String, Game> loadedGames = new HashMap<>();
+    private final Map<String, GameLoader> gameLoaders = new HashMap<>();
 
     // guarded by this
-    private final Map<Client, Game> clientToGame = new HashMap<>();
+    private final Map<Client, GameRef> clientToGameRef = new HashMap<>();
 
     private final Path gamesPath;
-
-    // TODO make sure to unload games again, to not run out of memory
 
     @Autowired
     public GameManager(@Value("${storage.dir}") String storageDir) {
@@ -42,55 +42,87 @@ public class GameManager {
         gamesPath = storageDirPath.resolve("games");
     }
 
-    public Game newGame(CreateGameRequest createGameRequest) throws IOException {
+    public String newGame(CreateGameRequest createGameRequest) throws IOException {
         String gameId = generateAndReserveNewGameId();
         Path gameDir = getGameDir(gameId);
-        Game game = new Game(gameId, gameDir, new Player(createGameRequest.playerId, createGameRequest.playerName, createGameRequest.playerFace, true));
-        synchronized (this) {
-            loadedGames.put(game.gameId, game);
+        Game newGame = new Game(gameId, gameDir, new Player(createGameRequest.playerId, createGameRequest.playerName, createGameRequest.playerFace, true));
+
+        GameRef gameRef = getGameRef(gameId);
+        try {
+            gameRef.setNewGame(newGame);
+        } finally {
+            closeGameRef(gameRef);
         }
-        return game;
+
+        return newGame.gameId;
     }
 
     public void handleAccessAction(Client client, AccessAction accessAction) {
-        Game game = getGame(accessAction.gameId);
-        if (game == null) {
-            handleGameUnknown(client);
-            return;
-        }
-        boolean added = game.access(client, accessAction);
-        if (added) {
-            addClientForGame(client, game);
-        }
+        handleAccessOrJoinAction(client, game -> game.access(client, accessAction), accessAction.gameId);
     }
 
     public void handleJoinAction(Client client, JoinAction joinAction) {
-        Game game = getGame(joinAction.gameId);
-        if (game == null) {
-            handleGameUnknown(client);
-            return;
-        }
-        boolean added = game.join(client, joinAction);
-        if (added) {
-            addClientForGame(client, game);
+        handleAccessOrJoinAction(client, game -> game.join(client, joinAction), joinAction.gameId);
+    }
+
+    private void handleAccessOrJoinAction(Client client, Function<Game, Boolean> actionHandler, String gameId) {
+        // TODO validate gameid (must not contain special characters, length, etc.)
+
+        GameRef gameRef = getGameRef(gameId);
+        boolean added = false;
+        try {
+            added = gameRef.useGame(game -> {
+                if (game == null) {
+                    handleGameUnknown(client);
+                    return false;
+                }
+                return actionHandler.apply(game);
+            });
+        } finally {
+            if (added) {
+                associateClientWithGameRef(client, gameRef);
+            } else {
+                closeGameRef(gameRef);
+            }
         }
     }
 
-    private Game getGame(String gameId) {
-        Game game;
+    private void associateClientWithGameRef(Client client, GameRef gameRef) {
+        GameRef previousGameRefForClient;
         synchronized (this) {
-            game = loadedGames.get(gameId);
+            previousGameRefForClient = clientToGameRef.put(client, gameRef);
         }
-        if (game == null) {
-            log.info("Access to unknown game {}", gameId);
-            return null;
+        if (previousGameRefForClient != null) {
+            log.warn("Client {} unexpectedly switched between games. New game: {} - Old game: {}",
+                    client.getId(), gameRef.getGameId(), previousGameRefForClient.getGameId());
+            closeGameRef(gameRef);
         }
-        return game;
     }
 
-    private void addClientForGame(Client client, Game game) {
+    private GameRef getGameRef(String gameId) {
+        GameRef gameRef;
         synchronized (this) {
-            clientToGame.put(client, game);
+            GameLoader gameLoader = gameLoaders.computeIfAbsent(gameId, id -> new GameLoader(gameId, getGameDir(gameId)));
+            log.info("Access to game loader of game {} (total number of game loaders: {})", gameId, gameLoaders.size());
+            gameRef = gameLoader.getGameRef();
+        }
+        return gameRef;
+    }
+
+    private void closeGameRef(GameRef gameRef) {
+        gameRef.close();
+        removeGameLoaderIfUnused(gameRef.getGameId());
+    }
+
+    private void removeGameLoaderIfUnused(String gameId) {
+        synchronized (this) {
+            GameLoader gameLoader = gameLoaders.get(gameId);
+            if (gameLoader != null) {
+                if (gameLoader.isUnused()) {
+                    gameLoaders.remove(gameId);
+                    log.info("Removed unused game loader for game {} (total number of loaders: {})", gameLoader.gameId, gameLoaders.size());
+                }
+            }
         }
     }
 
@@ -123,45 +155,62 @@ public class GameManager {
     }
 
     public void clientDisconnected(Client client) {
-        Game game;
+        GameRef gameRef;
         synchronized (this) {
-            game = clientToGame.remove(client);
+            gameRef = clientToGameRef.remove(client);
         }
-        if (game != null) {
-            game.clientDisconnected(client);
+        if (gameRef == null) {
+            return;
         }
+        try {
+            gameRef.useGame(game -> {
+                if (game != null) {
+                    game.clientDisconnected(client);
+                }
+            });
+        } finally {
+            closeGameRef(gameRef);
+        }
+    }
+
+    private GameRef getGameRefForClient(Client client) {
+        return clientToGameRef.get(client);
     }
 
     public void handleStartAction(Client client) {
-        Game game = getGame(client);
-        if (game == null) {
+        GameRef gameRef = getGameRefForClient(client);
+        if (gameRef == null) {
             log.warn("Cannot handle start. Client {} unknown", client.getId());
             return;
         }
-        game.start(client);
-    }
-
-    private Game getGame(Client client) {
-        synchronized (this) {
-            return clientToGame.get(client);
-        }
+        gameRef.useGame(game -> {
+            game.start(client);
+        });
     }
 
     public void handleTypeAction(Client client, TypeAction typeAction) {
-        Game game = getGame(client);
-        if (game == null) {
+        GameRef gameRef = getGameRefForClient(client);
+        if (gameRef == null) {
             log.warn("Cannot handle type. Client {} unknown", client.getId());
             return;
         }
-        game.type(client, typeAction);
+        gameRef.useGame(game -> {
+            game.type(client, typeAction);
+        });
     }
 
-    public void handleReceiveDrawing(Client client, ByteBuffer image) throws IOException {
-        Game game = getGame(client);
-        if (game == null) {
+    public void handleReceiveDrawing(Client client, ByteBuffer image) {
+        GameRef gameRef = getGameRefForClient(client);
+        if (gameRef == null) {
             log.warn("Cannot handle receive drawing. Client {} unknown", client.getId());
             return;
         }
-        game.draw(client, image);
+        gameRef.useGame(game -> {
+            try {
+                game.draw(client, image);
+            } catch (IOException e) {
+                log.error("Error handling draw action for client {}", client.getId(), e);
+            }
+        });
     }
 }

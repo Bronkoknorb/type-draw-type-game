@@ -9,6 +9,9 @@ const Home = (props: RouteComponentProps) => {
     toggleToFullscreenAndLandscapeOnMobile();
   };
 
+  // TODO add button to Join existing game.
+  // TODO add game description
+
   return (
     <BigLogoScreen>
       <div className="buttons">

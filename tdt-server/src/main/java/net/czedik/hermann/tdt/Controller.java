@@ -31,8 +31,8 @@ public class Controller {
             produces = {MediaType.APPLICATION_JSON_VALUE})
     public CreateGameResponse createGame(@Valid @RequestBody CreateGameRequest createGameRequest) throws IOException {
         log.info("Create game: {}", createGameRequest);
-        Game game = gameManager.newGame(createGameRequest);
-        CreateGameResponse response = new CreateGameResponse(game.gameId);
+        String gameId = gameManager.newGame(createGameRequest);
+        CreateGameResponse response = new CreateGameResponse(gameId);
         log.info("Created game: {}", response);
         return response;
     }

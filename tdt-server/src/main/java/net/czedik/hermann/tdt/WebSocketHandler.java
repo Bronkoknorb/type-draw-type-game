@@ -14,7 +14,6 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.AbstractWebSocketHandler;
 
-import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.Map;
 import java.util.Objects;
@@ -70,7 +69,7 @@ public class WebSocketHandler extends AbstractWebSocketHandler {
     }
 
     @Override
-    protected void handleBinaryMessage(WebSocketSession session, BinaryMessage message) throws IOException {
+    protected void handleBinaryMessage(WebSocketSession session, BinaryMessage message) {
         Client client = Objects.requireNonNull(clients.get(session));
         log.info("Received image (size: {}KB) from client {}", message.getPayloadLength() / 1000, client.getId());
 

@@ -1,12 +1,18 @@
 package net.czedik.hermann.tdt;
 
-public class StoryElement {
-    public String type;
-    public String content;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-    private StoryElement(String type, String content) {
-        this.type = type;
-        this.content = content;
+import java.util.Objects;
+
+public class StoryElement {
+    public final String type;
+    public final String content;
+
+    @JsonCreator
+    private StoryElement(@JsonProperty("type") String type, @JsonProperty("content") String content) {
+        this.type = Objects.requireNonNull(type);
+        this.content = Objects.requireNonNull(content);
     }
 
     public static StoryElement createImageElement(String filename) {
