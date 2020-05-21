@@ -1,11 +1,12 @@
 import React from "react";
 import { RouteComponentProps } from "@reach/router";
+
+import { PlayerInfo, StoryContent } from "./model";
+import { getPlayerId } from "./helpers";
 import Type from "./Type";
 import Draw from "./Draw";
 import BigLogoScreen from "./BigLogoScreen";
 import WaitForPlayersScreen, { WaitForGameStartScreen } from "./WaitForPlayers";
-import { PlayerInfo, StoryContent } from "./model";
-import { getPlayerId } from "./helpers";
 import GameFinishedAnimation from "./GameFinishedAnimation";
 import Stories from "./Stories";
 import { Join } from "./CreateOrJoin";

@@ -1,0 +1,51 @@
+.Join {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+}
+
+.Join-logo {
+  flex-grow: 1;
+  flex-basis: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.Join-logo .Logo {
+  flex-grow: 0;
+}
+
+.Join-logo .Logo img {
+  max-height: 90vh;
+  width: 40vw;
+}
+
+.Join-content {
+  flex-grow: 1;
+  flex-basis: 50%;
+}
+
+.Join-content .SelectAvatar {
+  margin-top: 0.5vmin;
+  margin-bottom: 3vmin;
+}
+
+.Join-content label {
+  display: block;
+  margin-bottom: 0.9vmin;
+}
+
+.Join-content input {
+  width: 80%;
+  margin-bottom: 4vmin;
+}
+
+.SelectAvatar {
+  cursor: pointer;
+  width: 24vmin;
+  height: 24vmin;
+  vertical-align: middle;
+  margin: 0 auto;
+}

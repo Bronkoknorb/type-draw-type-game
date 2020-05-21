@@ -1,0 +1,22 @@
+.Type {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.Type textarea {
+  width: 80vw;
+  height: 20vh;
+  margin: 2vmin 0;
+}
+
+.Type h1 img {
+  width: 25vmin;
+  margin-top: 2.3vmin;
+}
+
+.Type button {
+  margin-bottom: 3vmin;
+}

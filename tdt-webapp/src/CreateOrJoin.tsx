@@ -1,9 +1,12 @@
 import React from "react";
 import { RouteComponentProps, navigate } from "@reach/router";
+
 import { getRandomCharacterFromString, isBlank, getPlayerId } from "./helpers";
 import Logo from "./Logo";
 import Avatar from "./Avatar";
 import { ConnectionLostErrorDialog } from "./ErrorDialogs";
+
+import "./CreateOrJoin.css";
 
 export const Create = (props: RouteComponentProps) => {
   const [error, setError] = React.useState(false);

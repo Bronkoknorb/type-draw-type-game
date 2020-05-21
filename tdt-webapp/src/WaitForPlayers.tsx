@@ -1,7 +1,10 @@
 import React from "react";
+
+import { PlayerInfo } from "./model";
 import Player from "./Player";
 import Logo from "./Logo";
-import { PlayerInfo } from "./model";
+
+import "./WaitForPlayers.css";
 
 const WaitForPlayersScreen = ({
   gameId,

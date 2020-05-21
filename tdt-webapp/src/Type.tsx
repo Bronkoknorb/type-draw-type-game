@@ -1,8 +1,12 @@
 import React from "react";
-import typeImg from "./img/type.svg";
+
+import { isBlank } from "./helpers";
 import Scrollable from "./Scrollable";
 import { PlayerInfo } from "./model";
-import { isBlank } from "./helpers";
+
+import "./Type.css";
+
+import typeImg from "./img/type.svg";
 
 const Type = ({
   round,

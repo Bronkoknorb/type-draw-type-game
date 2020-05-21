@@ -1,0 +1,63 @@
+.WaitForPlayers {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+}
+
+.WaitForPlayers-left {
+  width: 50vw;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.Players-title {
+  padding-left: 2vmin;
+}
+
+.Players {
+  flex: auto;
+  min-height: 10vmin;
+  border: 0.7vmin solid black;
+  border-left-width: 0;
+  border-bottom-width: 0;
+  border-radius: 2vmin;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  padding: 2vmin;
+  margin-right: 5vmin;
+  background-color: white;
+  box-shadow: 0.5vmin 0.7vmin 1vmin rgba(0, 0, 0, 0.2);
+  overflow: auto;
+}
+
+.Players .Player {
+  margin-bottom: 2vmin;
+}
+
+.WaitForPlayers-right {
+  height: 100%;
+  width: 50vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+}
+
+.WaitForPlayers-right .field {
+  white-space: nowrap;
+  user-select: all;
+  max-width: 44vw;
+  overflow: auto;
+}
+
+.WaitForPlayers-right .Logo {
+  flex-grow: 0;
+}
+
+.WaitForPlayers-right .Logo img {
+  width: 30vmin;
+}
