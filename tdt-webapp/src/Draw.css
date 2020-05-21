@@ -36,6 +36,7 @@
   max-width: 100%;
   max-height: 100vh;
   cursor: crosshair;
+  border-radius: 2vmin;
 }
 
 .tool-button {
@@ -57,13 +58,21 @@
   justify-content: center;
 }
 
-.tool-button-info {
-  background-color: #700;
-  color: white;
+.tool-button-help {
+  background-color: #b00;
+}
+
+.tool-button-done {
+  background-color: #4caf50;
+}
+
+.tool-button img {
+  width: 7vmin;
+  height: 7vmin;
+  filter: invert();
 }
 
 .tool-button-brush {
-  background-color: #eee;
   cursor: pointer;
   margin: 1vmin;
 }

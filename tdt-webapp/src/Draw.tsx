@@ -5,6 +5,8 @@ import Dialog from "./Dialog";
 import "./Draw.css";
 import colorwheelImg from "./img/colorwheel.svg";
 import drawImg from "./img/draw.svg";
+import helpImg from "./img/help.svg";
+import checkImg from "./img/check.svg";
 import { PlayerInfo } from "./model";
 import Scrollable from "./Scrollable";
 
@@ -144,42 +146,28 @@ const Draw = ({
       </Dialog>
       <div className="Draw-tools">
         <div
-          className="tool-button tool-button-info"
+          className="tool-button tool-button-help"
           onClick={() => setShowHelpDialog(true)}
         >
-          <div>Help?</div>
+          <img src={helpImg} alt="Help" title="Help (Show text to draw)" />
         </div>
-        <div
-          className="tool-button tool-button-brush"
+        <BrushButton
+          size={selectedBrush.displaySize}
+          color={color}
           onClick={selectBrush}
           ref={brushButton}
-        >
-          <div
-            style={{
-              width: selectedBrush.displaySize,
-              height: selectedBrush.displaySize,
-              backgroundColor: color,
-            }}
-          ></div>
-        </div>
+        />
         <div
           className={"tool-popup" + (showBrushPopup ? "" : " hidden")}
           ref={brushPopup}
         >
           {brushSizes.map((brush, index) => (
-            <div
-              className="tool-button tool-button-brush"
-              onClick={() => handleSetBrush(index)}
+            <BrushButton
               key={index}
-            >
-              <div
-                style={{
-                  width: brush.displaySize,
-                  height: brush.displaySize,
-                  backgroundColor: color,
-                }}
-              ></div>
-            </div>
+              size={brush.displaySize}
+              color={color}
+              onClick={() => handleSetBrush(index)}
+            />
           ))}
         </div>
         <div className="tool-color" onClick={triggerColorPicker}>
@@ -192,8 +180,8 @@ const Draw = ({
         <Dialog show={showColorPicker}>
           <ColorPicker handlePickColor={handlePickColor} />
         </Dialog>
-        <div className="button tool-button-done" onClick={handleClickDone}>
-          Done
+        <div className="tool-button tool-button-done" onClick={handleClickDone}>
+          <img src={checkImg} alt="Done" title="Done" />
         </div>
       </div>
       <DrawCanvas
@@ -207,6 +195,38 @@ const Draw = ({
 };
 
 export default Draw;
+
+const BrushButton = React.forwardRef(
+  (
+    {
+      color,
+      size,
+      onClick,
+    }: {
+      color: string;
+      size: number;
+      onClick: () => void;
+    },
+    ref?: React.Ref<HTMLDivElement>
+  ) => {
+    return (
+      <div
+        className="tool-button tool-button-brush"
+        onClick={onClick}
+        ref={ref}
+        style={{ backgroundColor: color === "#FFF" ? "#aaa" : "white" }}
+      >
+        <div
+          style={{
+            width: size,
+            height: size,
+            backgroundColor: color,
+          }}
+        ></div>
+      </div>
+    );
+  }
+);
 
 interface ImageProvider {
   getImageDataURL: () => string;
