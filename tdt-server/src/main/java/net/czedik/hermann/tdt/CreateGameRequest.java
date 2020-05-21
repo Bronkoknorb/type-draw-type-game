@@ -8,7 +8,7 @@ public class CreateGameRequest {
     @NotBlank
     public String playerName;
     @NotBlank
-    public String playerAvatar;
+    public String playerFace;
 
     @Override
     public String toString() {

@@ -59,16 +59,14 @@ const StoryElementComponent = ({ element }: { element: StoryElement }) => {
   if (element.type === "text") {
     return (
       <TextStoryElement>
-        <Player face={element.player.avatar}>
-          {element.player.name} typed:
-        </Player>
+        <Player face={element.player.face}>{element.player.name} typed:</Player>
         <div className="field">{NewlineToBreak(element.content)}</div>
       </TextStoryElement>
     );
   } else {
     return (
       <ImageStoryElement>
-        <Player face={element.player.avatar}>
+        <Player face={element.player.face}>
           {element.player.name} painted:
         </Player>
         <img src={element.content} alt="Drawing" />

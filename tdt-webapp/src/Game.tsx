@@ -181,14 +181,14 @@ const Game = (props: GameProps) => {
     if (playerState.state === "loading") {
       return <LoadingGame />;
     } else if (playerState.state === "join") {
-      const handleJoinDone = (avatar: string, name: string) => {
+      const handleJoinDone = (face: string, name: string) => {
         send({
           action: "join",
           content: {
             gameId,
             playerId: getPlayerId(),
             name,
-            avatar,
+            face,
           },
         });
       };

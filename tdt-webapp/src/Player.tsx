@@ -1,5 +1,5 @@
 import React from "react";
-import Avatar from "./Avatar";
+import Face from "./Face";
 
 const Player = ({
   face,
@@ -10,7 +10,7 @@ const Player = ({
 }) => {
   return (
     <div className="Player">
-      <Avatar face={face} small={true}></Avatar>
+      <Face face={face} small={true}></Face>
       <div>{children}</div>
     </div>
   );

@@ -27,7 +27,7 @@
   flex-basis: 50%;
 }
 
-.Join-content .SelectAvatar {
+.Join-content .SelectFace {
   margin-top: 0.5vmin;
   margin-bottom: 3vmin;
 }
@@ -42,7 +42,7 @@
   margin-bottom: 4vmin;
 }
 
-.SelectAvatar {
+.SelectFace {
   cursor: pointer;
   width: 24vmin;
   height: 24vmin;

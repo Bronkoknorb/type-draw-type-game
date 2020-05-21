@@ -45,7 +45,7 @@ public class GameManager {
     public Game newGame(CreateGameRequest createGameRequest) throws IOException {
         String gameId = generateAndReserveNewGameId();
         Path gameDir = getGameDir(gameId);
-        Game game = new Game(gameId, gameDir, new Player(createGameRequest.playerId, createGameRequest.playerName, createGameRequest.playerAvatar, true));
+        Game game = new Game(gameId, gameDir, new Player(createGameRequest.playerId, createGameRequest.playerName, createGameRequest.playerFace, true));
         synchronized (this) {
             loadedGames.put(game.gameId, game);
         }

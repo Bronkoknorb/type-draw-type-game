@@ -90,7 +90,7 @@ public class Game {
             if (player != null) {
                 log.warn("Game {}: Player {} has already joined", gameId, joinAction.playerId);
             } else {
-                player = new Player(joinAction.playerId, joinAction.name, joinAction.avatar, false);
+                player = new Player(joinAction.playerId, joinAction.name, joinAction.face, false);
                 gameState.players.add(player);
             }
             addClientForPlayer(client, player);
@@ -239,7 +239,7 @@ public class Game {
     }
 
     private static PlayerInfo mapPlayerToPlayerInfo(Player p) {
-        return new PlayerInfo(p.name, p.avatar, p.isCreator);
+        return new PlayerInfo(p.name, p.face, p.isCreator);
     }
 
     public synchronized void clientDisconnected(Client client) {

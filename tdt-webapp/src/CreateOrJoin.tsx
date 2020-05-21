@@ -8,7 +8,7 @@ import {
   useLocalStorageState,
 } from "./helpers";
 import Logo from "./Logo";
-import Avatar from "./Avatar";
+import Face from "./Face";
 import { ConnectionLostErrorDialog } from "./ErrorDialogs";
 
 import "./CreateOrJoin.css";
@@ -16,7 +16,7 @@ import "./CreateOrJoin.css";
 export const Create = (props: RouteComponentProps) => {
   const [error, setError] = React.useState(false);
 
-  const handleDone = async (avatar: string, name: string) => {
+  const handleDone = async (face: string, name: string) => {
     interface CreatedGameResponse {
       gameId: string;
     }
@@ -30,7 +30,7 @@ export const Create = (props: RouteComponentProps) => {
         body: JSON.stringify({
           playerId: getPlayerId(),
           playerName: name,
-          playerAvatar: avatar,
+          playerFace: face,
         }),
       });
 
@@ -58,7 +58,7 @@ export const Create = (props: RouteComponentProps) => {
 export const Join = ({
   handleDone,
 }: {
-  handleDone: (avatar: string, name: string) => void;
+  handleDone: (face: string, name: string) => void;
 }) => {
   return <CreateOrJoin buttonLabel="Join game" handleDone={handleDone} />;
 };
@@ -68,7 +68,7 @@ const CreateOrJoin = ({
   handleDone,
 }: {
   buttonLabel: string;
-  handleDone: (avatar: string, name: string) => void;
+  handleDone: (face: string, name: string) => void;
 }) => {
   const faces = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
@@ -80,7 +80,7 @@ const CreateOrJoin = ({
 
   const buttonDisabled = isBlank(name);
 
-  const handleChangeAvatar = (newFace: string) => setFace(newFace);
+  const handleChangeFace = (newFace: string) => setFace(newFace);
 
   return (
     <div className="Join">
@@ -90,11 +90,7 @@ const CreateOrJoin = ({
       <div className="Join-content">
         Pick your look:
         <br />
-        <SelectAvatar
-          face={face}
-          faces={faces}
-          handleChange={handleChangeAvatar}
-        />
+        <SelectFace face={face} faces={faces} handleChange={handleChangeFace} />
         <label htmlFor="name">Enter your name:</label>
         <input
           type="text"
@@ -117,7 +113,7 @@ const CreateOrJoin = ({
   );
 };
 
-const SelectAvatar = ({
+const SelectFace = ({
   face,
   faces,
   handleChange,
@@ -132,8 +128,8 @@ const SelectAvatar = ({
   };
 
   return (
-    <div className="SelectAvatar" onClick={nextFace}>
-      <Avatar face={face} small={false} />
+    <div className="SelectFace" onClick={nextFace}>
+      <Face face={face} small={false} />
     </div>
   );
 };

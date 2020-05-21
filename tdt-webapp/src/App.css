@@ -16,12 +16,12 @@
   white-space: nowrap;
 }
 
-.Player .Avatar {
+.Player .Face {
   flex: none;
   margin-right: 2vmin;
 }
 
-.Avatar {
+.Face {
   font-family: "TheFreakyFace";
   font-size: 30vmin;
   border: 0.7vmin solid black;
@@ -36,7 +36,7 @@
   overflow: hidden;
 }
 
-.Avatar-small {
+.Face-small {
   width: 16vmin;
   height: 16vmin;
   font-size: 20vmin;
