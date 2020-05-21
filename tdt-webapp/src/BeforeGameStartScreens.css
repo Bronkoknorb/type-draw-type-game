@@ -1,16 +1,40 @@
-.WaitForPlayers {
+.BeforeGameStartScreen {
   display: flex;
   width: 100%;
   height: 100%;
   align-items: center;
 }
 
-.WaitForPlayers-left {
+.BeforeGameStartScreen-left {
   width: 50vw;
   height: 100%;
   display: flex;
   flex-direction: column;
   text-align: left;
+}
+
+.BeforeGameStartScreen-right {
+  height: 100%;
+  width: 50vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+}
+
+.BeforeGameStartScreen-right .field {
+  white-space: nowrap;
+  user-select: all;
+  max-width: 44vw;
+  overflow: auto;
+}
+
+.BeforeGameStartScreen-right .Logo {
+  flex-grow: 0;
+}
+
+.BeforeGameStartScreen-right .Logo img {
+  width: 30vmin;
 }
 
 .Players-title {
@@ -36,28 +60,4 @@
 
 .Players .Player {
   margin-bottom: 2vmin;
-}
-
-.WaitForPlayers-right {
-  height: 100%;
-  width: 50vw;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-evenly;
-}
-
-.WaitForPlayers-right .field {
-  white-space: nowrap;
-  user-select: all;
-  max-width: 44vw;
-  overflow: auto;
-}
-
-.WaitForPlayers-right .Logo {
-  flex-grow: 0;
-}
-
-.WaitForPlayers-right .Logo img {
-  width: 30vmin;
 }

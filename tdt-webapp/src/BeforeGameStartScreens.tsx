@@ -66,7 +66,6 @@ export const WaitForGameStartScreen = ({
   );
 };
 
-// TODO rename CSS classes
 const BeforeGameStartScreen = ({
   players,
   children,
@@ -75,8 +74,8 @@ const BeforeGameStartScreen = ({
   children: React.ReactNode;
 }) => {
   return (
-    <div className="WaitForPlayers">
-      <div className="WaitForPlayers-left">
+    <div className="BeforeGameStartScreen">
+      <div className="BeforeGameStartScreen-left">
         <div className="Players-title">Players:</div>
         <div className="Players">
           {players.map((player, index) => (
@@ -86,7 +85,7 @@ const BeforeGameStartScreen = ({
           ))}
         </div>
       </div>
-      <div className="WaitForPlayers-right">{children}</div>
+      <div className="BeforeGameStartScreen-right">{children}</div>
     </div>
   );
 };
