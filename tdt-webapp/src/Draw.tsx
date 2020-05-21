@@ -46,6 +46,7 @@ const Draw = ({
   handleDone: (image: Blob) => void;
 }) => {
   const [showHelpDialog, setShowHelpDialog] = React.useState(true);
+  const [firstTimeHelpDialog, setFirstTimeHelpDialog] = React.useState(true);
 
   const [color, setColor] = React.useState("#000");
 
@@ -129,8 +130,14 @@ const Draw = ({
               <div>... this text by {textWriter.name}:</div>
             </div>
             <Text>{NewlineToBreak(text)}</Text>
-            <button className="button" onClick={() => setShowHelpDialog(false)}>
-              Okay, start drawing
+            <button
+              className="button"
+              onClick={() => {
+                setShowHelpDialog(false);
+                setFirstTimeHelpDialog(false);
+              }}
+            >
+              Okay, {firstTimeHelpDialog ? "start" : "continue"} drawing
             </button>
           </div>
         </Scrollable>
