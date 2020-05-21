@@ -15,11 +15,13 @@ body,
 @font-face {
   font-family: "KidsDrawings";
   src: url(./fonts/KidsDrawings.woff) format("woff");
+  font-display: block;
 }
 
 @font-face {
   font-family: "TheFreakyFace";
   src: url(./fonts/TheFreakyFace.woff) format("woff");
+  font-display: block;
 }
 
 body {
