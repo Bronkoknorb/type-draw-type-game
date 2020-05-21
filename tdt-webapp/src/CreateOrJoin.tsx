@@ -1,7 +1,12 @@
 import React from "react";
 import { RouteComponentProps, navigate } from "@reach/router";
 
-import { getRandomCharacterFromString, isBlank, getPlayerId } from "./helpers";
+import {
+  getRandomCharacterFromString,
+  isBlank,
+  getPlayerId,
+  useLocalStorageState,
+} from "./helpers";
 import Logo from "./Logo";
 import Avatar from "./Avatar";
 import { ConnectionLostErrorDialog } from "./ErrorDialogs";
@@ -12,8 +17,6 @@ export const Create = (props: RouteComponentProps) => {
   const [error, setError] = React.useState(false);
 
   const handleDone = async (avatar: string, name: string) => {
-    // TODO store name and avatar in localStorage
-
     interface CreatedGameResponse {
       gameId: string;
     }
@@ -67,13 +70,17 @@ const CreateOrJoin = ({
   buttonLabel: string;
   handleDone: (avatar: string, name: string) => void;
 }) => {
-  const [avatar, setAvatar] = React.useState("");
+  const faces = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-  const [name, setName] = React.useState("");
+  const [face, setFace] = useLocalStorageState("face", () =>
+    getRandomCharacterFromString(faces)
+  );
+
+  const [name, setName] = useLocalStorageState("name", "");
 
   const buttonDisabled = isBlank(name);
 
-  const handleChangeAvatar = React.useCallback((face) => setAvatar(face), []);
+  const handleChangeAvatar = (newFace: string) => setFace(newFace);
 
   return (
     <div className="Join">
@@ -83,7 +90,11 @@ const CreateOrJoin = ({
       <div className="Join-content">
         Pick your look:
         <br />
-        <SelectAvatar handleChange={handleChangeAvatar} />
+        <SelectAvatar
+          face={face}
+          faces={faces}
+          handleChange={handleChangeAvatar}
+        />
         <label htmlFor="name">Enter your name:</label>
         <input
           type="text"
@@ -97,7 +108,7 @@ const CreateOrJoin = ({
         <button
           className="button"
           disabled={buttonDisabled}
-          onClick={() => handleDone(avatar, name.trim())}
+          onClick={() => handleDone(face, name.trim())}
         >
           {buttonLabel}
         </button>
@@ -107,24 +118,18 @@ const CreateOrJoin = ({
 };
 
 const SelectAvatar = ({
+  face,
+  faces,
   handleChange,
 }: {
+  face: string;
+  faces: string;
   handleChange: (face: string) => void;
 }) => {
-  const faces = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-
-  const [face, setFace] = React.useState(() =>
-    getRandomCharacterFromString(faces)
-  );
-
   const nextFace = () => {
     const newFace = faces.charAt((faces.indexOf(face) + 1) % faces.length);
-    setFace(newFace);
+    handleChange(newFace);
   };
-
-  React.useEffect(() => {
-    handleChange(face);
-  }, [face, handleChange]);
 
   return (
     <div className="SelectAvatar" onClick={nextFace}>

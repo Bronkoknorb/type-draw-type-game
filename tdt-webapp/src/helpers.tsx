@@ -107,3 +107,27 @@ export function getPlayerId() {
   }
   return playerId;
 }
+
+export function useLocalStorageState(
+  key: string,
+  initialValue: string | (() => string)
+): [string, (value: string) => void] {
+  const [storedValue, setStoredValue] = React.useState(() => {
+    const item = window.localStorage.getItem(key);
+    if (item !== null) {
+      return item;
+    } else {
+      // Allow initialValue to be a function so we have same API as useState
+      const value =
+        initialValue instanceof Function ? initialValue() : initialValue;
+      return value;
+    }
+  });
+
+  const setValue = (value: string) => {
+    window.localStorage.setItem(key, value);
+    setStoredValue(value);
+  };
+
+  return [storedValue, setValue];
+}
