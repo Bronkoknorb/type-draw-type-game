@@ -3,7 +3,9 @@ import { v4 as uuidv4 } from "uuid";
 import o9n from "o9n";
 
 function isMobileDevice() {
-  return window.orientation !== undefined;
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+    navigator.userAgent
+  );
 }
 
 export function toggleToFullscreenAndLandscapeOnMobile() {

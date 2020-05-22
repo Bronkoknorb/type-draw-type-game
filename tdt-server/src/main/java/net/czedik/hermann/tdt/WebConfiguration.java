@@ -11,10 +11,13 @@ import java.util.concurrent.TimeUnit;
 @Configuration
 public class WebConfiguration implements WebMvcConfigurer {
 
+    private static final String FORWARD_TO_ROOT = "forward:/";
+
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
-        registry.addViewController("/g/{gameId:\\w+}").setViewName("forward:/");
-        registry.addViewController("/new").setViewName("forward:/");
+        registry.addViewController("/g/{gameId:\\w+}").setViewName(FORWARD_TO_ROOT);
+        registry.addViewController("/new").setViewName(FORWARD_TO_ROOT);
+        registry.addViewController("/join").setViewName(FORWARD_TO_ROOT);
     }
 
     @Override

@@ -9,6 +9,7 @@ import {
 } from "./helpers";
 import Logo from "./Logo";
 import Face from "./Face";
+import HowToButtonAndDialog from "./HowToButtonAndDialog";
 import { ConnectionLostErrorDialog } from "./ErrorDialogs";
 
 import "./CreateOrJoin.css";
@@ -83,32 +84,39 @@ const CreateOrJoin = ({
   const handleChangeFace = (newFace: string) => setFace(newFace);
 
   return (
+    <LogoLeftScreen>
+      Pick your look:
+      <br />
+      <SelectFace face={face} faces={faces} handleChange={handleChangeFace} />
+      <label htmlFor="name">Enter your name:</label>
+      <input
+        type="text"
+        id="name"
+        name="name"
+        autoFocus
+        value={name}
+        onChange={(event) => setName(event.target.value)}
+      />
+      <br />
+      <button
+        className="button"
+        disabled={buttonDisabled}
+        onClick={() => handleDone(face, name.trim())}
+      >
+        {buttonLabel}
+      </button>
+    </LogoLeftScreen>
+  );
+};
+
+const LogoLeftScreen = ({ children }: { children: React.ReactNode }) => {
+  return (
     <div className="Join">
       <div className="Join-logo">
         <Logo />
+        <HowToButtonAndDialog />
       </div>
-      <div className="Join-content">
-        Pick your look:
-        <br />
-        <SelectFace face={face} faces={faces} handleChange={handleChangeFace} />
-        <label htmlFor="name">Enter your name:</label>
-        <input
-          type="text"
-          id="name"
-          name="name"
-          autoFocus
-          value={name}
-          onChange={(event) => setName(event.target.value)}
-        />
-        <br />
-        <button
-          className="button"
-          disabled={buttonDisabled}
-          onClick={() => handleDone(face, name.trim())}
-        >
-          {buttonLabel}
-        </button>
-      </div>
+      <div className="Join-content">{children}</div>
     </div>
   );
 };
@@ -131,5 +139,34 @@ const SelectFace = ({
     <div className="SelectFace" onClick={nextFace}>
       <Face face={face} small={false} />
     </div>
+  );
+};
+
+export const JoinWithCode = (props: RouteComponentProps) => {
+  const [code, setCode] = React.useState("");
+
+  const buttonDisabled = code.length !== 5;
+
+  return (
+    <LogoLeftScreen>
+      <label htmlFor="code">Enter Game Code:</label>
+      <input
+        type="text"
+        id="code"
+        name="code"
+        autoFocus
+        value={code}
+        onChange={(event) => setCode(event.target.value)}
+      />
+      <br />
+      <button
+        className="button"
+        disabled={buttonDisabled}
+        onClick={() => navigate(`/g/${code}`)}
+        title={buttonDisabled ? "Game code should have five characters" : ""}
+      >
+        Join game
+      </button>
+    </LogoLeftScreen>
   );
 };

@@ -1,5 +1,6 @@
 import React from "react";
 
+import { toggleToFullscreenAndLandscapeOnMobile } from "./helpers";
 import { PlayerInfo, Brush } from "./model";
 
 import { ConfirmDrawingDialog, DrawHelpDialog } from "./DrawDialogs";
@@ -76,9 +77,10 @@ const Draw = ({
     setDrawingDataUrl(undefined);
   };
 
-  const handleCloseDrawDialog = () => {
+  const handleCloseHelpDialog = () => {
     setShowHelpDialog(false);
     setFirstTimeHelpDialog(false);
+    toggleToFullscreenAndLandscapeOnMobile();
   };
 
   return (
@@ -97,7 +99,7 @@ const Draw = ({
         rounds={rounds}
         show={showHelpDialog}
         firstShow={firstTimeHelpDialog}
-        handleClose={handleCloseDrawDialog}
+        handleClose={handleCloseHelpDialog}
       />
       <DrawTools
         color={color}

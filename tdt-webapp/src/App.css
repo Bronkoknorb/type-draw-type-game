@@ -70,8 +70,12 @@
   outline: none;
 }
 
-.button-cancel {
+.button-red {
   background-color: #b00;
+}
+
+.button-blue {
+  background-color: #3434d1;
 }
 
 .button:disabled {
