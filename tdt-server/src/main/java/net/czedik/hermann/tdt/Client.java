@@ -3,6 +3,7 @@ package net.czedik.hermann.tdt;
 import net.czedik.hermann.tdt.playerstate.PlayerState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.socket.PingMessage;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
@@ -31,6 +32,17 @@ public class Client {
             }
         } catch (IOException | RuntimeException e) {
             log.error("Exception when updating client {}", getId(), e);
+        }
+    }
+
+    public void ping() {
+        try {
+            // synchronized, because WebSocketSession.sendMessage(.) does not allow concurrent sending
+            synchronized (this) {
+                session.sendMessage(new PingMessage());
+            }
+        } catch (IOException | RuntimeException e) {
+            log.warn("Exception when pinging client {}", getId(), e);
         }
     }
 }

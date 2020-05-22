@@ -18,17 +18,37 @@ import java.net.InetSocketAddress;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class WebSocketHandler extends AbstractWebSocketHandler {
     private static final Logger log = LoggerFactory.getLogger(WebSocketHandler.class);
+
+    private static final long KEEP_CLIENTS_ALIVE_INTERVAL_SECONDS = 15;
 
     private final Map<WebSocketSession, Client> clients = new ConcurrentHashMap<>();
 
     private final GameManager gameManager;
 
+    private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+
     @Autowired
     public WebSocketHandler(GameManager gameManager) {
         this.gameManager = gameManager;
+
+        executorService.scheduleWithFixedDelay(this::keepClientsActive,
+                KEEP_CLIENTS_ALIVE_INTERVAL_SECONDS, KEEP_CLIENTS_ALIVE_INTERVAL_SECONDS, TimeUnit.SECONDS);
+    }
+
+    /**
+     * This is necessary, because when proxying via nginx, nginx will automatically close the Websocket connection if
+     * there is no activity for 30 seconds.
+     */
+    private void keepClientsActive() {
+        for (Client client : clients.values()) {
+            client.ping();
+        }
     }
 
     @Override
