@@ -4,9 +4,21 @@
 
 ![Type Draw Type Logo](/tdt-webapp/src/img/logo.svg?raw=true&sanitize=true)
 
-TODO describe game
+_Type Draw Type_ is a simple and fun game for you and your friends.
+It is like the telephone game (Chinese whispers), only with pictures.
+Every player starts by typing a sentence.
+Then the texts are passed on and you have to draw the sentence you received.
+In the next round you get one of the drawings and have to describe it with another sentence (without knowing the initial sentence!).
+This goes on, by alternately typing and drawing, until all players have participated in every chain (story).
+In the end everybody sees all the stories and can wonder about how the initial sentences have transformed in unexpected ways!
 
-## Installation
+Play online at: https://draw.gerty.roga.czedik.at
+
+This is an open-source Web/mobile version of the pen-and-paper game Telephone Pictionary (also known as Paper Telephone and "Eat Poop You Cat"). It can be installed on mobile phones (tested on Android) by using the "Add to Home Screen" functionality.
+
+Alternative (closed-source, to my knowledge) versions of the game are: [Drawception](https://drawception.com/), [Interference](https://www.playinterference.com/), [Doodle Or Die](http://doodleordie.com/), [Broken Picture Telephone](https://www.brokenpicturephone.com/), Telestrations, Cranium Scribblish, Stille Post extrem (offline Board games).
+
+## Installation on own server
 
 Prerequisites:
 
