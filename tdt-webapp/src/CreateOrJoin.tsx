@@ -2,6 +2,7 @@ import React from "react";
 import { RouteComponentProps, navigate } from "@reach/router";
 
 import {
+  toggleToFullscreenAndLandscapeOnMobile,
   getRandomCharacterFromString,
   isBlank,
   getPlayerId,
@@ -147,6 +148,11 @@ export const JoinWithCode = (props: RouteComponentProps) => {
 
   const buttonDisabled = code.length !== 5;
 
+  const handleJoin = () => {
+    navigate(`/g/${code}`);
+    toggleToFullscreenAndLandscapeOnMobile();
+  };
+
   return (
     <LogoLeftScreen>
       <label htmlFor="code">Enter Game Code:</label>
@@ -162,7 +168,7 @@ export const JoinWithCode = (props: RouteComponentProps) => {
       <button
         className="button"
         disabled={buttonDisabled}
-        onClick={() => navigate(`/g/${code}`)}
+        onClick={handleJoin}
         title={buttonDisabled ? "Game code should have five characters" : ""}
       >
         Join game
