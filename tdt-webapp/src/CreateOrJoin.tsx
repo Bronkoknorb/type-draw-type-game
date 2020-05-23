@@ -143,10 +143,18 @@ const SelectFace = ({
   );
 };
 
+const CODE_LENGTH = 5;
+const codePattern = `^[a-z0-9]{${CODE_LENGTH}}$`;
+const codeRegex = new RegExp(codePattern);
+
 export const JoinWithCode = (props: RouteComponentProps) => {
   const [code, setCode] = React.useState("");
 
-  const buttonDisabled = code.length !== 5;
+  const buttonDisabled = !codeRegex.test(code);
+
+  const handleChangeCode = (newCode: string) => {
+    setCode(newCode.toLowerCase());
+  };
 
   const handleJoin = () => {
     navigate(`/g/${code}`);
@@ -160,9 +168,16 @@ export const JoinWithCode = (props: RouteComponentProps) => {
         type="text"
         id="code"
         name="code"
+        minLength={CODE_LENGTH}
+        maxLength={CODE_LENGTH}
+        pattern={codePattern}
         autoFocus
+        autoCapitalize="off"
+        autoCorrect="off"
+        autoComplete="off"
+        spellCheck={false}
         value={code}
-        onChange={(event) => setCode(event.target.value)}
+        onChange={(event) => handleChangeCode(event.target.value)}
       />
       <br />
       <button
