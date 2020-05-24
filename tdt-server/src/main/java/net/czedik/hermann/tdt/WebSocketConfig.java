@@ -12,7 +12,8 @@ import org.springframework.web.socket.server.standard.ServletServerContainerFact
 @EnableWebSocket
 public class WebSocketConfig implements WebSocketConfigurer {
 
-    private static final int TWENTY_MB = 20 * 1024 * 1024;
+    private static final int ONE_MB = 1 * 1024 * 1024;
+    private static final int FIVE_MB = 5 * 1024 * 1024;
 
     @Autowired
     private GameManager gameManager;
@@ -30,8 +31,8 @@ public class WebSocketConfig implements WebSocketConfigurer {
     @Bean
     public ServletServerContainerFactoryBean createWebSocketContainer() {
         ServletServerContainerFactoryBean container = new ServletServerContainerFactoryBean();
-        container.setMaxTextMessageBufferSize(TWENTY_MB);
-        container.setMaxBinaryMessageBufferSize(TWENTY_MB);
+        container.setMaxTextMessageBufferSize(ONE_MB);
+        container.setMaxBinaryMessageBufferSize(FIVE_MB);
         return container;
     }
 
