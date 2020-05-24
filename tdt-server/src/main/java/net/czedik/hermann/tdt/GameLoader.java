@@ -3,6 +3,7 @@ package net.czedik.hermann.tdt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -44,7 +45,7 @@ public class GameLoader {
         Path gameStateFile = gameDir.resolve(Game.STATE_FILENAME);
 
         GameState gameState;
-        try (InputStream in = Files.newInputStream(gameStateFile)) {
+        try (InputStream in = new BufferedInputStream(Files.newInputStream(gameStateFile))) {
             gameState = JSONHelper.objectMapper.readValue(in, GameState.class);
         } catch (NoSuchFileException e) {
             log.info("Cannot load unknown game {} (no state file)", gameId);
