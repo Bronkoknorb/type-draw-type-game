@@ -58,7 +58,7 @@ public class GameRoundsGenerator {
 
         // a "perfect" game is not possible for odd numbers.
         // it would be nice to find an algorithm that at least generates a "near-perfect" game, i.e. so that you get a
-        // story the least often from the same player, but I haven found one yet.
+        // story the least often from the same player, but I haven't found one yet.
         // Therefore instead, for now generate a valid game by first always just handing over to the next player,
         // and then shuffle the rounds, to at least make a bit better.
 
