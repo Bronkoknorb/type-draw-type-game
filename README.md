@@ -14,7 +14,7 @@ In the end everybody sees all the stories and can wonder about how the initial s
 
 Play online at: https://draw.gerty.roga.czedik.at
 
-This is an open-source Web/mobile version of the pen-and-paper game Telephone Pictionary (also known as Paper Telephone and "Eat Poop You Cat"). It can be installed on mobile phones (tested on Android) by using the "Add to Home Screen" functionality.
+This is an open-source Web/mobile version of the pen-and-paper game Telephone Pictionary (also known as Paper Telephone and "Eat Poop You Cat"). It can be installed on mobile phones (Android and iPhone) by using the "Add to Home Screen" functionality.
 
 Alternative (closed-source, to my knowledge) versions of the game are: [Drawception](https://drawception.com/), [Interference](https://www.playinterference.com/), [Doodle Or Die](http://doodleordie.com/), [Broken Picture Telephone](https://www.brokenpicturephone.com/), Telestrations, Cranium Scribblish, Stille Post extrem (offline Board games).
 
