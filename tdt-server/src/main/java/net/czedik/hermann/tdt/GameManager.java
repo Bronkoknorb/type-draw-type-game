@@ -95,7 +95,7 @@ public class GameManager {
         if (previousGameRefForClient != null) {
             log.warn("Client {} unexpectedly switched between games. New game: {} - Old game: {}",
                     client.getId(), gameRef.getGameId(), previousGameRefForClient.getGameId());
-            closeGameRef(gameRef);
+            closeGameRef(previousGameRefForClient);
         }
     }
 
