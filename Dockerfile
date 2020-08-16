@@ -10,7 +10,7 @@ COPY tdt-webapp/ ./
 RUN yarn build
 
 # Stage 2 - build the server
-FROM ubuntu:18.04 as build-server
+FROM ubuntu:20.04 as build-server
 RUN apt-get update && apt-get install openjdk-11-jdk -y --no-install-recommends
 WORKDIR /opt/tdt-src/
 
