@@ -1,5 +1,5 @@
 # Stage 1 - build the webapp
-FROM node:12.16.3-buster as build-webapp
+FROM node:12.18.3-buster as build-webapp
 WORKDIR /usr/src/app
 
 # first copy only dependency definitions, because these change less often and therefore allow docker to cache the build results better
