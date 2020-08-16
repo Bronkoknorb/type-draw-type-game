@@ -123,6 +123,8 @@ Build and push multi-architecture images:
 
     ./build-prod-multi-arch-push.sh
 
+Note: This will also try to push the built images to Docker Hub. You need to login first (docker login).
+
 Reference: https://www.docker.com/blog/getting-started-with-docker-for-arm-on-linux/
 
 ## Author
