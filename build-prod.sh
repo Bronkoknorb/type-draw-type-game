@@ -5,4 +5,4 @@ set -euxo pipefail
 
 source build.sh
 
-docker build --tag tdt-game -f Dockerfile_prod .
+docker build --pull --tag tdt-game -f Dockerfile_prod .

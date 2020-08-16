@@ -3,7 +3,7 @@
 # strict error handling
 set -euxo pipefail
 
-docker build --tag tdt-game-build .
+docker build --pull --tag tdt-game-build .
 
 mkdir -p ./build/
 
