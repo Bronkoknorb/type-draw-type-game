@@ -32,13 +32,3 @@ COPY tdt-server/ ./
 # including the webapp resources generated in the stage 1
 COPY --from=build-webapp /usr/src/app/build/ ./src/main/resources/public/
 RUN ./gradlew -i --no-daemon --build-cache --stacktrace build
-
-# Stage 3 - production container
-FROM ubuntu:18.04
-RUN apt-get update && apt-get install openjdk-11-jre -y --no-install-recommends \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
-WORKDIR /opt/tdt/
-COPY --from=build-server /opt/tdt-src/build/libs/type-draw-type-server-1.0.0-SNAPSHOT.jar server.jar
-EXPOSE 8080
-VOLUME /tdt-data
-ENTRYPOINT ["java","-jar","server.jar","--storage.dir=/tdt-data/"]

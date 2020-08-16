@@ -95,7 +95,7 @@ See also [React-App-HELP.md](tdt-webapp/React-App-HELP.md).
 
 To build the app using Docker:
 
-    docker build --tag tdt-game .
+    ./build-prod.sh
 
 ### Multi-Architecture Build
 
@@ -119,12 +119,9 @@ Create a multi-architecture build instance:
     docker buildx use mybuilder
     docker buildx inspect --bootstrap
 
-Build multi-architecture images:
+Build and push multi-architecture images:
 
-    docker buildx build --platform linux/amd64,linux/arm/v7 .
-
-Note: For now platform linux/arm64 is not included as it is very slow to build.
-Might be useful to add it again for future Raspbian version which will use arm64.
+    ./build-prod-multi-arch-push.sh
 
 Reference: https://www.docker.com/blog/getting-started-with-docker-for-arm-on-linux/
 
