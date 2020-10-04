@@ -55,6 +55,8 @@ jobs:
     # If this step fails, then you should remove it and run the build manually (see below)
     #- name: Autobuild
     #  uses: github/codeql-action/autobuild@v1
+    
+    # (Autobuild comment by Hermann, replaced by manual Gradle build below.)
 
     # ℹ️ Command-line programs to run using the OS shell.
     # 📚 https://git.io/JvXDl
@@ -76,6 +78,7 @@ jobs:
       if: ${{ matrix.language == 'java' }}
 
     - name: Build with Gradle
+      working-directory: ./tdt-server
       run: ./gradlew build
       if: ${{ matrix.language == 'java' }}
 
