@@ -81,6 +81,7 @@ Prerequisites:
 Run the frontend in development mode:
 
     cd tdt-webapp
+    yarn
     yarn start
 
 This will also automatically start a proxy server which forwards API requests to the backend (running on port 8080).
