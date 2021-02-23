@@ -1,6 +1,9 @@
 # production container
 
-FROM ubuntu:20.04
+# For unknown reasons the container doesn't start up on the Raspberry Pi when using Ubuntu 20.04
+# Therefore I am sticking to 18.04 for now:
+
+FROM ubuntu:18.04
 RUN apt-get update && apt-get install openjdk-11-jre -y --no-install-recommends \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 WORKDIR /opt/tdt/
