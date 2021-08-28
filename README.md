@@ -31,19 +31,19 @@ Pull the newest image from [Docker Hub](https://hub.docker.com/r/bronkoknorb/typ
 
 To run the Docker image (forwarding the internal port 8080 to the external port 8081):
 
-    docker run -p 8081:8080 --volume /home/pi/tdt-data:/tdt-data tdt-game
+    docker run -p 8081:8080 --volume ~/tdt-data:/tdt-data tdt-game
 
-Note that /home/pi/tdt-data is a directory on the host where game data will be stored.
+Note that `~/tdt-data` is a directory on the host where game data will be stored.
 
 You can then open the game on http://localhost:8081/
 
 To run the Docker image (in the background) and do automatic restarts (e.g. when the machine gets rebooted or the application crashed):
 
-    docker run -d --restart always --name tdt -p 8081:8080 --volume /home/pi/tdt-data:/tdt-data tdt-game
+    docker run -d --restart always --name tdt -p 8081:8080 --volume ~/tdt-data:/tdt-data tdt-game
 
 To restart the Docker container after pulling (or building) a new version of the image:
 
-    docker stop tdt && docker rm tdt && docker run -d --restart always --name tdt -p 8081:8080 --volume /home/pi/tdt-data:/tdt-data tdt-game
+    docker stop tdt && docker rm tdt && docker run -d --restart always --name tdt -p 8081:8080 --volume ~/tdt-data:/tdt-data tdt-game
 
 To check the logs of the running Docker container:
 
