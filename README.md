@@ -16,7 +16,7 @@ Play online at: https://draw.gerty.roga.czedik.at
 
 This is an open-source Web/mobile version of the pen-and-paper game Telephone Pictionary (also known as Paper Telephone and "Eat Poop You Cat"). It can be installed on mobile phones (Android and iPhone) by using the "Add to Home Screen" functionality.
 
-Alternative versions of the game are: [Drawception](https://drawception.com/), [Interference](https://www.playinterference.com/), [Doodle Or Die](http://doodleordie.com/), [Broken Picturephone](https://www.brokenpicturephone.com/), [Drawphone](https://github.com/tannerkrewson/drawphone), [Gartic Phone](https://garticphone.com/) Telestrations, Cranium Scribblish, Stille Post extrem, Scrawl (offline Board games).
+Alternative versions of the game are: [Drawception](https://drawception.com/), [Interference](https://www.playinterference.com/), [Doodle Or Die](http://doodleordie.com/), [Broken Picturephone](https://www.brokenpicturephone.com/), [Drawphone](https://github.com/tannerkrewson/drawphone), [Gartic Phone](https://garticphone.com/), Telestrations, Cranium Scribblish, Stille Post extrem, Scrawl (offline Board games).
 
 ## Installation on own server
 
