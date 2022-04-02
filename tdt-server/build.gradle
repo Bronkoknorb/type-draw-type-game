@@ -6,7 +6,7 @@ plugins {
 
 group = 'net.czedik.hermann'
 version = '1.0.0-SNAPSHOT'
-sourceCompatibility = '17'
+sourceCompatibility = '11'
 
 repositories {
 	mavenCentral()
