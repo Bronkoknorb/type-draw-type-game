@@ -1,9 +1,6 @@
 # production container
 
-# For unknown reasons the container doesn't start up on the Raspberry Pi when using Ubuntu 20.04
-# Therefore I am sticking to 18.04 for now:
-
-FROM eclipse-temurin:17-jre-alpine
+FROM eclipse-temurin:17-jre-jammy
 WORKDIR /opt/tdt/
 COPY build/server.jar server.jar
 EXPOSE 8080
