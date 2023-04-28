@@ -1,6 +1,6 @@
 package net.czedik.hermann.tdt;
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 
 public class CreateGameRequest {
     @NotBlank

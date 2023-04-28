@@ -19,7 +19,7 @@ COPY tdt-server/gradlew ./
 RUN ./gradlew --version
 
 # first copy only dependency definitions and main classes, because these change less often and therefore allow docker to cache the build results better
-COPY tdt-server/build.gradle tdt-server/settings.gradle ./
+COPY tdt-server/build.gradle.kts tdt-server/settings.gradle.kts ./
 COPY tdt-server/src/main/java/net/czedik/hermann/tdt/Application.java \
      ./src/main/java/net/czedik/hermann/tdt/Application.java
 COPY tdt-server/src/test/java/net/czedik/hermann/tdt/ApplicationUnitTests.java \
