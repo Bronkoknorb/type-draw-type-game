@@ -14,7 +14,7 @@ To do production build:
 
 To run a static server:
 
-    npx serve -s build
+    npx serve -s dist
 
 To run linter:
 
