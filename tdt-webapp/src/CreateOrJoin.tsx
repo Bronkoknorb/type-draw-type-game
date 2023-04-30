@@ -80,7 +80,14 @@ const CreateOrJoin = ({
     getRandomCharacterFromString(faces)
   );
 
-  const [name, setName] = useLocalStorageState("name", "");
+  const nameMaxLength = 50;
+
+  const [nameUnchecked, setName] = useLocalStorageState("name", "");
+
+  const name =
+    nameUnchecked.length > nameMaxLength
+      ? nameUnchecked.slice(0, nameMaxLength)
+      : nameUnchecked;
 
   const buttonDisabled = isBlank(name);
 
@@ -99,6 +106,7 @@ const CreateOrJoin = ({
         autoFocus
         value={name}
         onChange={(event) => setName(event.target.value)}
+        maxLength={nameMaxLength}
       />
       <br />
       <button

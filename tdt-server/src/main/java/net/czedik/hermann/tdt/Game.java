@@ -321,9 +321,14 @@ public class Game {
         if (Strings.isEmpty(typeAction.text)) {
             throw new IllegalArgumentException("Empty text");
         }
+        String text = typeAction.text;
+        int maxTextLength = 2000; // same limit as in webapp code
+        if (text.length() > maxTextLength) {
+            text = text.substring(0, maxTextLength);
+        }
 
         Story story = getCurrentStoryForPlayer(player);
-        story.elements[gameState.round] = StoryElement.createTextElement(typeAction.text);
+        story.elements[gameState.round] = StoryElement.createTextElement(text);
 
         checkAndHandleRoundFinished();
 

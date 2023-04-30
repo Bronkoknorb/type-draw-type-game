@@ -46,6 +46,7 @@ const Type = ({
         <textarea
           value={text}
           onChange={(event) => setText(event.target.value)}
+          maxLength={2000}
         />
         {first && (
           <div className="small">

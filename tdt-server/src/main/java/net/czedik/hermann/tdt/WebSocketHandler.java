@@ -77,6 +77,7 @@ public class WebSocketHandler extends AbstractWebSocketHandler {
             gameManager.handleAccessAction(client, accessAction);
         } else if ("join".equals(action)) {
             JoinAction joinAction = JSONHelper.objectMapper.treeToValue(content, JoinAction.class);
+            joinAction.validate();
             gameManager.handleJoinAction(client, joinAction);
         } else if ("start".equals(action)) {
             gameManager.handleStartAction(client);
