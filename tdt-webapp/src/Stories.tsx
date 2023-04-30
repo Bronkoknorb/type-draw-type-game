@@ -1,5 +1,7 @@
 import React from "react";
 import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
+
 import { StoryContent, StoryElement } from "./model";
 import Player from "./Player";
 import Scrollable from "./Scrollable";
@@ -25,6 +27,12 @@ const Stories = ({ stories }: { stories: StoryContent[] }) => {
     />
   );
 
+  const navigate = useNavigate();
+
+  const handleNewGame = () => {
+    navigate("/");
+  };
+
   return (
     <Scrollable ref={scrollableRef}>
       {navButtons}
@@ -33,11 +41,18 @@ const Stories = ({ stories }: { stories: StoryContent[] }) => {
       </h1>
       <Story story={stories[selectedStory]} />
       {navButtons}
+      <StartNewButton className="button button-red" onClick={handleNewGame}>
+        Start a new game
+      </StartNewButton>
     </Scrollable>
   );
 };
 
 export default Stories;
+
+const StartNewButton = styled.button`
+  margin-bottom: 2vmin;
+`;
 
 const Story = ({ story }: { story: StoryContent }) => {
   return (
