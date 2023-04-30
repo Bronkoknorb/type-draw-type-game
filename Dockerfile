@@ -7,7 +7,7 @@ COPY tdt-webapp/package.json tdt-webapp/yarn.lock ./
 RUN yarn --network-timeout 100000
 
 COPY tdt-webapp/ ./
-RUN yarn build
+RUN yarn run build
 
 # Stage 2 - build the server
 FROM eclipse-temurin:17-jdk-jammy as build-server
@@ -29,5 +29,5 @@ RUN ./gradlew -i --no-daemon --build-cache --stacktrace build
 # now copy everything
 COPY tdt-server/ ./
 # including the webapp resources generated in the stage 1
-COPY --from=build-webapp /usr/src/app/build/ ./src/main/resources/public/
+COPY --from=build-webapp /usr/src/app/dist/ ./src/main/resources/public/
 RUN ./gradlew -i --no-daemon --build-cache --stacktrace build
