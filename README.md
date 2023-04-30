@@ -26,7 +26,7 @@ Prerequisites:
 
 Pull the newest image from [Docker Hub](https://hub.docker.com/r/bronkoknorb/type-draw-type-game) and tag it with a simpler name:
 
-    docker pull bronkoknorb/type-draw-type-game
+    docker pull bronkoknorb/type-draw-type-game && \
     docker tag bronkoknorb/type-draw-type-game tdt-game
 
 To run the Docker image (forwarding the internal port 8080 to the external port 8081):
@@ -43,7 +43,8 @@ To run the Docker image (in the background) and do automatic restarts (e.g. when
 
 To restart the Docker container after pulling (or building) a new version of the image:
 
-    docker stop tdt && docker rm tdt && docker run -d --restart always --name tdt -p 8081:8080 --volume ~/tdt-data:/tdt-data tdt-game
+    docker stop tdt && docker rm tdt && \
+    docker run -d --restart always --name tdt -p 8081:8080 --volume ~/tdt-data:/tdt-data tdt-game
 
 To check the logs of the running Docker container:
 
@@ -100,29 +101,13 @@ I want to build ARM Docker images to run on my Raspberry Pi:
 
 This repository contains a Github Action Workflow which builds the multi-arch images and pushes them to a Docker registry, see [docker-image.yml](.github/workflows/docker-image.yml).
 
-Here are some notes how to achieve the same locally:
+To achieve the same locally follow the instructions at: https://docs.docker.com/build/building/multi-platform/
 
-As of writing this, experimental features need to be enabled for Docker:
-
-    export DOCKER_CLI_EXPERIMENTAL=enabled
-
-Install qemu instructions to be able to build ARM executables:
-
-    docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
-
-Create a multi-architecture build instance:
-
-    docker buildx create --name mybuilder
-    docker buildx use mybuilder
-    docker buildx inspect --bootstrap
-
-Build and push multi-architecture images:
+Then run this to build and push multi-architecture images:
 
     ./build-prod-multi-arch-push.sh
 
 Note: This will also try to push the built images to Docker Hub. You need to login first (docker login).
-
-Reference: https://www.docker.com/blog/getting-started-with-docker-for-arm-on-linux/
 
 ## Author
 
