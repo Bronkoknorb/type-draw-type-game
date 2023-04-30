@@ -70,7 +70,7 @@ const DrawCanvas = ({
 
   let pos: { x: number; y: number } | null = null;
 
-  function paint_start(ctx: CanvasRenderingContext2D, x: number, y: number) {
+  function paint_start(_: CanvasRenderingContext2D, x: number, y: number) {
     pos = { x, y };
   }
   function paint_move(ctx: CanvasRenderingContext2D, x: number, y: number) {

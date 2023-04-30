@@ -15,7 +15,7 @@ import { ConnectionLostErrorDialog } from "./ErrorDialogs";
 
 import "./CreateOrJoin.css";
 
-export const Create = (props: RouteComponentProps) => {
+export const Create = (_: RouteComponentProps) => {
   const [error, setError] = React.useState(false);
 
   const handleDone = async (face: string, name: string) => {
@@ -147,7 +147,7 @@ const CODE_LENGTH = 5;
 const codePattern = `^[a-z0-9]{${CODE_LENGTH}}$`;
 const codeRegex = new RegExp(codePattern);
 
-export const JoinWithCode = (props: RouteComponentProps) => {
+export const JoinWithCode = (_: RouteComponentProps) => {
   const [code, setCode] = React.useState("");
 
   const buttonDisabled = !codeRegex.test(code);

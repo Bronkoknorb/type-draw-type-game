@@ -1,5 +1,5 @@
 import React from "react";
-import styled from "styled-components/macro";
+import styled from "styled-components";
 import { StoryContent, StoryElement } from "./model";
 import Player from "./Player";
 import Scrollable from "./Scrollable";

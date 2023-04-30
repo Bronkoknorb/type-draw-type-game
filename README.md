@@ -82,15 +82,11 @@ Run the frontend in development mode:
 
     cd tdt-webapp
     yarn
-    yarn start
+    yarn run dev
 
 This will also automatically start a proxy server which forwards API requests to the backend (running on port 8080).
 
-To interactively upgrade dependencies of the frontend:
-
-    yarn upgrade-interactive --latest
-
-See also [React-App-HELP.md](tdt-webapp/React-App-HELP.md).
+See also [README-webapp.md](tdt-webapp/README-webapp.md).
 
 ## Build
 

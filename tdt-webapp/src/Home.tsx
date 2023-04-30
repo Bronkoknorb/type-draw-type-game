@@ -1,12 +1,11 @@
-import React from "react";
 import { RouteComponentProps, navigate } from "@reach/router";
-import styled from "styled-components/macro";
+import styled from "styled-components";
 
 import { toggleToFullscreenAndLandscapeOnMobile } from "./helpers";
 import BigLogoScreen from "./BigLogoScreen";
 import HowToButtonAndDialog from "./HowToButtonAndDialog";
 
-const Home = (props: RouteComponentProps) => {
+const Home = (_: RouteComponentProps) => {
   const handleStartNewGame = () => {
     navigate("/new");
     toggleToFullscreenAndLandscapeOnMobile();

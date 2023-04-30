@@ -1,5 +1,5 @@
 import React from "react";
-import styled from "styled-components/macro";
+import styled from "styled-components";
 import { useWindowSize } from "./helpers";
 
 const GameFinishedAnimation = ({
@@ -8,9 +8,10 @@ const GameFinishedAnimation = ({
   handleShowStories: () => void;
 }) => {
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
-  const animationClickRef = React.useRef<
-    (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void
-  >();
+  const animationClickRef =
+    React.useRef<
+      (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void
+    >();
 
   const windowSize = useWindowSize();
 
