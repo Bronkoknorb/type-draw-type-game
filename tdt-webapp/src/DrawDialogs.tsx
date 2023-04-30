@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-import { NewlineToBreak } from "./helpers";
+import NewlineToBreak from "./NewLineToBreak";
 import { PlayerInfo } from "./model";
 import Dialog from "./Dialog";
 import Scrollable from "./Scrollable";

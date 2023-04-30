@@ -102,8 +102,8 @@ interface Action {
 }
 
 const Game = () => {
-  const { gameId: gameId } = useParams();
-  if (gameId === undefined) return;
+  const { gameId } = useParams();
+  const gameIdNotNull = gameId!;
 
   const [playerState, setPlayerState] = React.useState({ state: "loading" });
 
@@ -132,7 +132,7 @@ const Game = () => {
       send({
         action: "access",
         content: {
-          gameId,
+          gameId: gameIdNotNull,
           playerId: getPlayerId(),
         },
       });
@@ -168,7 +168,7 @@ const Game = () => {
     return () => {
       closeSocket();
     };
-  }, [gameId, reconnectCount]);
+  }, [gameIdNotNull, reconnectCount]);
 
   const handleDrawDone = React.useCallback((image: Blob) => {
     socketRef.current!.send(image);
@@ -182,7 +182,7 @@ const Game = () => {
         send({
           action: "join",
           content: {
-            gameId,
+            gameId: gameIdNotNull,
             playerId: getPlayerId(),
             name,
             face,
@@ -198,7 +198,7 @@ const Game = () => {
 
       return (
         <WaitForPlayersScreen
-          gameId={gameId}
+          gameId={gameIdNotNull}
           players={playerState.players}
           handleStart={handleStartGame}
         />
@@ -249,7 +249,7 @@ const Game = () => {
       // unknown game
       return (
         <Message>
-          Sorry, the game code <em>{gameId}</em> was not found.
+          Sorry, the game code <em>{gameIdNotNull}</em> was not found.
         </Message>
       );
     }
