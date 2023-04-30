@@ -1,5 +1,5 @@
 import React from "react";
-import { RouteComponentProps, navigate } from "@reach/router";
+import { useNavigate } from "react-router-dom";
 
 import {
   toggleToFullscreenAndLandscapeOnMobile,
@@ -15,8 +15,10 @@ import { ConnectionLostErrorDialog } from "./ErrorDialogs";
 
 import "./CreateOrJoin.css";
 
-export const Create = (_: RouteComponentProps) => {
+export const Create = () => {
   const [error, setError] = React.useState(false);
+
+  const navigate = useNavigate();
 
   const handleDone = async (face: string, name: string) => {
     interface CreatedGameResponse {
@@ -147,7 +149,7 @@ const CODE_LENGTH = 5;
 const codePattern = `^[a-z0-9]{${CODE_LENGTH}}$`;
 const codeRegex = new RegExp(codePattern);
 
-export const JoinWithCode = (_: RouteComponentProps) => {
+export const JoinWithCode = () => {
   const [code, setCode] = React.useState("");
 
   const buttonDisabled = !codeRegex.test(code);
@@ -155,6 +157,8 @@ export const JoinWithCode = (_: RouteComponentProps) => {
   const handleChangeCode = (newCode: string) => {
     setCode(newCode.toLowerCase());
   };
+
+  const navigate = useNavigate();
 
   const handleJoin = () => {
     navigate(`/g/${code}`);

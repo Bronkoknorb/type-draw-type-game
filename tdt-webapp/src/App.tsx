@@ -1,5 +1,5 @@
 import React from "react";
-import { Router } from "@reach/router";
+import { Routes, Route } from "react-router-dom";
 
 import { toggleToFullscreenAndLandscapeOnMobile } from "./helpers";
 import Home from "./Home";
@@ -25,12 +25,12 @@ const App = () => {
 
   return (
     <div className="App">
-      <Router>
-        <Home path="/" default />
-        <Create path="/new" />
-        <JoinWithCode path="/join" />
-        <Game path="/g/:gameId" />
-      </Router>
+      <Routes>
+        <Route path="/join" element={<JoinWithCode />} />
+        <Route path="/new" element={<Create />} />
+        <Route path="/g/:gameId" element={<Game />} />
+        <Route path="*" element={<Home />} />
+      </Routes>
     </div>
   );
 };

@@ -1,5 +1,5 @@
 import React from "react";
-import { RouteComponentProps } from "@reach/router";
+import { useParams } from "react-router-dom";
 
 import { PlayerInfo, StoryContent } from "./model";
 import { getPlayerId } from "./helpers";
@@ -14,10 +14,6 @@ import GameFinishedAnimation from "./GameFinishedAnimation";
 import Stories from "./Stories";
 import { Join } from "./CreateOrJoin";
 import { ConnectionLostErrorDialog } from "./ErrorDialogs";
-
-interface GameProps extends RouteComponentProps {
-  gameId?: string;
-}
 
 interface PlayerState {
   state: string;
@@ -105,8 +101,9 @@ interface Action {
   };
 }
 
-const Game = (props: GameProps) => {
-  const gameId = props.gameId!;
+const Game = () => {
+  const { gameId: gameId } = useParams();
+  if (gameId === undefined) return;
 
   const [playerState, setPlayerState] = React.useState({ state: "loading" });
 
