@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { StoryContent, StoryElement } from "./model";
 import Player from "./Player";
 import Scrollable from "./Scrollable";
-import { NewlineToBreak } from "./helpers";
+import NewlineToBreak from "./NewLineToBreak";
 
 const Stories = ({ stories }: { stories: StoryContent[] }) => {
   const [selectedStory, setSelectedStory] = React.useState(0);
