@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This one gets stored/read from disk, so be careful with changes, that need to be backwards compatible.
+ * This one gets stored/read from disk, so be careful with changes: they need to
+ * be backwards compatible.
  */
 public class GameState {
     public List<Player> players = new ArrayList<>();
