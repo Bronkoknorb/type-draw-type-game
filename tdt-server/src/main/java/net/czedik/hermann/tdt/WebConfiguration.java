@@ -23,8 +23,8 @@ public class WebConfiguration implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         // very long caching for static (hashed files)
-        registry.addResourceHandler("/static/**")
-                .addResourceLocations("classpath:/public/static/")
+        registry.addResourceHandler("/assets/**")
+                .addResourceLocations("classpath:/public/assets/")
                 .setCacheControl(CacheControl.maxAge(365, TimeUnit.DAYS));
 
         // no caching (browser needs to re-validate) for all the rest
