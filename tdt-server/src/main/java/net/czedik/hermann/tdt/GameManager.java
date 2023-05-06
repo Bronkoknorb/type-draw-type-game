@@ -1,17 +1,5 @@
 package net.czedik.hermann.tdt;
 
-import net.czedik.hermann.tdt.GameLoader.GameRef;
-import net.czedik.hermann.tdt.actions.AccessAction;
-import net.czedik.hermann.tdt.actions.JoinAction;
-import net.czedik.hermann.tdt.actions.TypeAction;
-import net.czedik.hermann.tdt.playerstate.UnknownGameState;
-import org.apache.commons.lang3.RandomStringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
@@ -19,6 +7,20 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.regex.Pattern;
+
+import org.apache.commons.lang3.RandomStringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+import net.czedik.hermann.tdt.GameLoader.GameRef;
+import net.czedik.hermann.tdt.actions.AccessAction;
+import net.czedik.hermann.tdt.actions.JoinAction;
+import net.czedik.hermann.tdt.actions.TypeAction;
+import net.czedik.hermann.tdt.playerstate.UnknownGameState;
 
 @Service
 public class GameManager {
@@ -26,6 +28,8 @@ public class GameManager {
 
     private static final String CHARACTERS_WITHOUT_AMBIGUOUS = "23456789abcdefghijkmnpqrstuvwxyz";
     private static final int GAME_ID_LENGTH = 5;
+    private static final Pattern gameIdPattern = Pattern
+            .compile("[" + CHARACTERS_WITHOUT_AMBIGUOUS + "]{" + GAME_ID_LENGTH + "}");
 
     // guarded by this
     private final Map<String, GameLoader> gameLoaders = new HashMap<>();
@@ -66,8 +70,8 @@ public class GameManager {
     }
 
     private void handleAccessOrJoinAction(Client client, Function<Game, Boolean> actionHandler, String gameId) {
-        // TODO validate gameid (must not contain special characters, length, etc.)
-
+        validateGameId(gameId);
+        
         GameRef gameRef = getGameRef(gameId);
         boolean added = false;
         try {
@@ -148,10 +152,18 @@ public class GameManager {
     }
 
     public Path getGameDir(String gameId) {
+        validateGameId(gameId);
+        // split gameId into two parts. this makes sure we do not create too many
+        // folders on one level
+        return gamesPath.resolve(gameId.substring(0, 2)).resolve(gameId.substring(2, GAME_ID_LENGTH));
+    }
+
+    public static void validateGameId(String gameId) {
         if (gameId.length() != GAME_ID_LENGTH)
             throw new IllegalArgumentException("Wrong gameId length");
-        // split gameId into two parts. this makes sure we do not create too many folders on one level
-        return gamesPath.resolve(gameId.substring(0, 2)).resolve(gameId.substring(2, GAME_ID_LENGTH));
+        if(!gameIdPattern.matcher(gameId).matches()) {
+            throw new IllegalArgumentException("Invalid gameId: " + gameId);
+        }
     }
 
     public void clientDisconnected(Client client) {
