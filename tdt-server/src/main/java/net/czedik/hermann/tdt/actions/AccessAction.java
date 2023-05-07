@@ -1,6 +1,4 @@
 package net.czedik.hermann.tdt.actions;
 
-public class AccessAction {
-    public String gameId;
-    public String playerId;
+public record AccessAction(String gameId, String playerId) {
 }

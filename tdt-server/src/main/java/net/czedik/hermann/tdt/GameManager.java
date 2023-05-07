@@ -49,7 +49,9 @@ public class GameManager {
     public String newGame(CreateGameRequest createGameRequest) throws IOException {
         String gameId = generateAndReserveNewGameId();
         Path gameDir = getGameDir(gameId);
-        Game newGame = new Game(gameId, gameDir, new Player(createGameRequest.playerId, createGameRequest.playerName, createGameRequest.playerFace, true));
+        Player player = new Player(createGameRequest.playerId(), createGameRequest.playerName(),
+                createGameRequest.playerFace(), true);
+        Game newGame = new Game(gameId, gameDir, player);
 
         GameRef gameRef = getGameRef(gameId);
         try {
@@ -62,11 +64,11 @@ public class GameManager {
     }
 
     public void handleAccessAction(Client client, AccessAction accessAction) {
-        handleAccessOrJoinAction(client, game -> game.access(client, accessAction), accessAction.gameId);
+        handleAccessOrJoinAction(client, game -> game.access(client, accessAction), accessAction.gameId());
     }
 
     public void handleJoinAction(Client client, JoinAction joinAction) {
-        handleAccessOrJoinAction(client, game -> game.join(client, joinAction), joinAction.gameId);
+        handleAccessOrJoinAction(client, game -> game.join(client, joinAction), joinAction.gameId());
     }
 
     private void handleAccessOrJoinAction(Client client, Function<Game, Boolean> actionHandler, String gameId) {

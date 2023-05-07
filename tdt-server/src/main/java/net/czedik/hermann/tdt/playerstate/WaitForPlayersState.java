@@ -1,15 +1,14 @@
 package net.czedik.hermann.tdt.playerstate;
 
-import net.czedik.hermann.tdt.PlayerInfo;
-
 import java.util.List;
 import java.util.Objects;
 
-public class WaitForPlayersState implements PlayerState {
-    public List<PlayerInfo> players;
+import net.czedik.hermann.tdt.PlayerInfo;
 
-    public WaitForPlayersState(List<PlayerInfo> players) {
-        this.players = Objects.requireNonNull(players);
+public record WaitForPlayersState(List<PlayerInfo> players) implements PlayerState {
+
+    public WaitForPlayersState {
+        Objects.requireNonNull(players);
     }
 
     @Override

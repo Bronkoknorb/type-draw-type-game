@@ -1,10 +1,13 @@
 package net.czedik.hermann.tdt;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import net.czedik.hermann.tdt.actions.AccessAction;
-import net.czedik.hermann.tdt.actions.JoinAction;
-import net.czedik.hermann.tdt.actions.TypeAction;
+import java.net.InetSocketAddress;
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,13 +17,12 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.AbstractWebSocketHandler;
 
-import java.net.InetSocketAddress;
-import java.util.Map;
-import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+
+import net.czedik.hermann.tdt.actions.AccessAction;
+import net.czedik.hermann.tdt.actions.JoinAction;
+import net.czedik.hermann.tdt.actions.TypeAction;
 
 public class WebSocketHandler extends AbstractWebSocketHandler {
     private static final Logger log = LoggerFactory.getLogger(WebSocketHandler.class);
@@ -77,7 +79,6 @@ public class WebSocketHandler extends AbstractWebSocketHandler {
             gameManager.handleAccessAction(client, accessAction);
         } else if ("join".equals(action)) {
             JoinAction joinAction = JSONHelper.objectMapper.treeToValue(content, JoinAction.class);
-            joinAction.validate();
             gameManager.handleJoinAction(client, joinAction);
         } else if ("start".equals(action)) {
             gameManager.handleStartAction(client);

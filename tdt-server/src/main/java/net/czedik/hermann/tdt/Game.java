@@ -1,14 +1,5 @@
 package net.czedik.hermann.tdt;
 
-import net.czedik.hermann.tdt.actions.AccessAction;
-import net.czedik.hermann.tdt.actions.JoinAction;
-import net.czedik.hermann.tdt.actions.TypeAction;
-import net.czedik.hermann.tdt.playerstate.*;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.logging.log4j.util.Strings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -17,8 +8,38 @@ import java.nio.channels.ByteChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.logging.log4j.util.Strings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import net.czedik.hermann.tdt.actions.AccessAction;
+import net.czedik.hermann.tdt.actions.JoinAction;
+import net.czedik.hermann.tdt.actions.TypeAction;
+import net.czedik.hermann.tdt.playerstate.AlreadyStartedGameState;
+import net.czedik.hermann.tdt.playerstate.DrawState;
+import net.czedik.hermann.tdt.playerstate.FrontendStory;
+import net.czedik.hermann.tdt.playerstate.FrontendStoryElement;
+import net.czedik.hermann.tdt.playerstate.JoinState;
+import net.czedik.hermann.tdt.playerstate.PlayerState;
+import net.czedik.hermann.tdt.playerstate.StoriesState;
+import net.czedik.hermann.tdt.playerstate.TypeState;
+import net.czedik.hermann.tdt.playerstate.WaitForGameStartState;
+import net.czedik.hermann.tdt.playerstate.WaitForPlayersState;
+import net.czedik.hermann.tdt.playerstate.WaitForRoundFinishState;
 
 // note: this class is not thread-safe, and relies on external synchronization (by the owning GameLoader)
 public class Game {
@@ -50,13 +71,13 @@ public class Game {
 
     // returns whether the client has been added as a player to the game
     public boolean access(Client client, AccessAction accessAction) {
-        Player player = getPlayerById(accessAction.playerId);
+        Player player = getPlayerById(accessAction.playerId());
         if (player == null) {
-            log.info("Game {}: New player {} accessing via client {}", gameId, accessAction.playerId, client.getId());
+            log.info("Game {}: New player {} accessing via client {}", gameId, accessAction.playerId(), client.getId());
             client.send(getStateForAccessByNewPlayer());
             return false;
         } else {
-            log.info("Game {}: New client {} connected for known player {}", gameId, client.getId(), player.id);
+            log.info("Game {}: New client {} connected for known player {}", gameId, client.getId(), player.id());
             addClientForPlayer(client, player);
             updateStateForPlayer(player);
             return true;
@@ -64,7 +85,7 @@ public class Game {
     }
 
     private Player getPlayerById(String playerId) {
-        return gameState.players.stream().filter(p -> p.id.equals(playerId)).findAny().orElse(null);
+        return gameState.players.stream().filter(p -> p.id().equals(playerId)).findAny().orElse(null);
     }
 
     private PlayerState getStateForAccessByNewPlayer() {
@@ -88,12 +109,13 @@ public class Game {
     // returns whether the client has been added as a player to the game
     public boolean join(Client client, JoinAction joinAction) {
         if (gameState.state == GameState.State.WaitingForPlayers) {
-            log.info("Game {}: Player {} joining with name '{}' via client {}", gameId, joinAction.playerId, joinAction.name, client.getId());
-            Player player = getPlayerById(joinAction.playerId);
+            log.info("Game {}: Player {} joining with name '{}' via client {}", gameId, joinAction.playerId(),
+                    joinAction.name(), client.getId());
+            Player player = getPlayerById(joinAction.playerId());
             if (player != null) {
-                log.warn("Game {}: Player {} has already joined", gameId, joinAction.playerId);
+                log.warn("Game {}: Player {} has already joined", gameId, joinAction.playerId());
             } else {
-                player = new Player(joinAction.playerId, joinAction.name, joinAction.face, false);
+                player = new Player(joinAction.playerId(), joinAction.name(), joinAction.face(), false);
                 gameState.players.add(player);
             }
             addClientForPlayer(client, player);
@@ -133,9 +155,7 @@ public class Game {
     }
 
     private PlayerState getFinishedState() {
-        StoriesState storiesState = new StoriesState();
-        storiesState.stories = mapStoriesToFrontendStories();
-        return storiesState;
+        return new StoriesState(mapStoriesToFrontendStories());
     }
 
     private FrontendStory[] mapStoriesToFrontendStories() {
@@ -149,13 +169,13 @@ public class Game {
     }
 
     private FrontendStory mapStoryElementsToFrontendStoryElements(int storyIndex, StoryElement[] elements) {
-        FrontendStory frontendStory = new FrontendStory();
-        frontendStory.elements = new FrontendStoryElement[elements.length];
+        FrontendStory frontendStory = new FrontendStory(new FrontendStoryElement[elements.length]);
         for (int roundNo = 0; roundNo < elements.length; roundNo++) {
             StoryElement e = elements[roundNo];
             Player player = getPlayerForStoryInRound(storyIndex, roundNo);
             String content = "image".equals(e.type) ? getDrawingSrc(e.content) : e.content;
-            frontendStory.elements[roundNo] = new FrontendStoryElement(e.type, content, mapPlayerToPlayerInfo(player));
+            frontendStory.elements()[roundNo] = new FrontendStoryElement(e.type, content,
+                    mapPlayerToPlayerInfo(player));
         }
         return frontendStory;
     }
@@ -205,7 +225,7 @@ public class Game {
             throw new IllegalStateException("Only valid to call this method in started state");
 
         List<PlayerInfo> playerInfos = mapPlayersToPlayerInfos(gameState.players);
-        if (player.isCreator) {
+        if (player.isCreator()) {
             return new WaitForPlayersState(playerInfos);
         } else {
             return new WaitForGameStartState(playerInfos);
@@ -242,7 +262,7 @@ public class Game {
     }
 
     private static PlayerInfo mapPlayerToPlayerInfo(Player p) {
-        return new PlayerInfo(p.name, p.face, p.isCreator);
+        return new PlayerInfo(p.name(), p.face(), p.isCreator());
     }
 
     public void clientDisconnected(Client client) {
@@ -252,14 +272,14 @@ public class Game {
             return;
         }
 
-        log.info("Game {}: Client {} of player {} disconnected", gameId, client.getId(), player.id);
+        log.info("Game {}: Client {} of player {} disconnected", gameId, client.getId(), player.id());
 
         Set<Client> clientsOfPlayer = playerToClients.get(player);
         clientsOfPlayer.remove(client);
 
         if (gameState.state == GameState.State.WaitingForPlayers) {
-            if (!player.isCreator && clientsOfPlayer.isEmpty()) {
-                log.info("Game {}: Player {} has left the game", gameId, player.id);
+            if (!player.isCreator() && clientsOfPlayer.isEmpty()) {
+                log.info("Game {}: Player {} has left the game", gameId, player.id());
                 gameState.players.remove(player);
                 playerToClients.remove(player);
                 updateStateForAllPlayers();
@@ -277,8 +297,8 @@ public class Game {
             log.warn("Game {}: Ignoring start in state {}", gameId, gameState.state);
             return;
         }
-        if (!player.isCreator) {
-            log.warn("Game {}: Non-creator {} cannot start the game (client: {})", gameId, player.id, client.getId());
+        if (!player.isCreator()) {
+            log.warn("Game {}: Non-creator {} cannot start the game (client: {})", gameId, player.id(), client.getId());
             return;
         }
 
@@ -318,10 +338,10 @@ public class Game {
             log.warn("Game {}: Ignoring type in draw round {}", gameId, gameState.round);
             return;
         }
-        if (Strings.isEmpty(typeAction.text)) {
+        String text = typeAction.text();
+        if (Strings.isEmpty(text)) {
             throw new IllegalArgumentException("Empty text");
         }
-        String text = typeAction.text;
         int maxTextLength = 2000; // same limit as in webapp code
         if (text.length() > maxTextLength) {
             text = text.substring(0, maxTextLength);

@@ -1,5 +1,4 @@
 package net.czedik.hermann.tdt.actions;
 
-public class TypeAction {
-    public String text;
+public record TypeAction(String text) {
 }

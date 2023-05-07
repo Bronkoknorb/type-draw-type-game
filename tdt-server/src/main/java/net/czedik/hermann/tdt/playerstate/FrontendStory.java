@@ -1,5 +1,9 @@
 package net.czedik.hermann.tdt.playerstate;
 
-public class FrontendStory {
-    public FrontendStoryElement[] elements;
+import java.util.Objects;
+
+public record FrontendStory(FrontendStoryElement[] elements) {
+    public FrontendStory {
+        Objects.requireNonNull(elements);
+    }
 }
