@@ -20,7 +20,9 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(myHandler(), "/api/websocket");
+        registry.addHandler(myHandler(), "/api/websocket")
+                // allow any origin as it is simpler to proxy via a web server then, and it is safe enough for the websocket
+                .setAllowedOrigins("*");
     }
 
     @Bean
