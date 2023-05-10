@@ -12,7 +12,7 @@ In the next round you get one of the drawings and have to describe it with anoth
 This goes on, by alternately typing and drawing, until all players have participated in every chain (story).
 In the end everybody sees all the stories and can wonder about how the initial sentences have transformed in unexpected ways!
 
-Play online at: https://draw.gerty.roga.czedik.at
+Play online at: https://draw.czedik.at
 
 This is an open-source Web/mobile version of the pen-and-paper game Telephone Pictionary (also known as Paper Telephone and "Eat Poop You Cat"). It can be installed on mobile phones (Android and iPhone) by using the "Add to Home Screen" functionality.
 
