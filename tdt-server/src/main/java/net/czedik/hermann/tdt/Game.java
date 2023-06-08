@@ -22,7 +22,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.logging.log4j.util.Strings;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -339,7 +339,7 @@ public class Game {
             return;
         }
         String text = typeAction.text();
-        if (Strings.isEmpty(text)) {
+        if (StringUtils.isEmpty(text)) {
             throw new IllegalArgumentException("Empty text");
         }
         int maxTextLength = 2000; // same limit as in webapp code
