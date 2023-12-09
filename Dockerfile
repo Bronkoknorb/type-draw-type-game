@@ -10,7 +10,7 @@ COPY tdt-webapp/ ./
 RUN yarn run build
 
 # Stage 2 - build the server
-FROM eclipse-temurin:17-jdk-jammy as build-server
+FROM eclipse-temurin:21-jdk-jammy as build-server
 WORKDIR /opt/tdt-src/
 
 COPY tdt-server/gradle/ ./gradle/
