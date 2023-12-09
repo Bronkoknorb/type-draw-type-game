@@ -71,7 +71,12 @@ public class GameManager {
     }
 
     private void handleAccessOrJoinAction(Client client, Function<Game, Boolean> actionHandler, String gameId) {
-        validateGameId(gameId);
+        try {
+            validateGameId(gameId);
+        } catch (IllegalArgumentException e) {
+            handleGameUnknown(client);
+            return;
+        }
 
         GameRef gameRef = getGameRef(gameId);
         boolean added = false;
