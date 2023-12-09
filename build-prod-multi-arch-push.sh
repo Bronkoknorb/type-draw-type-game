@@ -7,7 +7,7 @@ source build.sh
 
 docker buildx build \
               --pull \
-              --platform linux/amd64,linux/arm/v7,linux/arm64 \
+              --platform linux/amd64,linux/arm64 \
               --tag bronkoknorb/type-draw-type-game:latest \
               --push \
               -f Dockerfile_prod \
