@@ -39,7 +39,6 @@ public class GameManager {
 
     private final Path gamesPath;
 
-    @Autowired
     public GameManager(@Value("${storage.dir}") String storageDir) {
         Path storageDirPath = Path.of(storageDir).toAbsolutePath().normalize();
         log.info("Using storage path: {}", storageDirPath);
@@ -73,7 +72,7 @@ public class GameManager {
 
     private void handleAccessOrJoinAction(Client client, Function<Game, Boolean> actionHandler, String gameId) {
         validateGameId(gameId);
-        
+
         GameRef gameRef = getGameRef(gameId);
         boolean added = false;
         try {
@@ -108,7 +107,8 @@ public class GameManager {
     private GameRef getGameRef(String gameId) {
         GameRef gameRef;
         synchronized (this) {
-            GameLoader gameLoader = gameLoaders.computeIfAbsent(gameId, id -> new GameLoader(gameId, getGameDir(gameId)));
+            GameLoader gameLoader = gameLoaders.computeIfAbsent(gameId,
+                    id -> new GameLoader(gameId, getGameDir(gameId)));
             log.info("Access to game loader of game {} (total number of game loaders: {})", gameId, gameLoaders.size());
             gameRef = gameLoader.getGameRef();
         }
@@ -126,7 +126,8 @@ public class GameManager {
             if (gameLoader != null) {
                 if (gameLoader.isUnused()) {
                     gameLoaders.remove(gameId);
-                    log.info("Removed unused game loader for game {} (total number of loaders: {})", gameLoader.gameId, gameLoaders.size());
+                    log.info("Removed unused game loader for game {} (total number of loaders: {})", gameLoader.gameId,
+                            gameLoaders.size());
                 }
             }
         }
@@ -163,7 +164,7 @@ public class GameManager {
     public static void validateGameId(String gameId) {
         if (gameId.length() != GAME_ID_LENGTH)
             throw new IllegalArgumentException("Wrong gameId length");
-        if(!gameIdPattern.matcher(gameId).matches()) {
+        if (!gameIdPattern.matcher(gameId).matches()) {
             throw new IllegalArgumentException("Invalid gameId: " + gameId);
         }
     }

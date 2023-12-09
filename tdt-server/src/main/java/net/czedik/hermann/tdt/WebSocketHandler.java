@@ -35,7 +35,6 @@ public class WebSocketHandler extends AbstractWebSocketHandler {
 
     private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
 
-    @Autowired
     public WebSocketHandler(GameManager gameManager) {
         this.gameManager = gameManager;
 
@@ -44,8 +43,8 @@ public class WebSocketHandler extends AbstractWebSocketHandler {
     }
 
     /**
-     * This is necessary, because when proxying via nginx, nginx will automatically close the Websocket connection if
-     * there is no activity for 30 seconds.
+     * This is necessary, because when proxying via nginx, nginx will automatically
+     * close the Websocket connection if there is no activity for 30 seconds.
      */
     private void keepClientsActive() {
         for (Client client : clients.values()) {
@@ -62,7 +61,8 @@ public class WebSocketHandler extends AbstractWebSocketHandler {
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
         Client client = clients.remove(session);
-        log.info("Closed connection {} ({}) with status {} (total clients: {})", session.getId(), getHostname(session), status, clients.size());
+        log.info("Closed connection {} ({}) with status {} (total clients: {})", session.getId(), getHostname(session),
+                status, clients.size());
         gameManager.clientDisconnected(client);
     }
 

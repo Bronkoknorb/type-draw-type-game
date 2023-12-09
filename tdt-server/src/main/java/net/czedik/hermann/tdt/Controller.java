@@ -21,14 +21,13 @@ public class Controller {
 
     private final GameManager gameManager;
 
-    @Autowired
     public Controller(GameManager gameManager) {
         this.gameManager = gameManager;
     }
 
     @PostMapping(path = "/create",
-            consumes = {MediaType.APPLICATION_JSON_VALUE},
-            produces = {MediaType.APPLICATION_JSON_VALUE})
+        consumes = { MediaType.APPLICATION_JSON_VALUE },
+        produces = { MediaType.APPLICATION_JSON_VALUE })
     public CreateGameResponse createGame(@Valid @RequestBody CreateGameRequest createGameRequest) throws IOException {
         log.info("Create game: {}", createGameRequest);
         String gameId = gameManager.newGame(createGameRequest);
@@ -38,7 +37,8 @@ public class Controller {
     }
 
     @GetMapping(path = "/image/{gameId:\\w+}/{imageId:[\\w\\-]+}.png")
-    public void getImage(HttpServletResponse response, @PathVariable String gameId, @PathVariable String imageId) throws IOException {
+    public void getImage(HttpServletResponse response, @PathVariable String gameId, @PathVariable String imageId)
+            throws IOException {
         response.setContentType(MediaType.IMAGE_PNG_VALUE);
         Path imagePath = gameManager.getGameDir(gameId).resolve(imageId + ".png");
         try (InputStream in = Files.newInputStream(imagePath)) {
