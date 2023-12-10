@@ -55,7 +55,7 @@ The Backend is developed using Spring Boot in Java and built with Gradle.
 
 Prerequisites:
 
-- Install Java (tested with version 17)
+- Install Java (tested with JDK version 21)
 
 Run the server in development mode:
 
