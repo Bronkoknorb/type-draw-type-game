@@ -22,8 +22,8 @@ To run linter:
 
 To upgrade dependencies:
 
-    yarn upgrade
+    yarn up
 
 To interactively upgrade dependencies to the latest version:
 
-    yarn upgrade-interactive --latest
+    yarn upgrade-interactive
