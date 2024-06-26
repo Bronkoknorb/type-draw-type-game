@@ -1,5 +1,5 @@
 # Stage 1 - build the webapp
-FROM node:20-bullseye as build-webapp
+FROM node:20-bullseye AS build-webapp
 WORKDIR /usr/src/app
 
 # first copy only dependency definitions, because these change less often and therefore allow docker to cache the build results better
@@ -11,7 +11,7 @@ COPY tdt-webapp/ ./
 RUN yarn run build
 
 # Stage 2 - build the server
-FROM eclipse-temurin:21-jdk-jammy as build-server
+FROM eclipse-temurin:21-jdk-jammy AS build-server
 WORKDIR /opt/tdt-src/
 
 COPY tdt-server/gradle/ ./gradle/
