@@ -74,7 +74,7 @@ The Frontend is a React App written in Typescript and built with yarn.
 
 Prerequisites:
 
-- Install [yarn](https://yarnpkg.com/) (tested with version 1.22.22)
+- Install [yarn](https://yarnpkg.com/)
 
 Run the frontend in development mode:
 
