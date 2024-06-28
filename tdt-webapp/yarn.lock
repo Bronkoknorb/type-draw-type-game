@@ -3109,7 +3109,7 @@ __metadata:
     styled-components: "npm:^6.1.11"
     typescript: "npm:^5.5.2"
     uuid: "npm:^10.0.0"
-    vite: "npm:^5.3.1"
+    vite: "npm:^5.3.2"
   languageName: unknown
   linkType: soft
 
@@ -3190,7 +3190,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite@npm:^5.3.1":
+"vite@npm:^5.3.2":
   version: 5.3.2
   resolution: "vite@npm:5.3.2"
   dependencies:
