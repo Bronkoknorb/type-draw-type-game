@@ -13,6 +13,8 @@ dist-ssr
 *.local
 /.yarn/
 /.yarnrc.yml
+/.pnp.cjs
+/.pnp.loader.mjs
 
 # Editor directories and files
 .vscode/*
