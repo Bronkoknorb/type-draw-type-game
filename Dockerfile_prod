@@ -1,6 +1,6 @@
 # production container
 
-FROM eclipse-temurin:21-jre-jammy
+FROM docker.io/eclipse-temurin:21-jre-jammy
 WORKDIR /opt/tdt/
 COPY build/server.jar server.jar
 EXPOSE 8080
