@@ -12,7 +12,6 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -148,7 +147,7 @@ public class GameManager {
         Path gameDir;
         boolean retry = false;
         do {
-            gameId = RandomStringUtils.random(GAME_ID_LENGTH, CHARACTERS_WITHOUT_AMBIGUOUS);
+            gameId = RandomStringUtils.secure().next(GAME_ID_LENGTH, CHARACTERS_WITHOUT_AMBIGUOUS);
             gameDir = getGameDir(gameId);
             retry = Files.exists(gameDir);
             if (retry) {
