@@ -71,7 +71,7 @@ public class WebSocketHandler extends AbstractWebSocketHandler {
         String payload = message.getPayload();
         log.info("Client {} sent message: {}", client.getId(), payload);
         JsonNode actionMessage = JSONHelper.stringToJsonNode(payload);
-        String action = actionMessage.get("action").asText();
+        String action = actionMessage.get("action").asString();
         JsonNode content = actionMessage.get("content");
         if ("access".equals(action)) {
             AccessAction accessAction = JSONHelper.objectMapper.treeToValue(content, AccessAction.class);
