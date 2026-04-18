@@ -46,7 +46,9 @@ export const WaitForPlayersScreen = ({
         </button>
       </div>
       <div className="small">
-        Once the game has started, no additional players can join!
+        Minimum number of players: 3. The more the merrier!
+        <br />
+        Once the game has started, no additional players can join.
       </div>
     </BeforeGameStartScreen>
   );

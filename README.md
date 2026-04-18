@@ -4,13 +4,11 @@
 
 ![Type Draw Type Logo](/tdt-webapp/src/img/logo.svg?raw=true&sanitize=true)
 
-_Type Draw Type_ is a simple and fun game for you and your friends.
-It is like the telephone game (Chinese whispers), only with pictures.
-Every player starts by typing a sentence.
-Then the texts are passed on and you have to draw the sentence you received.
-In the next round you get one of the drawings and have to describe it with another sentence (without knowing the initial sentence!).
-This goes on, by alternately typing and drawing, until all players have participated in every chain (story).
-In the end everybody sees all the stories and can wonder about how the initial sentences have transformed in unexpected ways!
+_Type Draw Type_ is a lively party game that combines creativity and laughter, perfect for you and your friends. Think of it as a twist on the classic telephone game, but with drawings!
+
+Here's how it works: Each player starts by writing a sentence. That sentence is then passed to the next player, who must illustrate it. The drawing is then passed on, and the next player describes it with a new sentence - without knowing the original! This cycle of typing and drawing continues until everyone has contributed to every "story".
+
+At the end, you'll unveil the hilarious transformations of each story and marvel at how wildly things can change along the way. Simple, surprising, and endlessly fun!
 
 Play online at: https://draw.czedik.at
 
