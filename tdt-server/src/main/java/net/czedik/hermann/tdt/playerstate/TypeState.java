@@ -4,6 +4,8 @@ import net.czedik.hermann.tdt.PlayerInfo;
 
 import java.util.Objects;
 
+import org.jspecify.annotations.Nullable;
+
 public class TypeState implements PlayerState {
 
     /**
@@ -19,12 +21,12 @@ public class TypeState implements PlayerState {
     /**
      * Filename of the drawing. Will be null in the first round.
      */
-    public final String drawingSrc;
+    public final @Nullable String drawingSrc;
 
     /**
      * Player that made the drawing. (Null in the first round.)
      */
-    public final PlayerInfo artist;
+    public final @Nullable PlayerInfo artist;
 
     public TypeState(int round, int rounds) {
         if (round < 1)

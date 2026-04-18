@@ -1,7 +1,11 @@
+import net.ltgt.gradle.errorprone.errorprone
+import net.ltgt.gradle.errorprone.CheckSeverity
+
 plugins {
 	java
 	id("org.springframework.boot") version "4.0.5"
 	id("io.spring.dependency-management") version "1.1.7"
+    id("net.ltgt.errorprone") version "5.1.0"
 }
 
 group = "net.czedik.hermann"
@@ -31,8 +35,18 @@ dependencies {
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 	
 	implementation("org.apache.commons:commons-lang3:3.20.0")
+
+	errorprone("com.google.errorprone:error_prone_core:2.49.0")
+	errorprone("com.uber.nullaway:nullaway:0.13.3")
 }
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+}
+
+tasks.withType<JavaCompile>().configureEach {
+	options.errorprone {
+		check("NullAway", CheckSeverity.ERROR)
+		option("NullAway:AnnotatedPackages", "net.czedik.hermann")
+	}
 }

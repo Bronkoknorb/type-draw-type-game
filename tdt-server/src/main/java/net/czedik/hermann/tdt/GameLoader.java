@@ -1,5 +1,6 @@
 package net.czedik.hermann.tdt;
 
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,7 +22,7 @@ public class GameLoader {
 
     private final Path gameDir;
 
-    private Game loadedGame;
+    private @Nullable Game loadedGame;
 
     private final AtomicLong gameRefCount = new AtomicLong(0);
 
@@ -39,7 +40,7 @@ public class GameLoader {
         return gameRefCount.get() == 0;
     }
 
-    private Game loadGame() {
+    private @Nullable Game loadGame() {
         log.info("Loading game {}", gameId);
 
         Path gameStateFile = gameDir.resolve(Game.STATE_FILENAME);

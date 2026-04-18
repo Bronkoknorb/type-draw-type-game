@@ -1,6 +1,8 @@
 package net.czedik.hermann.tdt.playerstate;
 
-public record StoriesState(FrontendStory[] stories) implements PlayerState {
+import java.util.List;
+
+public record StoriesState(List<FrontendStory> stories) implements PlayerState {
 
     @Override
     public String getState() {

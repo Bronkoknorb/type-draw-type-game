@@ -7,10 +7,15 @@ import org.junit.jupiter.api.Test;
 class GameManagerTests {
 
     @Test
+    @SuppressWarnings("NullAway")
+    void testValidateNullGameId() {
+        assertThrows(NullPointerException.class, () -> GameManager.validateGameId(null));
+    }
+
+    @Test
     void testValidateGameId() {
         GameManager.validateGameId("abcde"); // valid
-
-        assertThrows(NullPointerException.class, () -> GameManager.validateGameId(null));
+        
         assertThrows(IllegalArgumentException.class, () -> GameManager.validateGameId(""));
         assertThrows(IllegalArgumentException.class, () -> GameManager.validateGameId("abcd"));
         assertThrows(IllegalArgumentException.class, () -> GameManager.validateGameId("abcdef"));

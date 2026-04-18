@@ -8,6 +8,7 @@ import java.nio.channels.ByteChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -23,6 +24,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,21 +86,16 @@ public class Game {
         }
     }
 
-    private Player getPlayerById(String playerId) {
+    private @Nullable Player getPlayerById(String playerId) {
         return gameState.players.stream().filter(p -> p.id().equals(playerId)).findAny().orElse(null);
     }
 
     private PlayerState getStateForAccessByNewPlayer() {
-        switch (gameState.state) {
-            case WaitingForPlayers:
-                return new JoinState();
-            case Started:
-                return new AlreadyStartedGameState();
-            case Finished:
-                return getFinishedState();
-            default:
-                throw new IllegalStateException("Unknown state " + gameState.state);
-        }
+        return switch (gameState.state) {
+            case WaitingForPlayers -> new JoinState();
+            case Started ->  new AlreadyStartedGameState();
+            case Finished -> getFinishedState();
+        };
     }
 
     private void addClientForPlayer(Client client, Player player) {
@@ -142,42 +139,41 @@ public class Game {
     }
 
     private PlayerState getPlayerState(Player player) {
-        switch (gameState.state) {
-            case WaitingForPlayers:
-                return getWaitingForPlayersState(player);
-            case Started:
-                return getStartedState(player);
-            case Finished:
-                return getFinishedState();
-            default:
-                throw new IllegalStateException("Unknown state: " + gameState.state);
-        }
+        return switch (gameState.state) {
+            case WaitingForPlayers ->
+                getWaitingForPlayersState(player);
+            case Started ->
+                getStartedState(player);
+            case Finished ->
+                getFinishedState();
+        };
     }
 
     private PlayerState getFinishedState() {
         return new StoriesState(mapStoriesToFrontendStories());
     }
 
-    private FrontendStory[] mapStoriesToFrontendStories() {
-        FrontendStory[] frontendStories = new FrontendStory[gameState.stories.length];
-        for (int storyIndex = 0; storyIndex < gameState.stories.length; storyIndex++) {
-            StoryElement[] elements = gameState.stories[storyIndex].elements;
+    private List<FrontendStory> mapStoriesToFrontendStories() {
+        Story[] stories = Objects.requireNonNull(gameState.stories);
+        List<FrontendStory> frontendStories = new ArrayList<>(stories.length);
+        for (int storyIndex = 0; storyIndex < stories.length; storyIndex++) {
+            StoryElement[] elements = stories[storyIndex].elements;
             FrontendStory frontendStory = mapStoryElementsToFrontendStoryElements(storyIndex, elements);
-            frontendStories[storyIndex] = frontendStory;
+            frontendStories.add(frontendStory);
         }
         return frontendStories;
     }
 
     private FrontendStory mapStoryElementsToFrontendStoryElements(int storyIndex, StoryElement[] elements) {
-        FrontendStory frontendStory = new FrontendStory(new FrontendStoryElement[elements.length]);
+        List<FrontendStoryElement> frontendStoryElements = new ArrayList<>(elements.length);
         for (int roundNo = 0; roundNo < elements.length; roundNo++) {
             StoryElement e = elements[roundNo];
             Player player = getPlayerForStoryInRound(storyIndex, roundNo);
             String content = "image".equals(e.type) ? getDrawingSrc(e.content) : e.content;
-            frontendStory.elements()[roundNo] = new FrontendStoryElement(e.type, content,
-                    mapPlayerToPlayerInfo(player));
+            frontendStoryElements.add(new FrontendStoryElement(e.type, content,
+                    mapPlayerToPlayerInfo(player)));
         }
-        return frontendStory;
+        return new FrontendStory(frontendStoryElements);
     }
 
     private PlayerState getStartedState(Player player) {
@@ -204,12 +200,13 @@ public class Game {
         int storyIndex = getCurrentStoryIndexForPlayer(player);
         String text = getStoryByIndex(storyIndex).elements[gameState.round - 1].content;
         Player previousPlayer = getPreviousPlayerForStory(storyIndex);
-        return new DrawState(gameState.round + 1, gameState.gameMatrix.length, text, mapPlayerToPlayerInfo(previousPlayer));
+        int[][] gameMatrix = Objects.requireNonNull(gameState.gameMatrix);
+        return new DrawState(gameState.round + 1, gameMatrix.length, text, mapPlayerToPlayerInfo(previousPlayer));
     }
 
     private PlayerState getTypeState(Player player) {
         int roundOneBased = gameState.round + 1;
-        int rounds = gameState.gameMatrix.length;
+        int rounds = Objects.requireNonNull(gameState.gameMatrix).length;
         if (gameState.round == 0) {
             return new TypeState(roundOneBased, rounds);
         } else {
@@ -241,12 +238,13 @@ public class Game {
     }
 
     private Player getPlayerForStoryInRound(int storyIndex, int roundNo) {
-        int previousPlayerIndexForStory = ArrayUtils.indexOf(gameState.gameMatrix[roundNo], storyIndex);
+        int[][] gameMatrix = Objects.requireNonNull(gameState.gameMatrix);
+        int previousPlayerIndexForStory = ArrayUtils.indexOf(gameMatrix[roundNo], storyIndex);
         return gameState.players.get(previousPlayerIndexForStory);
     }
 
     private Story getStoryByIndex(int storyIndex) {
-        return gameState.stories[storyIndex];
+        return Objects.requireNonNull(gameState.stories)[storyIndex];
     }
 
     private List<Player> getNotFinishedPlayers() {
@@ -274,7 +272,7 @@ public class Game {
 
         log.info("Game {}: Client {} of player {} disconnected", gameId, client.getId(), player.id());
 
-        Set<Client> clientsOfPlayer = playerToClients.get(player);
+        Set<Client> clientsOfPlayer = Objects.requireNonNull(playerToClients.get(player));
         clientsOfPlayer.remove(client);
 
         if (gameState.state == GameState.State.WaitingForPlayers) {
@@ -360,7 +358,8 @@ public class Game {
     }
 
     private int getCurrentStoryIndexForPlayer(Player player) {
-        return gameState.gameMatrix[gameState.round][gameState.players.indexOf(player)];
+        int[][] gameMatrix = Objects.requireNonNull(gameState.gameMatrix);
+        return gameMatrix[gameState.round][gameState.players.indexOf(player)];
     }
 
     private boolean isCurrentRoundFinished() {
@@ -424,7 +423,7 @@ public class Game {
     }
 
     private boolean isGameFinished() {
-        return gameState.round >= gameState.gameMatrix.length;
+        return gameState.round >= Objects.requireNonNull(gameState.gameMatrix).length;
     }
 
     public void storeState() {

@@ -8,6 +8,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.socket.BinaryMessage;
@@ -37,8 +38,13 @@ public class WebSocketHandler extends AbstractWebSocketHandler {
     public WebSocketHandler(GameManager gameManager) {
         this.gameManager = gameManager;
 
-        executorService.scheduleWithFixedDelay(this::keepClientsActive,
-                KEEP_CLIENTS_ALIVE_INTERVAL_SECONDS, KEEP_CLIENTS_ALIVE_INTERVAL_SECONDS, TimeUnit.SECONDS);
+        var _ = executorService.scheduleWithFixedDelay(() -> {
+            try {
+                keepClientsActive();
+            } catch (Throwable t) {
+                log.error("keepClientsActive failed", t);
+            }
+        }, KEEP_CLIENTS_ALIVE_INTERVAL_SECONDS, KEEP_CLIENTS_ALIVE_INTERVAL_SECONDS, TimeUnit.SECONDS);
     }
 
     /**
@@ -97,7 +103,7 @@ public class WebSocketHandler extends AbstractWebSocketHandler {
         gameManager.handleReceiveDrawing(client, message.getPayload());
     }
 
-    private static String getHostname(WebSocketSession session) {
+    private static @Nullable String getHostname(WebSocketSession session) {
         InetSocketAddress remoteAddress = session.getRemoteAddress();
         return remoteAddress != null ? remoteAddress.getHostName() : null;
     }
