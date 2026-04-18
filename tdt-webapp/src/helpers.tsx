@@ -59,8 +59,8 @@ function getObjectFitSize(
 ) {
   const doRatio = width / height;
   const cRatio = containerWidth / containerHeight;
-  let targetWidth = 0;
-  let targetHeight = 0;
+  let targetWidth;
+  let targetHeight;
 
   if (doRatio > cRatio) {
     targetWidth = containerWidth;

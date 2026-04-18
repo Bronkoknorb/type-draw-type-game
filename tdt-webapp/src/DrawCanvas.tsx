@@ -68,10 +68,11 @@ const DrawCanvas = ({
   // initial clear
   React.useEffect(clearCanvas, [canvas]);
 
-  let pos: { x: number; y: number } | null = null;
+  //let pos: { x: number; y: number } | null = null;
+  const [pos, setPos] = React.useState<{ x: number; y: number } | null>(null);
 
   function paint_start(_: CanvasRenderingContext2D, x: number, y: number) {
-    pos = { x, y };
+    setPos({ x, y });
   }
   function paint_move(ctx: CanvasRenderingContext2D, x: number, y: number) {
     if (pos === null) {
@@ -84,7 +85,7 @@ const DrawCanvas = ({
     ctx.moveTo(pos!.x, pos!.y);
     ctx.lineTo(x, y);
     ctx.stroke();
-    pos = { x, y };
+    setPos({ x, y });
   }
   function paint_end(
     ctx: CanvasRenderingContext2D,
@@ -95,7 +96,7 @@ const DrawCanvas = ({
       return;
     }
     paint_move(ctx, x === null ? pos.x : x, y === null ? pos.y : y);
-    pos = null;
+    setPos(null);
   }
 
   const handleMouseDown = (
