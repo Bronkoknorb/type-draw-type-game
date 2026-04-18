@@ -16,8 +16,8 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.AbstractWebSocketHandler;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
 
 import net.czedik.hermann.tdt.actions.AccessAction;
 import net.czedik.hermann.tdt.actions.JoinAction;
@@ -66,7 +66,7 @@ public class WebSocketHandler extends AbstractWebSocketHandler {
     }
 
     @Override
-    public void handleTextMessage(WebSocketSession session, TextMessage message) throws JsonProcessingException {
+    public void handleTextMessage(WebSocketSession session, TextMessage message) throws JacksonException {
         Client client = Objects.requireNonNull(clients.get(session));
         String payload = message.getPayload();
         log.info("Client {} sent message: {}", client.getId(), payload);

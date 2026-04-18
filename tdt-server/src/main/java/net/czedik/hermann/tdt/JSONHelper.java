@@ -1,8 +1,8 @@
 package net.czedik.hermann.tdt;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 public class JSONHelper {
     public static final ObjectMapper objectMapper = new ObjectMapper();
@@ -14,7 +14,7 @@ public class JSONHelper {
     public static String objectToJsonString(Object object) {
         try {
             return objectMapper.writeValueAsString(object);
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             // error handling of the lazy programmer
             throw new IllegalArgumentException(e);
         }
@@ -23,7 +23,7 @@ public class JSONHelper {
     public static JsonNode stringToJsonNode(String json) {
         try {
             return objectMapper.readTree(json);
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             // error handling of the lazy programmer
             throw new IllegalArgumentException(e);
         }
