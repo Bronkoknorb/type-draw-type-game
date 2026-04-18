@@ -31,7 +31,7 @@ const DrawCanvas = ({
 }: {
   color: string;
   brushPixelSize: number;
-  imageProviderRef: React.MutableRefObject<ImageProvider | undefined>;
+  imageProviderRef: React.MutableRefObject<ImageProvider | null>;
   handleScaleChange: (scale: number) => void;
 }) => {
   const [canvas, setCanvas] = React.useState<HTMLCanvasElement | null>(null);

@@ -54,7 +54,7 @@ const Draw = ({
     string | undefined
   >();
 
-  const imageProviderRef = React.useRef<ImageProvider>();
+  const imageProviderRef = React.useRef<ImageProvider>(null);
 
   const handleClickDone = () => {
     const imageProvider = imageProviderRef.current!;

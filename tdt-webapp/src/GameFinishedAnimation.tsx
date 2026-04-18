@@ -11,7 +11,7 @@ const GameFinishedAnimation = ({
   const animationClickRef =
     React.useRef<
       (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void
-    >();
+    >(null);
 
   const windowSize = useWindowSize();
 
@@ -158,7 +158,7 @@ const GameFinishedAnimation = ({
   }, [windowSize]);
 
   const handleClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-    if (animationClickRef.current !== undefined) {
+    if (animationClickRef.current !== null) {
       animationClickRef.current(event);
     }
   };

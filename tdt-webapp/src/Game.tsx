@@ -111,7 +111,7 @@ const Game = () => {
 
   const [reconnectCount, setReconnectCount] = React.useState(0);
 
-  const socketRef = React.useRef<WebSocket>();
+  const socketRef = React.useRef<WebSocket>(null);
 
   const send = (action: Action) => {
     socketRef.current!.send(JSON.stringify(action));
