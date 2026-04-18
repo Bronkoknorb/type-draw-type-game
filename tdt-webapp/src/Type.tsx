@@ -2,7 +2,7 @@ import React from "react";
 
 import { isBlank } from "./helpers";
 import Scrollable from "./Scrollable";
-import { PlayerInfo } from "./model";
+import type { PlayerInfo } from "./model";
 
 import "./Type.css";
 

@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
-    "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "build": "tsc -b && vite build",
+    "lint": "eslint .",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -19,6 +19,8 @@
     "uuid": "^13.0.0"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^25.6.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@types/react-router-dom": "^5.3.3",
@@ -28,10 +30,14 @@
     "@typescript-eslint/parser": "^8.58.2",
     "@vitejs/plugin-react": "^6.0.1",
     "eslint": "^10.2.1",
+    "eslint-plugin-react-dom": "^4.2.3",
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.2",
+    "eslint-plugin-react-x": "^4.2.3",
+    "globals": "^17.5.0",
     "prettier": "3.8.3",
     "typescript": "^6.0.3",
+    "typescript-eslint": "^8.58.2",
     "vite": "^8.0.8"
   },
   "packageManager": "yarn@4.14.1"

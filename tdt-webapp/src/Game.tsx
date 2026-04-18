@@ -1,7 +1,7 @@
 import React from "react";
 import { useParams } from "react-router-dom";
 
-import { PlayerInfo, StoryContent } from "./model";
+import type { PlayerInfo, StoryContent } from "./model";
 import { getPlayerId } from "./helpers";
 import Type from "./Type";
 import Draw from "./Draw";

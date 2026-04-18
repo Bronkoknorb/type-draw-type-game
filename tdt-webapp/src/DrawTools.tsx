@@ -1,7 +1,7 @@
 import React from "react";
 
 import { useWindowSize } from "./helpers";
-import { Brush } from "./model";
+import type { Brush } from "./model";
 
 import Dialog from "./Dialog";
 import ColorPicker from "./ColorPicker";

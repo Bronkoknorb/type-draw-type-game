@@ -1,10 +1,10 @@
 import React from "react";
 
 import { toggleToFullscreenAndLandscapeOnMobile } from "./helpers";
-import { PlayerInfo, Brush } from "./model";
+import type { PlayerInfo, Brush } from "./model";
 
 import { ConfirmDrawingDialog, DrawHelpDialog } from "./DrawDialogs";
-import DrawCanvas, { ImageProvider } from "./DrawCanvas";
+import DrawCanvas, { type ImageProvider } from "./DrawCanvas";
 import DrawTools from "./DrawTools";
 
 import "./Draw.css";

@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 
-import { StoryContent, StoryElement } from "./model";
+import type { StoryContent, StoryElement } from "./model";
 import Player from "./Player";
 import Scrollable from "./Scrollable";
 import NewlineToBreak from "./NewLineToBreak";

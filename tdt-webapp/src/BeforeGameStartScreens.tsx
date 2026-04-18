@@ -1,6 +1,6 @@
 import React from "react";
 
-import { PlayerInfo } from "./model";
+import type { PlayerInfo } from "./model";
 import Player from "./Player";
 import Logo from "./Logo";
 
