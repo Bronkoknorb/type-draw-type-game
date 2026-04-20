@@ -3,7 +3,5 @@ WORKDIR /opt/tdt-src/
 
 COPY tdt-server/ ./
 
-ARG SONAR_TOKEN
-ENV SONAR_TOKEN=$SONAR_TOKEN
-
-RUN ./gradlew -i --no-daemon --stacktrace build sonar
+RUN --mount=type=secret,id=sonar_token,env=SONAR_TOKEN \
+    ./gradlew -i --no-daemon --stacktrace build sonar

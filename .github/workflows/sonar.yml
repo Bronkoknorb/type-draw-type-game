@@ -19,4 +19,4 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
-          docker build --pull -f Dockerfile_sonar --build-arg SONAR_TOKEN=$SONAR_TOKEN .
+          docker build --pull -f Dockerfile_sonar --secret id=sonar_token,env=SONAR_TOKEN .
