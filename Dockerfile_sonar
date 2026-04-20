@@ -1,0 +1,9 @@
+FROM docker.io/eclipse-temurin:25-jdk-noble AS build-server
+WORKDIR /opt/tdt-src/
+
+COPY tdt-server/ ./
+
+ARG SONAR_TOKEN
+ENV SONAR_TOKEN=$SONAR_TOKEN
+
+RUN ./gradlew -i --no-daemon --stacktrace build sonar
