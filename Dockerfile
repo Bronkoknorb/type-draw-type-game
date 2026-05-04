@@ -11,7 +11,7 @@ COPY tdt-webapp/ ./
 RUN yarn run build
 
 # Stage 2 - build the server
-FROM docker.io/eclipse-temurin:25-jdk-noble AS build-server
+FROM docker.io/eclipse-temurin:26-jdk-noble AS build-server
 WORKDIR /opt/tdt-src/
 
 COPY tdt-server/gradle/ ./gradle/
