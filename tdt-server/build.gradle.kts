@@ -38,7 +38,7 @@ dependencies {
 	implementation("org.apache.commons:commons-lang3:3.20.0")
 
 	errorprone("com.google.errorprone:error_prone_core:2.49.0")
-	errorprone("com.uber.nullaway:nullaway:0.13.3")
+	errorprone("com.uber.nullaway:nullaway:0.13.4")
 }
 
 tasks.withType<Test> {
