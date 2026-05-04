@@ -14,9 +14,9 @@
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
     "react-is": "^19.2.5",
-    "react-router-dom": "^7.14.1",
-    "styled-components": "^6.4.0",
-    "uuid": "^13.0.0"
+    "react-router-dom": "^7.14.2",
+    "styled-components": "^6.4.1",
+    "uuid": "^14.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
@@ -26,19 +26,19 @@
     "@types/react-router-dom": "^5.3.3",
     "@types/styled-components": "^5.1.36",
     "@types/uuid": "^11.0.0",
-    "@typescript-eslint/eslint-plugin": "^8.58.2",
-    "@typescript-eslint/parser": "^8.58.2",
+    "@typescript-eslint/eslint-plugin": "^8.59.2",
+    "@typescript-eslint/parser": "^8.59.2",
     "@vitejs/plugin-react": "^6.0.1",
-    "eslint": "^10.2.1",
-    "eslint-plugin-react-dom": "^4.2.3",
+    "eslint": "^10.3.0",
+    "eslint-plugin-react-dom": "^5.7.2",
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.2",
-    "eslint-plugin-react-x": "^4.2.3",
-    "globals": "^17.5.0",
+    "eslint-plugin-react-x": "^5.7.2",
+    "globals": "^17.6.0",
     "prettier": "3.8.3",
     "typescript": "^6.0.3",
-    "typescript-eslint": "^8.58.2",
-    "vite": "^8.0.8"
+    "typescript-eslint": "^8.59.2",
+    "vite": "^8.0.10"
   },
   "packageManager": "yarn@4.14.1"
 }
