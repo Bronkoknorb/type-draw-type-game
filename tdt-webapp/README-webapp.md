@@ -22,7 +22,15 @@ To run linter:
 
 To upgrade dependencies:
 
+    yarn up '*'
+
+(upgrades dependencies in package.json and yarn.lock)
+
+AND
+
     yarn up -R '*'
+
+(upgrades transitive dependencies)
 
 To interactively upgrade dependencies to the latest version:
 
