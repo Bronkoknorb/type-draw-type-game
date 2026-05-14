@@ -33,6 +33,7 @@ const HowToButtonAndDialog = () => {
               Minimum number of players: 3. The more the merrier!
             </div>
             <button
+              type="button"
               className="button"
               onClick={() => setShowHowToDialog(false)}
             >
@@ -42,6 +43,7 @@ const HowToButtonAndDialog = () => {
         </Scrollable>
       </Dialog>
       <button
+        type="button"
         className="button button-red"
         onClick={() => setShowHowToDialog(true)}
       >

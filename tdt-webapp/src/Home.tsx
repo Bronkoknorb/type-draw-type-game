@@ -23,10 +23,10 @@ const Home = () => {
       <Buttons>
         <HowToButtonAndDialog />
         <br />
-        <button className="button" onClick={handleStartNewGame}>
+        <button type="button" className="button" onClick={handleStartNewGame}>
           Start new Game
         </button>
-        <button className="button button-blue" onClick={handleJoinGame}>
+        <button type="button" className="button button-blue" onClick={handleJoinGame}>
           Join Game
         </button>
       </Buttons>

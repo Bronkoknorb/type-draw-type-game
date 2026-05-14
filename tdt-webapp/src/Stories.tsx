@@ -58,6 +58,7 @@ const Story = ({ story }: { story: StoryContent }) => {
   return (
     <StyledStory>
       {story.elements.map((e, index) => (
+        // eslint-disable-next-line @eslint-react/no-array-index-key -- StoryElement has no unique id, list is static
         <StoryElementComponent key={index} element={e} />
       ))}
     </StyledStory>
@@ -134,6 +135,7 @@ const StoryNavButtons = ({
   return (
     <NavButtons>
       <button
+        type="button"
         className="button"
         onClick={() => handleNav(selectedIndex - 1)}
         disabled={selectedIndex === 0}
@@ -141,8 +143,9 @@ const StoryNavButtons = ({
         ⇦
       </button>
       {items.map((_item, index) => (
-        <button
-          key={index}
+        // eslint-disable-next-line @eslint-react/no-array-index-key -- nav buttons are purely positional, no unique id available
+        <button key={index}
+          type="button"
           className="button"
           onClick={() => handleNav(index)}
           disabled={selectedIndex === index}
@@ -151,6 +154,7 @@ const StoryNavButtons = ({
         </button>
       ))}
       <button
+        type="button"
         className="button"
         onClick={() => handleNav(selectedIndex + 1)}
         disabled={selectedIndex === items.length - 1}

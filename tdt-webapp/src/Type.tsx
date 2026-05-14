@@ -60,6 +60,7 @@ const Type = ({
           </div>
         )}
         <button
+          type="button"
           className="button"
           disabled={buttonDisabled}
           onClick={() => handleDone(text.trim())}

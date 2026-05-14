@@ -168,7 +168,7 @@ const GameFinishedAnimation = ({
       <canvas width="100" height="100" ref={canvasRef}></canvas>
       <div>Done!</div>
       <div>
-        <button className="button" onClick={handleShowStories}>
+        <button type="button" className="button" onClick={handleShowStories}>
           See finished stories
         </button>
       </div>

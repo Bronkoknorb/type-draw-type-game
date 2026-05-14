@@ -110,6 +110,7 @@ const CreateOrJoin = ({
       />
       <br />
       <button
+        type="button"
         className="button"
         disabled={buttonDisabled}
         onClick={() => handleDone(face, name.trim())}
@@ -193,6 +194,7 @@ export const JoinWithCode = () => {
       />
       <br />
       <button
+        type="button"
         className="button"
         disabled={buttonDisabled}
         onClick={handleJoin}

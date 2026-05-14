@@ -31,10 +31,10 @@ export const ConfirmDrawingDialog = ({
           <img src={drawingDataUrl} alt="Drawing" />
         </div>
         <div className="buttons">
-          <button className="button" onClick={handleDone}>
+          <button type="button" className="button" onClick={handleDone}>
             Yes, I'm done
           </button>
-          <button className="button button-red" onClick={handleContinue}>
+          <button type="button" className="button button-red" onClick={handleContinue}>
             No, continue drawing
           </button>
         </div>
@@ -94,7 +94,7 @@ export const DrawHelpDialog = ({
             <div>... this text by {textWriter.name}:</div>
           </div>
           <Text>{NewlineToBreak(text)}</Text>
-          <button className="button" onClick={handleClose}>
+          <button type="button" className="button" onClick={handleClose}>
             Okay, {firstShow ? "start" : "continue"} drawing
           </button>
         </div>

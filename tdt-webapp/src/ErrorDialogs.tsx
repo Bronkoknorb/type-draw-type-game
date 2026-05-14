@@ -27,7 +27,7 @@ export const ConnectionLostErrorDialog = ({
         <div></div>
         <h1>ERROR</h1>
         <div>Connection to server lost</div>
-        <button className="button" onClick={handleReconnect}>
+        <button type="button" className="button" onClick={handleReconnect}>
           Click to re-connect
         </button>
       </ConnectionLostErrorDialogContent>

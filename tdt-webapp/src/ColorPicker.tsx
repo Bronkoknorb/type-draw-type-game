@@ -20,14 +20,15 @@ const ColorPicker = ({
   return (
     <div className="ColorPicker">
       {colors.map((colorRow, index) => (
+        // eslint-disable-next-line @eslint-react/no-array-index-key -- static hardcoded grid, index is stable
         <div key={index}>
           {colorRow.map((color, indexInner) => {
             const style = {
               backgroundColor: color,
             };
             return (
-              <div
-                key={indexInner}
+              // eslint-disable-next-line @eslint-react/no-array-index-key -- static hardcoded grid, index is stable
+              <div key={indexInner}
                 style={style}
                 onClick={() => handlePickColor(color)}
               ></div>

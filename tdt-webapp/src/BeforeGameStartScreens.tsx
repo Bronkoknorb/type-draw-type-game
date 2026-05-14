@@ -33,6 +33,7 @@ export const WaitForPlayersScreen = ({
       </div>
       <div className="buttons">
         <button
+          type="button"
           className="button"
           disabled={buttonDisabled}
           title={
@@ -81,6 +82,7 @@ const BeforeGameStartScreen = ({
         <div className="Players-title">Players:</div>
         <div className="Players">
           {players.map((player, index) => (
+            // eslint-disable-next-line @eslint-react/no-array-index-key -- PlayerInfo has no unique id
             <Player key={index} face={player.face}>
               {player.name}
             </Player>

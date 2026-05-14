@@ -27,8 +27,8 @@ const DrawTools = ({
   onChangeColor: (color: string) => void;
   onDone: () => void;
 }) => {
-  const brushButton = React.useRef<HTMLDivElement>(null);
-  const brushPopup = React.useRef<HTMLDivElement>(null);
+  const brushButtonRef = React.useRef<HTMLDivElement>(null);
+  const brushPopupRef = React.useRef<HTMLDivElement>(null);
 
   const [showBrushPopup, setShowBrushPopup] = React.useState(false);
 
@@ -40,16 +40,16 @@ const DrawTools = ({
 
   React.useEffect(() => {
     const setBrushPopupPosition = () => {
-      if (brushPopup.current !== null && brushButton.current !== null) {
-        brushPopup.current.style.left = `${
-          brushButton.current.offsetLeft + brushButton.current.offsetWidth
+      if (brushPopupRef.current !== null && brushButtonRef.current !== null) {
+        brushPopupRef.current.style.left = `${
+          brushButtonRef.current.offsetLeft + brushButtonRef.current.offsetWidth
         }px`;
-        brushPopup.current.style.top = `calc(${brushButton.current.offsetTop}px - 2vmin)`;
+        brushPopupRef.current.style.top = `calc(${brushButtonRef.current.offsetTop}px - 2vmin)`;
       }
     };
 
     setBrushPopupPosition();
-  }, [windowSize, brushButton, brushPopup]);
+  }, [windowSize, brushButtonRef, brushPopupRef]);
 
   const handleSelectBrush = (index: number) => {
     setShowBrushPopup(false);
@@ -76,15 +76,15 @@ const DrawTools = ({
         size={selectedBrush.displaySize}
         color={color}
         onClick={selectBrush}
-        ref={brushButton}
+        ref={brushButtonRef}
       />
       <div
         className={"tool-popup" + (showBrushPopup ? "" : " hidden")}
-        ref={brushPopup}
+        ref={brushPopupRef}
       >
         {brushes.map((brush, index) => (
-          <BrushButton
-            key={index}
+          // eslint-disable-next-line @eslint-react/no-array-index-key -- static brush list, index is stable
+          <BrushButton key={index}
             size={brush.displaySize}
             color={color}
             onClick={() => handleSelectBrush(index)}
@@ -110,34 +110,31 @@ const DrawTools = ({
 
 export default DrawTools;
 
-const BrushButton = React.forwardRef(
-  (
-    {
-      color,
-      size,
-      onClick,
-    }: {
-      color: string;
-      size: number;
-      onClick: () => void;
-    },
-    ref?: React.Ref<HTMLDivElement>
-  ) => {
-    return (
+const BrushButton = ({
+  color,
+  size,
+  onClick,
+  ref,
+}: {
+  color: string;
+  size: number;
+  onClick: () => void;
+  ref?: React.Ref<HTMLDivElement>;
+}) => {
+  return (
+    <div
+      className="tool-button tool-button-brush"
+      onClick={onClick}
+      ref={ref}
+      style={{ backgroundColor: color === "#FFF" ? "#aaa" : "white" }}
+    >
       <div
-        className="tool-button tool-button-brush"
-        onClick={onClick}
-        ref={ref}
-        style={{ backgroundColor: color === "#FFF" ? "#aaa" : "white" }}
-      >
-        <div
-          style={{
-            width: size,
-            height: size,
-            backgroundColor: color,
-          }}
-        ></div>
-      </div>
-    );
-  }
-);
+        style={{
+          width: size,
+          height: size,
+          backgroundColor: color,
+        }}
+      ></div>
+    </div>
+  );
+};
