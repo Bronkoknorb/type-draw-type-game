@@ -9,9 +9,9 @@ const GameFinishedAnimation = ({
 }) => {
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
   const animationClickRef =
-    React.useRef<
-      (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void
-    >(null);
+    React.useRef<(event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void>(
+      null,
+    );
 
   const windowSize = useWindowSize();
 
@@ -69,7 +69,7 @@ const GameFinishedAnimation = ({
           y === undefined ? Math.round(Math.random() * canvas.height) : y;
         this.radius = Math.ceil(
           config.minParticleSize +
-            Math.random() * (config.maxParticleSize - config.minParticleSize)
+            Math.random() * (config.maxParticleSize - config.minParticleSize),
         );
         this.color = colors[Math.floor(Math.random() * colors.length)];
         this.speed = Math.pow(Math.ceil(Math.random() * config.maxSpeed), 0.7);
@@ -115,7 +115,7 @@ const GameFinishedAnimation = ({
     const addParticles = function (
       numParticles: number,
       x?: number,
-      y?: number
+      y?: number,
     ) {
       for (let i = 0; i < numParticles; i++) {
         particles.push(new Particle(x, y));
@@ -132,7 +132,7 @@ const GameFinishedAnimation = ({
         addParticles(
           config.particleNumber,
           Math.round(Math.random() * canvas.width),
-          Math.round(Math.random() * canvas.height)
+          Math.round(Math.random() * canvas.height),
         );
         nextExplosion =
           time + Math.random() * config.maxTimeBetweenExplosionsMillis;

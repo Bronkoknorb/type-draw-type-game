@@ -77,7 +77,7 @@ const CreateOrJoin = ({
   const faces = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
   const [face, setFace] = useLocalStorageState("face", () =>
-    getRandomCharacterFromString(faces)
+    getRandomCharacterFromString(faces),
   );
 
   const nameMaxLength = 50;
@@ -98,7 +98,12 @@ const CreateOrJoin = ({
       Pick your look:
       <br />
       <SelectFace face={face} faces={faces} handleChange={handleChangeFace} />
-      <form onSubmit={(event) => { event.preventDefault(); handleDone(face, name.trim()); }}>
+      <form
+        onSubmit={(event) => {
+          event.preventDefault();
+          handleDone(face, name.trim());
+        }}
+      >
         <label htmlFor="name">Enter your name:</label>
         <input
           type="text"
@@ -110,11 +115,7 @@ const CreateOrJoin = ({
           maxLength={nameMaxLength}
         />
         <br />
-        <button
-          type="submit"
-          className="button"
-          disabled={buttonDisabled}
-        >
+        <button type="submit" className="button" disabled={buttonDisabled}>
           {buttonLabel}
         </button>
       </form>
@@ -177,7 +178,12 @@ export const JoinWithCode = () => {
 
   return (
     <LogoLeftScreen>
-      <form onSubmit={(event) => { event.preventDefault(); handleJoin(); }}>
+      <form
+        onSubmit={(event) => {
+          event.preventDefault();
+          handleJoin();
+        }}
+      >
         <label htmlFor="code">Enter Game Code:</label>
         <input
           type="text"

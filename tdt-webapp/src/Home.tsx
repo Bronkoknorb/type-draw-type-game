@@ -26,7 +26,11 @@ const Home = () => {
         <button type="button" className="button" onClick={handleStartNewGame}>
           Start new Game
         </button>
-        <button type="button" className="button button-blue" onClick={handleJoinGame}>
+        <button
+          type="button"
+          className="button button-blue"
+          onClick={handleJoinGame}
+        >
           Join Game
         </button>
       </Buttons>

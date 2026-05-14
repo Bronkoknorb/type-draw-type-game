@@ -143,8 +143,9 @@ const StoryNavButtons = ({
         ⇦
       </button>
       {items.map((_item, index) => (
-        // eslint-disable-next-line @eslint-react/no-array-index-key -- nav buttons are purely positional, no unique id available
-        <button key={index}
+        <button
+          // eslint-disable-next-line @eslint-react/no-array-index-key -- nav buttons are purely positional, no unique id available
+          key={index}
           type="button"
           className="button"
           onClick={() => handleNav(index)}

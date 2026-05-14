@@ -27,8 +27,9 @@ const ColorPicker = ({
               backgroundColor: color,
             };
             return (
-              // eslint-disable-next-line @eslint-react/no-array-index-key -- static hardcoded grid, index is stable
-              <div key={indexInner}
+              <div
+                // eslint-disable-next-line @eslint-react/no-array-index-key -- static hardcoded grid, index is stable
+                key={indexInner}
                 style={style}
                 onClick={() => handlePickColor(color)}
               ></div>

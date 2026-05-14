@@ -83,8 +83,9 @@ const DrawTools = ({
         ref={brushPopupRef}
       >
         {brushes.map((brush, index) => (
-          // eslint-disable-next-line @eslint-react/no-array-index-key -- static brush list, index is stable
-          <BrushButton key={index}
+          <BrushButton
+            // eslint-disable-next-line @eslint-react/no-array-index-key -- static brush list, index is stable
+            key={index}
             size={brush.displaySize}
             color={color}
             onClick={() => handleSelectBrush(index)}

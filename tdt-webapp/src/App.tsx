@@ -12,13 +12,13 @@ const App = () => {
   React.useEffect(() => {
     window.document.body.addEventListener(
       "click",
-      toggleToFullscreenAndLandscapeOnMobile
+      toggleToFullscreenAndLandscapeOnMobile,
     );
 
     return () => {
       window.document.body.removeEventListener(
         "click",
-        toggleToFullscreenAndLandscapeOnMobile
+        toggleToFullscreenAndLandscapeOnMobile,
       );
     };
   }, []);

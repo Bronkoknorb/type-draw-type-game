@@ -8,7 +8,7 @@ export interface ImageProvider {
 // gets position in "natural" canvas coordinates for mouse/touch events
 function getPositionInCanvas(
   canvas: HTMLCanvasElement,
-  event: { clientX: number; clientY: number }
+  event: { clientX: number; clientY: number },
 ) {
   const rect = canvas.getBoundingClientRect();
 
@@ -45,7 +45,7 @@ const DrawCanvas = ({
         };
       }
     },
-    [imageProviderRef]
+    [imageProviderRef],
   );
 
   const windowSize = useWindowSize();
@@ -90,7 +90,7 @@ const DrawCanvas = ({
   function paint_end(
     ctx: CanvasRenderingContext2D,
     x: number | null = null,
-    y: number | null = null
+    y: number | null = null,
   ) {
     if (pos === null) {
       return;
@@ -100,7 +100,7 @@ const DrawCanvas = ({
   }
 
   const handleMouseDown = (
-    event: React.MouseEvent<HTMLCanvasElement, MouseEvent>
+    event: React.MouseEvent<HTMLCanvasElement, MouseEvent>,
   ) => {
     if (event.buttons !== 1) {
       return;
@@ -111,7 +111,7 @@ const DrawCanvas = ({
     paint_start(ctx, x, y);
   };
   const handleMouseMove = (
-    event: React.MouseEvent<HTMLCanvasElement, MouseEvent>
+    event: React.MouseEvent<HTMLCanvasElement, MouseEvent>,
   ) => {
     const canvasTarget = event.currentTarget;
     const { x, y } = getPositionInCanvas(canvasTarget, event);
@@ -123,14 +123,14 @@ const DrawCanvas = ({
     paint_move(ctx, x, y);
   };
   const handleMouseUp = (
-    event: React.MouseEvent<HTMLCanvasElement, MouseEvent>
+    event: React.MouseEvent<HTMLCanvasElement, MouseEvent>,
   ) => {
     const canvasTarget = event.currentTarget;
     const ctx = getCanvas2DContext(canvasTarget);
     paint_end(ctx);
   };
   const handleMouseOut = (
-    event: React.MouseEvent<HTMLCanvasElement, MouseEvent>
+    event: React.MouseEvent<HTMLCanvasElement, MouseEvent>,
   ) => {
     const canvasTarget = event.currentTarget;
     const ctx = getCanvas2DContext(canvasTarget);
@@ -186,7 +186,7 @@ const DrawCanvas = ({
 export default DrawCanvas;
 
 function getCanvas2DContext(
-  canvas: HTMLCanvasElement
+  canvas: HTMLCanvasElement,
 ): CanvasRenderingContext2D {
   return canvas.getContext("2d")!;
 }

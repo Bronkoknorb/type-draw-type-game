@@ -70,7 +70,7 @@ const Decoration = ({ chars }: { chars: string }) => {
   const getRandomDecorationChar = () => getRandomCharacterFromString(chars);
 
   const [decorationChar, setDecorationChar] = React.useState(
-    getRandomDecorationChar
+    getRandomDecorationChar,
   );
 
   const nextDecoration = () => {

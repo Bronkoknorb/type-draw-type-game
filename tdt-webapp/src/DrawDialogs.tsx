@@ -34,7 +34,11 @@ export const ConfirmDrawingDialog = ({
           <button type="button" className="button" onClick={handleDone}>
             Yes, I'm done
           </button>
-          <button type="button" className="button button-red" onClick={handleContinue}>
+          <button
+            type="button"
+            className="button button-red"
+            onClick={handleContinue}
+          >
             No, continue drawing
           </button>
         </div>

@@ -4,7 +4,7 @@ import o9n from "o9n";
 
 function isMobileDevice() {
   return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-    navigator.userAgent
+    navigator.userAgent,
   );
 }
 
@@ -55,7 +55,7 @@ function getObjectFitSize(
   containerWidth: number,
   containerHeight: number,
   width: number,
-  height: number
+  height: number,
 ) {
   const doRatio = width / height;
   const cRatio = containerWidth / containerHeight;
@@ -83,7 +83,7 @@ export function getCanvasSize(canvas: HTMLCanvasElement) {
     canvas.clientWidth,
     canvas.clientHeight,
     canvas.width,
-    canvas.height
+    canvas.height,
   );
 }
 
@@ -103,7 +103,7 @@ export function getPlayerId() {
 
 export function useLocalStorageState(
   key: string,
-  initialValue: string | (() => string)
+  initialValue: string | (() => string),
 ): [string, (value: string) => void] {
   const [storedValue, setStoredValue] = React.useState(() => {
     const item = window.localStorage.getItem(key);

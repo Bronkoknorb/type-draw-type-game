@@ -20,6 +20,10 @@ To run linter:
 
     yarn run lint
 
+To run code formatter (Prettier):
+
+    yarn run format
+
 To upgrade dependencies:
 
     yarn up '*'

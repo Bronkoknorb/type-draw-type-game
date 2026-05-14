@@ -25,7 +25,7 @@ interface WaitForPlayersState extends PlayerState {
 }
 
 function isWaitForPlayersState(
-  playerState: PlayerState
+  playerState: PlayerState,
 ): playerState is WaitForPlayersState {
   return playerState.state === "waitForPlayers";
 }
@@ -36,7 +36,7 @@ interface WaitForGameStartState extends PlayerState {
 }
 
 function isWaitForGameStartState(
-  playerState: PlayerState
+  playerState: PlayerState,
 ): playerState is WaitForGameStartState {
   return playerState.state === "waitForGameStart";
 }
@@ -72,7 +72,7 @@ interface WaitForRoundFinishState extends PlayerState {
 }
 
 function isWaitForRoundFinishState(
-  playerState: PlayerState
+  playerState: PlayerState,
 ): playerState is WaitForRoundFinishState {
   return playerState.state === "waitForRoundFinish";
 }
