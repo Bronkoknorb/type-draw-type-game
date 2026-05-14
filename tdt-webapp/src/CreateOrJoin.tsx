@@ -98,25 +98,26 @@ const CreateOrJoin = ({
       Pick your look:
       <br />
       <SelectFace face={face} faces={faces} handleChange={handleChangeFace} />
-      <label htmlFor="name">Enter your name:</label>
-      <input
-        type="text"
-        id="name"
-        name="name"
-        autoFocus
-        value={name}
-        onChange={(event) => setName(event.target.value)}
-        maxLength={nameMaxLength}
-      />
-      <br />
-      <button
-        type="button"
-        className="button"
-        disabled={buttonDisabled}
-        onClick={() => handleDone(face, name.trim())}
-      >
-        {buttonLabel}
-      </button>
+      <form onSubmit={(event) => { event.preventDefault(); handleDone(face, name.trim()); }}>
+        <label htmlFor="name">Enter your name:</label>
+        <input
+          type="text"
+          id="name"
+          name="name"
+          autoFocus
+          value={name}
+          onChange={(event) => setName(event.target.value)}
+          maxLength={nameMaxLength}
+        />
+        <br />
+        <button
+          type="submit"
+          className="button"
+          disabled={buttonDisabled}
+        >
+          {buttonLabel}
+        </button>
+      </form>
     </LogoLeftScreen>
   );
 };
@@ -176,32 +177,33 @@ export const JoinWithCode = () => {
 
   return (
     <LogoLeftScreen>
-      <label htmlFor="code">Enter Game Code:</label>
-      <input
-        type="text"
-        id="code"
-        name="code"
-        minLength={CODE_LENGTH}
-        maxLength={CODE_LENGTH}
-        pattern={codePattern}
-        autoFocus
-        autoCapitalize="off"
-        autoCorrect="off"
-        autoComplete="off"
-        spellCheck={false}
-        value={code}
-        onChange={(event) => handleChangeCode(event.target.value)}
-      />
-      <br />
-      <button
-        type="button"
-        className="button"
-        disabled={buttonDisabled}
-        onClick={handleJoin}
-        title={buttonDisabled ? "Game code should have five characters" : ""}
-      >
-        Join game
-      </button>
+      <form onSubmit={(event) => { event.preventDefault(); handleJoin(); }}>
+        <label htmlFor="code">Enter Game Code:</label>
+        <input
+          type="text"
+          id="code"
+          name="code"
+          minLength={CODE_LENGTH}
+          maxLength={CODE_LENGTH}
+          pattern={codePattern}
+          autoFocus
+          autoCapitalize="off"
+          autoCorrect="off"
+          autoComplete="off"
+          spellCheck={false}
+          value={code}
+          onChange={(event) => handleChangeCode(event.target.value)}
+        />
+        <br />
+        <button
+          type="submit"
+          className="button"
+          disabled={buttonDisabled}
+          title={buttonDisabled ? "Game code should have five characters" : ""}
+        >
+          Join game
+        </button>
+      </form>
     </LogoLeftScreen>
   );
 };
