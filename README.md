@@ -64,7 +64,7 @@ To get live-reloads on changes, run in a second terminal:
 
     ./gradlew build --continuous
 
-See also [tdt-server/HELP.md](tdt-server/HELP.md).
+See also [tdt-server/README-server.md](tdt-server/README-server.md).
 
 ### Frontend Web App
 
