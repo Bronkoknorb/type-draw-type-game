@@ -9,7 +9,7 @@
     "enabled": true,
     "labels": ["security"]
   },
-  "minimumReleaseAge": "4 days",
+  "minimumReleaseAge": "5 days",
   "ignoreScripts": true,
   "lockFileMaintenance": {
     "enabled": true

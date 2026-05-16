@@ -12,7 +12,6 @@ dist
 dist-ssr
 *.local
 /.yarn/
-/.yarnrc.yml
 /.pnp.cjs
 /.pnp.loader.mjs
 
