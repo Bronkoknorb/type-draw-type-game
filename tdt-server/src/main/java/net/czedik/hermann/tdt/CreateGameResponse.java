@@ -1,4 +1,3 @@
 package net.czedik.hermann.tdt;
 
-public record CreateGameResponse(String gameId) {
-}
+public record CreateGameResponse(String gameId) {}
