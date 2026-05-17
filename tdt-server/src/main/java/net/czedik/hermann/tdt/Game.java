@@ -246,8 +246,9 @@ public class Game {
 
   private PlayerState getDrawState(Player player) {
     int storyIndex = getCurrentStoryIndexForPlayer(player);
-    String text = getStoryByIndex(storyIndex).elements[gameState.round -
-    1].content;
+    String text = getStoryByIndex(storyIndex).elements[
+      gameState.round - 1
+    ].content;
     Player previousPlayer = getPreviousPlayerForStory(storyIndex);
     int[][] gameMatrix = Objects.requireNonNull(gameState.gameMatrix);
     return new DrawState(
@@ -265,9 +266,9 @@ public class Game {
       return new TypeState(roundOneBased, rounds);
     } else {
       int storyIndex = getCurrentStoryIndexForPlayer(player);
-      String imageFilename = getStoryByIndex(
-        storyIndex
-      ).elements[gameState.round - 1].content;
+      String imageFilename = getStoryByIndex(storyIndex).elements[
+        gameState.round - 1
+      ].content;
       Player previousPlayer = getPreviousPlayerForStory(storyIndex);
       return new TypeState(
         roundOneBased,
