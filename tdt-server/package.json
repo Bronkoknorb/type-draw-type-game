@@ -1,9 +1,12 @@
 {
   "scripts": {
-    "format": "prettier --plugin=prettier-plugin-java --write '**/*.java'"
+    "format": "prettier --plugin=prettier-plugin-java --write '**/*.java'",
+    "deps-update": "ncu -u && rimraf node_modules package-lock.json && npm install"
   },
   "devDependencies": {
+    "npm-check-updates": "^22.2.1",
     "prettier": "3.8.3",
-    "prettier-plugin-java": "2.9.2"
+    "prettier-plugin-java": "2.9.4",
+    "rimraf": "^6.1.3"
   }
 }

@@ -24,7 +24,10 @@ Then run using:
 
     npm run format
 
-For updates:
 Check for outdated packages:
 
     npm outdated
+
+Update all packages (includes regenerating the package-lock.json file):
+
+    npm run deps-update
