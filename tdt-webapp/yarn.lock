@@ -693,11 +693,11 @@ __metadata:
   linkType: hard
 
 "@types/node@npm:^25.9.1":
-  version: 25.9.1
-  resolution: "@types/node@npm:25.9.1"
+  version: 25.9.5
+  resolution: "@types/node@npm:25.9.5"
   dependencies:
     undici-types: "npm:>=7.24.0 <7.24.7"
-  checksum: 10c0/9a04682842bebbcf21a1779dfeab9aa733d7bd7bbc0a0edb641ab3a9a3d43eac543225acf669c334f458f1956443ebc072bc3c72840c543b8b356cab5c82d456
+  checksum: 10c0/addbfe55f14d6a7f149a8796c2fca68463ac6caf911c623f552d07385691d36c0669a9c38724350d0e958131827d59a63c18781e753dede8113a903dd62b7932
   languageName: node
   linkType: hard
 
