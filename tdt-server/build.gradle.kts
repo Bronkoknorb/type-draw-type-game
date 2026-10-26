@@ -3,10 +3,10 @@ import net.ltgt.gradle.errorprone.CheckSeverity
 
 plugins {
 	java
-	id("org.springframework.boot") version "4.0.6"
+	id("org.springframework.boot") version "4.1.2"
 	id("io.spring.dependency-management") version "1.1.7"
-    id("net.ltgt.errorprone") version "5.1.0"
-	id("org.sonarqube") version "7.3.0.8198"
+    id("net.ltgt.errorprone") version "5.1.1"
+	id("org.sonarqube") version "7.5.0.8588"
 }
 
 group = "net.czedik.hermann"
@@ -39,10 +39,10 @@ dependencies {
 
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 	
-	implementation("org.apache.commons:commons-lang3:3.20.0")
+	implementation("org.apache.commons:commons-lang3:3.21.0")
 
-	errorprone("com.google.errorprone:error_prone_core:2.49.0")
-	errorprone("com.uber.nullaway:nullaway:0.13.4")
+	errorprone("com.google.errorprone:error_prone_core:2.51.0")
+	errorprone("com.uber.nullaway:nullaway:0.14.3")
 }
 
 tasks.withType<Test> {
