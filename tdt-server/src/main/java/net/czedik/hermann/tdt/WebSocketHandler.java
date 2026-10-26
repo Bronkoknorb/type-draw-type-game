@@ -88,7 +88,15 @@ public class WebSocketHandler extends AbstractWebSocketHandler {
       status,
       clients.size()
     );
-    gameManager.clientDisconnected(client);
+    if (client != null) {
+      gameManager.clientDisconnected(client);
+    } else {
+      log.warn(
+        "Received close callback for untracked connection {} ({}); skipping game disconnect handling",
+        session.getId(),
+        status
+      );
+    }
   }
 
   @Override
