@@ -24,7 +24,11 @@ To run code formatter (Prettier):
 
     yarn run format
 
-To upgrade dependencies:
+To interactively upgrade dependencies to the latest version:
+
+    yarn upgrade-interactive
+
+To upgrade dependencies blindly:
 
     yarn up '*'
 
@@ -35,7 +39,3 @@ AND
     yarn up -R '*'
 
 (upgrades transitive dependencies)
-
-To interactively upgrade dependencies to the latest version:
-
-    yarn upgrade-interactive
