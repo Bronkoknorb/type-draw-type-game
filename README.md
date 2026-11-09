@@ -68,17 +68,17 @@ See also [tdt-server/README-server.md](tdt-server/README-server.md).
 
 ### Frontend Web App
 
-The Frontend is a React App written in Typescript and built with yarn.
+The Frontend is a React App written in Typescript and built with pnpm.
 
 Prerequisites:
 
-- Install [yarn](https://yarnpkg.com/)
+- Install Node.js and [pnpm](https://pnpm.io/installation), or use Corepack. The exact pnpm version is pinned in `tdt-webapp/package.json`.
 
 Run the frontend in development mode:
 
     cd tdt-webapp
-    yarn
-    yarn run dev
+    pnpm install
+    pnpm run dev
 
 This will also automatically start a proxy server which forwards API requests to the backend (running on port 8080).
 

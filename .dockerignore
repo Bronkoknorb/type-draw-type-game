@@ -4,6 +4,7 @@
 
 /tdt-webapp/node_modules/
 /tdt-webapp/build/
+/tdt-webapp/dist/
 
 /tdt-server/build/
 /tdt-server/bin/

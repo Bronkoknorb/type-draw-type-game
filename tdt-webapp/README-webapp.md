@@ -2,40 +2,38 @@
 
 To install dependencies:
 
-    yarn
+    pnpm install
 
 To start dev server:
 
-    yarn run dev
+    pnpm run dev
 
 To do production build:
 
-    yarn run build
+    pnpm run build
 
 To run a static server:
 
-    npx serve -s dist
+    pnpm run preview
 
 To run linter:
 
-    yarn run lint
+    pnpm run lint
 
 To run code formatter (Prettier):
 
-    yarn run format
+    pnpm run format
 
 To interactively upgrade dependencies to the latest version:
 
-    yarn upgrade-interactive
+    pnpm update --latest --interactive
 
 To upgrade dependencies blindly:
 
-    yarn up '*'
+    pnpm update --latest
 
-(upgrades dependencies in package.json and yarn.lock)
+(upgrades dependencies in package.json and pnpm-lock.yaml)
 
-AND
+To update dependencies within their declared ranges, including transitive dependencies:
 
-    yarn up -R '*'
-
-(upgrades transitive dependencies)
+    pnpm update --no-save

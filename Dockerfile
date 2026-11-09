@@ -1,14 +1,15 @@
 # Stage 1 - build the webapp
-FROM docker.io/node:26-trixie AS build-webapp
+FROM ghcr.io/pnpm/pnpm:12 AS build-webapp
 WORKDIR /usr/src/app
 
+RUN pnpm runtime set node 26 -g
+
 # first copy only dependency definitions, because these change less often and therefore allow docker to cache the build results better
-COPY tdt-webapp/package.json tdt-webapp/yarn.lock ./
-RUN npm install --global corepack && corepack enable
-RUN yarn --network-timeout 100000
+COPY tdt-webapp/package.json tdt-webapp/pnpm-lock.yaml tdt-webapp/pnpm-workspace.yaml ./
+RUN pnpm install --frozen-lockfile
 
 COPY tdt-webapp/ ./
-RUN yarn run build
+RUN pnpm run build
 
 # Stage 2 - build the server
 FROM docker.io/eclipse-temurin:25-jdk-noble AS build-server
