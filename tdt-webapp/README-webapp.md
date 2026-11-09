@@ -24,6 +24,10 @@ To run code formatter (Prettier):
 
     pnpm run format
 
+To update dependencies within their declared ranges, including transitive dependencies:
+
+    pnpm update
+
 To interactively upgrade dependencies to the latest version:
 
     pnpm update --latest --interactive
@@ -31,9 +35,3 @@ To interactively upgrade dependencies to the latest version:
 To upgrade dependencies blindly:
 
     pnpm update --latest
-
-(upgrades dependencies in package.json and pnpm-lock.yaml)
-
-To update dependencies within their declared ranges, including transitive dependencies:
-
-    pnpm update --no-save
