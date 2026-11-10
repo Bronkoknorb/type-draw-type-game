@@ -5,7 +5,7 @@ plugins {
 	java
 	id("org.springframework.boot") version "4.1.2"
 	id("io.spring.dependency-management") version "1.1.7"
-    id("net.ltgt.errorprone") version "5.1.1"
+    id("net.ltgt.errorprone") version "5.2.0"
 	id("org.sonarqube") version "7.5.0.8588"
 }
 
@@ -41,7 +41,7 @@ dependencies {
 	
 	implementation("org.apache.commons:commons-lang3:3.21.0")
 
-	errorprone("com.google.errorprone:error_prone_core:2.51.0")
+	errorprone("com.google.errorprone:error_prone_core:2.52.0")
 	errorprone("com.uber.nullaway:nullaway:0.14.3")
 }
 
