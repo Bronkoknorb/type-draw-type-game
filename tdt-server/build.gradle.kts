@@ -39,7 +39,7 @@ dependencies {
 
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 	
-	implementation("org.apache.commons:commons-lang3:3.21.0")
+	implementation("org.apache.commons:commons-lang3:3.22.0")
 
 	errorprone("com.google.errorprone:error_prone_core:2.52.0")
 	errorprone("com.uber.nullaway:nullaway:0.14.3")
