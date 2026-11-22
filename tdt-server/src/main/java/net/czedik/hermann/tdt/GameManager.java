@@ -46,8 +46,9 @@ public class GameManager {
     gamesPath = storageDirPath.resolve("games");
   }
 
-  public String newGame(CreateGameRequest createGameRequest)
-    throws IOException {
+  public String newGame(
+    CreateGameRequest createGameRequest
+  ) throws IOException {
     String gameId = generateAndReserveNewGameId();
     Path gameDir = getGameDir(gameId);
     Player player = new Player(

@@ -100,8 +100,10 @@ public class WebSocketHandler extends AbstractWebSocketHandler {
   }
 
   @Override
-  public void handleTextMessage(WebSocketSession session, TextMessage message)
-    throws JacksonException {
+  public void handleTextMessage(
+    WebSocketSession session,
+    TextMessage message
+  ) throws JacksonException {
     Client client = Objects.requireNonNull(clients.get(session));
     String payload = message.getPayload();
     log.info("Client {} sent message: {}", client.getId(), payload);
