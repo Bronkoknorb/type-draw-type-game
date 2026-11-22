@@ -6,7 +6,7 @@ plugins {
 	id("org.springframework.boot") version "4.2.0"
 	id("io.spring.dependency-management") version "1.1.7"
     id("net.ltgt.errorprone") version "5.2.0"
-	id("org.sonarqube") version "7.5.0.8588"
+	id("org.sonarqube") version "7.6.0.18749"
 }
 
 group = "net.czedik.hermann"
@@ -41,8 +41,8 @@ dependencies {
 	
 	implementation("org.apache.commons:commons-lang3:3.22.0")
 
-	errorprone("com.google.errorprone:error_prone_core:2.52.0")
-	errorprone("com.uber.nullaway:nullaway:0.14.3")
+	errorprone("com.google.errorprone:error_prone_core:2.53.0")
+	errorprone("com.uber.nullaway:nullaway:0.14.4")
 }
 
 tasks.withType<Test> {
